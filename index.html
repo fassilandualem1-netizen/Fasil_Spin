@@ -168,7 +168,6 @@
         }
 
         async function startLiveDraw() {
-            // [ደረጃ 2] ቁጥሮቹን በደንብ መበጥበጥ (Shuffle)
             let all = []; for(let n=1; n<=100; n++) all.push(n);
             for(let i=all.length-1; i>0; i--) {
                 const j = Math.floor(Math.random()*(i+1));
@@ -191,16 +190,38 @@
                 await new Promise(r=>setTimeout(r, 1500));
             }
             saveHist(winners); 
-            sendToTelegram(winners); // [ደረጃ 2] ውጤቱን መላክ
+            sendToTelegram(winners); 
             document.getElementById('resetBtn').style.display = 'block';
         }
 
         function sendToTelegram(w) {
-            const token = localStorage.getItem('f_bot_token'), cid = localStorage.getItem('f_chat_id');
+            const token = localStorage.getItem('f_bot_token');
+            const cid = localStorage.getItem('f_chat_id');
+            
             if(!token || !cid) return;
+
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
-            const msg = `🎰 **የቢንጎ ዕጣ ውጤት** 🎰\n━━━━━━━━━━━━━━\n🥇 1ኛ፡ ቁጥር 【 ${w[0]} 】- ${n[0]}\n🥈 2ኛ፡ ቁጥር 【 ${w[1]} 】- ${n[1]}\n🥉 3ኛ፡ ቁጥር 【 ${w[2]} 】- ${n[2]}\n━━━━━━━━━━━━━━`;
-            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
+            const msg = `🎰 **የቢንጎ ዕጣ ውጤት** 🎰\n` +
+                        `━━━━━━━━━━━━━━\n` +
+                        `🥇 1ኛ፡ ቁጥር 【 ${w[0]} 】- ${n[0]}\n` +
+                        `🥈 2ኛ፡ ቁጥር 【 ${w[1]} 】- ${n[1]}\n` +
+                        `🥉 3ኛ፡ ቁጥር 【 ${w[2]} 】- ${n[2]}\n` +
+                        `━━━━━━━━━━━━━━\n` +
+                        `🕒 ሰዓት: ${new Date().toLocaleTimeString()}`;
+
+            const url = `https://api.telegram.org/bot${token}/sendMessage`;
+            
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: cid,
+                    text: msg,
+                    parse_mode: "Markdown"
+                })
+            }).then(res => {
+                if(!res.ok) console.log("Telegram Error");
+            }).catch(e => console.log("Connection Error"));
         }
 
         function resetGame() { location.reload(); }
