@@ -22,20 +22,17 @@
         .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
         
-        /* ሰንጠረዥ */
+        /* በቀለም ያሸበረቀ ሰንጠረዥ */
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 5px; border-radius: 8px; width: 100%; margin: 5px 0; }
-        .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 6px 0; border: 1px solid #222; border-radius: 3px; transition: all 0.1s; }
+        .grid-cell { background: #0a0a0a; color: #666; font-size: 10px; font-weight: bold; padding: 6px 0; border: 0.5px solid #222; border-radius: 3px; transition: all 0.1s; }
         
-        /* ለመዝገብ ገፅ ብቻ የሚሆን ስታይል - ቁጥሩ ጎላ እንዲል እና ቀለም እንዳይኖረው */
-        #bookingGrid .grid-cell { color: #fff !important; font-size: 13px; border-color: #333; }
+        /* መዝገብ ላይ ስም ያላቸው ቁጥሮች ቀለም */
+        .booked { background: linear-gradient(135deg, #1e1e1e, #333) !important; color: var(--gold) !important; border-color: var(--dark-gold) !important; }
         
-        /* መዝገብ ላይ ስም ያላቸው ቁጥሮች */
-        .booked { border: 1px solid #fff !important; box-shadow: inset 0 0 5px #fff; background: #222 !important; }
+        /* Live Tracking Animation - ዕጣው ሲሽከረከር */
+        .tracking { background: var(--gold) !important; color: #000 !important; transform: scale(1.1); box-shadow: 0 0 10px var(--gold); z-index: 5; }
         
-        /* Live Tracking */
-        .tracking { background: #fff !important; color: #000 !important; transform: scale(1.1); box-shadow: 0 0 10px #fff; z-index: 5; }
-        
-        /* ዕጣ ሲወጣ */
+        /* ዕጣ ሲወጣ የሚሆን ቋሚ አኒሜሽን */
         .winner-hit { 
             background: var(--red) !important; 
             color: #fff !important; 
@@ -99,8 +96,6 @@
     </div>
 
     <script>
-        const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
-
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSfx(freq, dur, vol) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -121,9 +116,6 @@
             const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
             bg.innerHTML = ""; gg.innerHTML = "";
             for(let i=1; i<=100; i++) {
-                let color = rowColors[Math.floor((i-1)/10)];
-                
-                // መዝገብ ገፅ ላይ ነጭ እና ጎላ ያለ ቁጥር
                 let bc = document.createElement('div'); bc.className = 'grid-cell'; bc.innerText = i;
                 if(localStorage.getItem('bk_'+i)) bc.classList.add('booked');
                 bc.onclick = () => {
@@ -131,11 +123,7 @@
                     if(v!==null) { if(v.trim()==="") localStorage.removeItem('bk_'+i); else localStorage.setItem('bk_'+i, v); setup(); }
                 };
                 bg.appendChild(bc);
-                
-                // ዕጣ ገፅ ላይ በቀለም
-                let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i; 
-                gc.style.color = color; gc.style.borderColor = color;
-                gg.appendChild(gc);
+                let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i; gg.appendChild(gc);
             }
         }
 
@@ -150,10 +138,8 @@
         function renderBall(val, final) {
             cx.clearRect(0,0,200,200);
             let d = final ? val : Math.floor(Math.random()*100)+1;
-            let ballColor = (final && val > 0) ? rowColors[Math.floor((val-1)/10)] : '#bf953f';
-            
             let g = cx.createRadialGradient(70,70,10,100,100,80);
-            g.addColorStop(0,'#fcf6ba'); g.addColorStop(1, ballColor);
+            g.addColorStop(0,'#fcf6ba'); g.addColorStop(1,'#bf953f');
             cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill();
             cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(d||"?",100,125);
         }
@@ -170,6 +156,7 @@
             
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
+                // Live Tracking Animation on Grid
                 for(let j=0; j<25; j++) {
                     let temp = Math.floor(Math.random()*100)+1;
                     let cell = document.getElementById('g'+temp);
@@ -179,6 +166,7 @@
                     await new Promise(r=>setTimeout(r, 60));
                     cell.classList.remove('tracking');
                 }
+                // ማረፊያ
                 renderBall(win, true);
                 playSfx(300, 1, 0.3);
                 document.getElementById('v'+i).innerText = win;
@@ -218,3 +206,4 @@
     </script>
 </body>
 </html>
+ 
