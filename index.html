@@ -22,17 +22,12 @@
         .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
         
-        /* ሰንጠረዥ */
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 5px; border-radius: 8px; width: 100%; margin: 5px 0; }
         .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 6px 0; border: 1px solid #222; border-radius: 3px; transition: all 0.1s; }
         
-        /* መዝገብ ላይ ስም ያላቸው ቁጥሮች */
         .booked { border: 1px solid #fff !important; box-shadow: inset 0 0 5px #fff; }
-        
-        /* Live Tracking */
         .tracking { background: #fff !important; color: #000 !important; transform: scale(1.1); box-shadow: 0 0 10px #fff; z-index: 5; }
         
-        /* ዕጣ ሲወጣ */
         .winner-hit { 
             background: var(--red) !important; 
             color: #fff !important; 
@@ -53,6 +48,12 @@
 
         canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 120px; height: 120px; margin: 5px auto; box-shadow: 0 0 20px rgba(191, 149, 63, 0.4); }
         button#drawBtn { width: 95%; padding: 15px; border-radius: 15px; font-size: 19px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; }
+
+        /* የታሪክ ኳሶች ዲዛይን */
+        .history-item { background:#111; border:1px solid #333; margin:10px; padding:12px; border-left:4px solid var(--gold); border-radius:10px; text-align:left; }
+        .h-ball-row { display: flex; gap: 10px; margin-top: 8px; align-items: center; }
+        .h-ball { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 14px; box-shadow: inset -3px -3px 5px rgba(0,0,0,0.3); }
+        .ball-txt { font-size: 10px; color: #888; display: block; text-align: center; }
     </style>
 </head>
 <body onload="checkAccess()">
@@ -96,10 +97,9 @@
     </div>
 
     <script>
-        // ረድፎችን በቀለም ማሸብረቂያ ቀለሞች
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
-
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
         function playSfx(freq, dur, vol) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const o = audioCtx.createOscillator(), g = audioCtx.createGain();
@@ -122,7 +122,7 @@
                 let color = rowColors[Math.floor((i-1)/10)];
                 
                 let bc = document.createElement('div'); bc.className = 'grid-cell'; bc.innerText = i;
-                bc.style.color = color; bc.style.borderColor = color;
+                bc.style.color = "#fff"; // መዝገብ ላይ ነጭ ብቻ
                 if(localStorage.getItem('bk_'+i)) bc.classList.add('booked');
                 bc.onclick = () => {
                     let v = prompt(i+" ስም:", localStorage.getItem('bk_'+i)||"");
@@ -131,7 +131,7 @@
                 bg.appendChild(bc);
                 
                 let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i; 
-                gc.style.color = color; gc.style.borderColor = color;
+                gc.style.color = color; gc.style.borderColor = color; // ዕጣ ላይ ባለቀለም
                 gg.appendChild(gc);
             }
         }
@@ -148,7 +148,6 @@
             cx.clearRect(0,0,200,200);
             let d = final ? val : Math.floor(Math.random()*100)+1;
             let ballColor = (final && val > 0) ? rowColors[Math.floor((val-1)/10)] : '#bf953f';
-            
             let g = cx.createRadialGradient(70,70,10,100,100,80);
             g.addColorStop(0,'#fcf6ba'); g.addColorStop(1, ballColor);
             cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill();
@@ -164,7 +163,6 @@
 
         async function startLiveDraw() {
             let winners = []; while(winners.length < 3) { let r = Math.floor(Math.random()*100)+1; if(!winners.includes(r)) winners.push(r); }
-            
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
                 for(let j=0; j<25; j++) {
@@ -194,24 +192,4 @@
 
         function saveHist(w) {
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
-            h.unshift({t: new Date().toLocaleTimeString(), r: w});
-            localStorage.setItem('f_h', JSON.stringify(h.slice(0,20)));
-        }
-
-        function loadHistory() {
-            let h = JSON.parse(localStorage.getItem('f_h')||"[]");
-            document.getElementById('historyList').innerHTML = h.map(x => `
-                <div style="background:#111; border:1px solid #333; margin:10px; padding:15px; border-left:4px solid var(--gold); border-radius:10px; text-align:left;">
-                    <small>🕒 ሰዓት: ${x.t}</small><br><b>1ኛ: ${x.r[0]} | 2ኛ: ${x.r[1]} | 3ኛ: ${x.r[2]}</b>
-                </div>`).join('');
-        }
-
-        function clearData() {
-            if(confirm("መዝገብና ታሪክ ይጥፋ?")) {
-                Object.keys(localStorage).forEach(k => { if(k.startsWith('bk_') || k==='f_h') localStorage.removeItem(k); });
-                location.reload();
-            }
-        }
-    </script>
-</body>
-</html>
+            h.unshift({t: new Date().toLocaleTimeString
