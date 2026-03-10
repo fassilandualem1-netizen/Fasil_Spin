@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP BINGO FULL</title>
+    <title>FASIL VIP BINGO - FREE TRIAL</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
-        /* Lock Screen */
-        #lockScreen { position: fixed; inset: 0; background: #000; z-index: 20000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        /* Lock Screen (ለጊዜው ተደብቆ ይቆያል) */
+        #lockScreen { position: fixed; inset: 0; background: #000; z-index: 20000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .lock-box { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; width: 85%; box-sizing: border-box; }
-        .lock-input { width: 100%; padding: 15px; margin: 15px 0; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; font-size: 28px; border-radius: 10px; letter-spacing: 5px; }
+        .lock-input { width: 100%; padding: 15px; margin: 15px 0; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; font-size: 28px; border-radius: 10px; letter-spacing: 5px; outline: none; }
         
         #appContent { display: none; flex: 1; flex-direction: column; overflow: hidden; }
         .page { display: none; flex: 1; padding: 10px; overflow-y: auto; padding-bottom: 90px; }
@@ -22,9 +22,9 @@
         .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
 
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 5px; border-radius: 8px; margin-top: 35px; }
-        .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 7px 0; border: 1px solid #222; border-radius: 3px; }
-        #bookingGrid .grid-cell { color: #fff; font-size: 13px; border-color: #333; }
-        .booked { border: 1px solid #fff !important; background: #222 !important; }
+        .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 8px 0; border: 1px solid #222; border-radius: 3px; }
+        #bookingGrid .grid-cell { color: #fff; border-color: #333; }
+        .booked { border: 1px solid #fff !important; background: #333 !important; }
         .tracking { background: #fff !important; color: #000 !important; transform: scale(1.1); }
         .winner-hit { background: var(--red) !important; color: #fff !important; animation: pulse 0.8s infinite; }
         @keyframes pulse { 50% { transform: scale(1.2); } }
@@ -43,17 +43,18 @@
     <div id="lockScreen">
         <div class="lock-box">
             <h2 id="lockStatus">FASIL VIP</h2>
-            <p id="trialMsg" style="color:#888; font-size:14px;"></p>
-            <input type="password" id="passCode" class="lock-input" placeholder="CODE" maxlength="4">
-            <button onclick="checkPass()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">UNLOCK</button>
+            <p id="trialMsg" style="color:#ff3333; font-size:14px; margin-top:5px;">የሙከራ ጊዜው አልቋል!</p>
+            <p style="color:#888; font-size:12px;">ለመቀጠል የመክፈቻ ኮድ ያስገቡ</p>
+            <input type="password" id="passCode" class="lock-input" placeholder="CODE" maxlength="4" inputmode="numeric">
+            <button onclick="checkPass()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold; color:#000; font-size:18px;">UNLOCK APP</button>
         </div>
     </div>
 
     <div id="appContent">
         <div id="bookingPage" class="page">
-            <h3 style="margin-top:40px;">የተመዘገቡ</h3>
+            <h3 style="margin-top:40px;">📋 መዝገብ</h3>
             <div id="bookingGrid" class="grid-container"></div>
-            <button style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:15px;" onclick="clearData()">ሁሉንም አጽዳ</button>
+            <button style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:20px;" onclick="clearData()">RESET</button>
         </div>
 
         <div id="gamePage" class="page active">
@@ -65,10 +66,13 @@
             </div>
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
             <button id="drawBtn" onclick="runSequence()">START DRAW</button>
-            <button id="resetBtn" onclick="location.reload()" style="display:none; background:#222; color:#fff; padding:12px; border-radius:15px; width:95%; margin:5px auto; border:none;">RE-START</button>
+            <button id="resetBtn" onclick="location.reload()" style="display:none; background:#222; color:#fff; padding:12px; border-radius:15px; width:95%; margin:5px auto; border:none;">RESTART</button>
         </div>
 
-        <div id="historyPage" class="page"><div id="historyList"></div></div>
+        <div id="historyPage" class="page">
+            <h3 style="margin-top:40px;">🕒 ታሪክ</h3>
+            <div id="historyList"></div>
+        </div>
 
         <div class="tabs">
             <button class="tab-btn" onclick="showPage('bookingPage', this)">📋 መዝገብ</button>
@@ -85,27 +89,39 @@
 
         function initApp() {
             let start = localStorage.getItem('f_start');
-            if (!start) { start = Date.now(); localStorage.setItem('f_start', start); }
-            let days = Math.floor((Date.now() - start) / (86400000));
+            if (!start) { 
+                start = Date.now(); 
+                localStorage.setItem('f_start', start); 
+            }
             
-            if (localStorage.getItem('f_ok') === '1' || days < TRIAL_DAYS) {
-                if(days < TRIAL_DAYS && localStorage.getItem('f_ok') !== '1') {
-                    document.getElementById('trialMsg').innerText = "የሙከራ ጊዜ፡ " + (TRIAL_DAYS - days) + " ቀን ይቀራል";
-                }
-                unlockApp();
+            let daysPassed = Math.floor((Date.now() - start) / 86400000);
+            let isPermanentlyUnlocked = localStorage.getItem('f_ok') === '1';
+
+            // ቼክ ማድረጊያ ሎጂክ
+            if (isPermanentlyUnlocked || daysPassed < TRIAL_DAYS) {
+                // በሙከራ ጊዜ ውስጥ ከሆነ ወይም ከተከፈለ በቀጥታ ይከፈታል
+                unlockApp(); 
             } else {
-                document.getElementById('lockStatus').innerText = "ጊዜው አልቋል!";
+                // 5 ቀን ካለፈው ግን መቆለፊያው ይታያል
+                document.getElementById('lockScreen').style.display = 'flex';
+                document.getElementById('appContent').style.display = 'none';
             }
             setup();
         }
 
         function checkPass() {
             if (document.getElementById('passCode').value === MASTER_KEY) {
-                localStorage.setItem('f_ok', '1'); unlockApp();
-            } else { alert("ስህተት!"); }
+                localStorage.setItem('f_ok', '1'); 
+                unlockApp();
+            } else { 
+                alert("የተሳሳተ ኮድ ነው!"); 
+            }
         }
 
-        function unlockApp() { document.getElementById('lockScreen').style.display = 'none'; document.getElementById('appContent').style.display = 'flex'; }
+        function unlockApp() { 
+            document.getElementById('lockScreen').style.display = 'none'; 
+            document.getElementById('appContent').style.display = 'flex'; 
+        }
 
         function setup() {
             const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
@@ -116,8 +132,7 @@
                 bc.onclick = () => {
                     let v = prompt(i+" ስም:", localStorage.getItem('bk_'+i)||"");
                     if(v!==null) { if(v.trim()==="") localStorage.removeItem('bk_'+i); else localStorage.setItem('bk_'+i, v); setup(); }
-                };
-                bg.appendChild(bc);
+                }; bg.appendChild(bc);
                 let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i;
                 gg.appendChild(gc);
             }
@@ -137,7 +152,7 @@
             let winners = [nums[0], nums[1], nums[2]];
 
             for(let i=1; i<=3; i++) {
-                for(let j=0; j<20; j++) {
+                for(let j=0; j<15; j++) {
                     let r = Math.floor(Math.random()*100)+1;
                     document.getElementById('g'+r).classList.add('tracking');
                     await new Promise(r=>setTimeout(r, 60));
@@ -145,15 +160,15 @@
                 }
                 document.getElementById('v'+i).innerText = winners[i-1];
                 document.getElementById('g'+winners[i-1]).classList.add('winner-hit');
-                await new Promise(r=>setTimeout(r, 1000));
+                await new Promise(r=>setTimeout(r, 800));
             }
             saveHist(winners); sendTele(winners);
             document.getElementById('resetBtn').style.display = 'block';
         }
 
         function sendTele(w) {
-            const n = w.map(x => localStorage.getItem('bk_'+x) || "ያልተመዘገበ");
-            const msg = `🎰 የቢንጎ ውጤት 🎰\n🥇 1ኛ: 【${w[0]}】- ${n[0]}\n🥈 2ኛ: 【${w[1]}】- ${n[1]}\n🥉 3ኛ: 【${w[2]}】- ${n[2]}`;
+            const names = w.map(x => localStorage.getItem('bk_'+x) || "ያልተመዘገበ");
+            const msg = `🎰 የቢንጎ ውጤት 🎰\n🥇 1ኛ፡ 【 ${w[0]} 】 - ${names[0]}\n🥈 2ኛ፡ 【 ${w[1]} 】 - ${names[1]}\n🥉 3ኛ፡ 【 ${w[2]} 】 - ${names[2]}`;
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}`);
         }
 
@@ -165,4 +180,14 @@
 
         function loadHistory() {
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
-            document.getElementById('historyList').innerHTML = h.map(x =>
+            document.getElementById('historyList').innerHTML = h.map(x => `
+                <div style="background:#111; margin:10px; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #333;">
+                    <small style="color:#888;">🕒 ${x.t}</small>
+                    <div style="display:flex; gap:6px;">${x.r.map(n => `<div class="h-ball">${n}</div>`).join('')}</div>
+                </div>`).join('');
+        }
+
+        function clearData() { if(confirm("ሁሉንም አጽዳ?")) { localStorage.clear(); location.reload(); } }
+    </script>
+</body>
+</html>
