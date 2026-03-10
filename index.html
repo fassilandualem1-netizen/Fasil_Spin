@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP - History Edition</title>
+    <title>FASIL VIP - Live Edition</title>
     <style>
-        :root { --gold: #bf953f; --bright-gold: #fcf6ba; }
-        body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; }
+        :root { --gold: #bf953f; --bright-gold: #fcf6ba; --dark-gold: #8a6d29; --red: #ff3333; --blue: #007bff; }
+        body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
+        #statusOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100002; display: none; justify-content: center; align-items: center; font-size: 55px; font-weight: bold; color: var(--bright-gold); }
+
         #appContent { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .page { display: none; flex: 1; padding: 10px; overflow-y: auto; box-sizing: border-box; padding-bottom: 90px; }
         .page.active { display: flex; flex-direction: column; }
@@ -16,70 +18,75 @@
         .tab-btn { flex: 1; color: #777; border: none; background: none; font-weight: bold; font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
 
-        /* የታሪክ ካርድ ዲዛይን */
-        .history-card { 
-            background: #111; 
-            border: 1px solid #333; 
-            margin: 12px auto; 
-            padding: 15px; 
-            border-radius: 15px; 
-            width: 90%; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            border-left: 5px solid var(--gold);
-        }
-        .history-time { font-size: 12px; color: #888; display: block; margin-bottom: 10px; text-align: left; }
+        .live-box { background: #111; border: 1px solid var(--gold); padding: 6px; border-radius: 10px; width: 85%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-top: 40px; margin-bottom: 5px; gap: 8px; font-size: 14px; }
+        .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
         
-        /* የታሪክ ኳሶች ዲዛይን */
-        .ball-container { display: flex; justify-content: space-around; align-items: center; }
-        .h-ball { 
-            width: 45px; height: 45px; 
-            border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; font-size: 18px; color: #000;
-            box-shadow: inset -4px -4px 8px rgba(0,0,0,0.4), 2px 4px 6px rgba(0,0,0,0.3);
-            position: relative;
+        /* ሰንጠረዥ */
+        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 5px; border-radius: 8px; width: 100%; margin: 5px 0; }
+        .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 6px 0; border: 1px solid #222; border-radius: 3px; transition: all 0.1s; }
+        
+        /* መዝገብ ላይ ስም ያላቸው ቁጥሮች */
+        .booked { border: 1px solid #fff !important; box-shadow: inset 0 0 5px #fff; }
+        
+        /* Live Tracking */
+        .tracking { background: #fff !important; color: #000 !important; transform: scale(1.1); box-shadow: 0 0 10px #fff; z-index: 5; }
+        
+        /* ዕጣ ሲወጣ */
+        .winner-hit { 
+            background: var(--red) !important; 
+            color: #fff !important; 
+            box-shadow: 0 0 15px var(--red);
+            animation: winner-pulse 0.8s infinite;
+            z-index: 10;
         }
-        .h-ball::after { /* የብርሃን ነጥብ በኳሱ ላይ */
-            content: ''; position: absolute; top: 5px; left: 8px; 
-            width: 12px; height: 8px; background: rgba(255,255,255,0.4); border-radius: 50%;
+        @keyframes winner-pulse { 
+            0% { transform: scale(1.1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1.1); }
         }
-        .ball-label { font-size: 10px; color: var(--gold); margin-top: 5px; display: block; }
-        .ball-wrapper { text-align: center; }
 
-        /* ለዕጣ ገፅ የሚያገለግል */
-        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; padding: 6px; }
-        .grid-cell { background: #111; color: #fff; font-size: 11px; font-weight: bold; padding: 8px 0; border-radius: 4px; border: 1px solid #222; }
-        .res-row { display: flex; justify-content: space-between; margin: 10px 0; gap: 6px; }
-        .res-card { background: #111; border: 2px solid var(--gold); padding: 8px; border-radius: 12px; width: 32%; }
-        canvas { border: 5px solid var(--gold); border-radius: 50%; background: #050505; width: 120px; height: 120px; margin: 5px auto; }
-        button#drawBtn { width: 95%; padding: 16px; border-radius: 15px; background: var(--gold); color: #000; border: none; font-weight: bold; }
+        .res-row { display: flex; justify-content: space-between; margin: 8px 0; gap: 6px; }
+        .res-card { background: #0a0a0a; border: 1.5px solid var(--gold); padding: 5px; border-radius: 10px; width: 32%; }
+        .res-card span { font-size: 11px; }
+        .res-card b { font-size: 26px; color: #fff; display: block; }
+
+        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 120px; height: 120px; margin: 5px auto; box-shadow: 0 0 20px rgba(191, 149, 63, 0.4); }
+        button#drawBtn { width: 95%; padding: 15px; border-radius: 15px; font-size: 19px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; }
     </style>
 </head>
 <body onload="checkAccess()">
 
+    <div id="statusOverlay">READY</div>
+
     <div id="appContent">
+        <div id="bookingPage" class="page">
+            <h3 style="margin-top:40px;">የተመዘገቡ</h3>
+            <div id="bookingGrid" class="grid-container"></div>
+            <button style="color:red; border:1px solid #444; background:none; padding:10px; border-radius:10px; margin-top:15px;" onclick="clearData()">ሁሉንም አጽዳ</button>
+        </div>
+        
         <div id="gamePage" class="page active">
-            <h3 style="margin-top:40px;">LIVE DRAW</h3>
+            <div class="live-box">
+                <div class="live-dot"></div>
+                <span style="font-weight:bold; color:red;">LIVE TRACKING</span>
+                <span id="liveClock">00:00:00</span>
+            </div>
+            
             <div id="gameGrid" class="grid-container"></div>
+            
             <div class="res-row">
                 <div class="res-card"><span>1ኛ</span><b id="v1">?</b></div>
                 <div class="res-card"><span>2ኛ</span><b id="v2">?</b></div>
                 <div class="res-card"><span>3ኛ</span><b id="v3">?</b></div>
             </div>
+            
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
-            <button id="drawBtn" onclick="startDraw()">START DRAW</button>
+            <button id="drawBtn" onclick="runSequence()">START DRAW</button>
+            <button id="resetBtn" onclick="resetGame()" style="display:none; background:#111; color:#fff; padding:14px; border-radius:15px; border:1px solid #444; width:95%; margin:5px auto; font-weight:bold;">RE-START</button>
         </div>
 
-        <div id="historyPage" class="page">
-            <h3 style="margin-top:40px;">የዕጣ ታሪክ</h3>
-            <div id="historyList"></div>
-            <button onclick="clearHistory()" style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:20px;">ታሪክ አጽዳ</button>
-        </div>
-        
-        <div id="bookingPage" class="page">
-            <h3 style="margin-top:40px;">መዝገብ</h3>
-            <div id="bookingGrid" class="grid-container"></div>
-        </div>
+        <div id="historyPage" class="page"><div id="historyList"></div></div>
 
         <div class="tabs">
             <button class="tab-btn" onclick="showPage('bookingPage', this)">📋 መዝገብ</button>
@@ -89,10 +96,44 @@
     </div>
 
     <script>
+        // ረድፎችን በቀለም ማሸብረቂያ ቀለሞች
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
 
-        function getBallColor(v) {
-            return rowColors[Math.floor((v - 1) / 10)] || "#bf953f";
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSfx(freq, dur, vol) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            o.frequency.value = freq; g.gain.value = vol;
+            o.start(); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+            o.stop(audioCtx.currentTime + dur);
+        }
+
+        function checkAccess() {
+            if (!localStorage.getItem('_init')) localStorage.setItem('_init', Date.now());
+            setup();
+            setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+        }
+
+        function setup() {
+            const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
+            bg.innerHTML = ""; gg.innerHTML = "";
+            for(let i=1; i<=100; i++) {
+                let color = rowColors[Math.floor((i-1)/10)];
+                
+                let bc = document.createElement('div'); bc.className = 'grid-cell'; bc.innerText = i;
+                bc.style.color = color; bc.style.borderColor = color;
+                if(localStorage.getItem('bk_'+i)) bc.classList.add('booked');
+                bc.onclick = () => {
+                    let v = prompt(i+" ስም:", localStorage.getItem('bk_'+i)||"");
+                    if(v!==null) { if(v.trim()==="") localStorage.removeItem('bk_'+i); else localStorage.setItem('bk_'+i, v); setup(); }
+                };
+                bg.appendChild(bc);
+                
+                let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i; 
+                gc.style.color = color; gc.style.borderColor = color;
+                gg.appendChild(gc);
+            }
         }
 
         function showPage(p, b) {
@@ -102,75 +143,73 @@
             if(p==='historyPage') loadHistory();
         }
 
-        function loadHistory() {
-            const list = document.getElementById('historyList');
-            const data = JSON.parse(localStorage.getItem('fasil_history') || "[]");
+        const cv = document.getElementById('bingoCanvas'), cx = cv.getContext('2d');
+        function renderBall(val, final) {
+            cx.clearRect(0,0,200,200);
+            let d = final ? val : Math.floor(Math.random()*100)+1;
+            let ballColor = (final && val > 0) ? rowColors[Math.floor((val-1)/10)] : '#bf953f';
             
-            if(data.length === 0) {
-                list.innerHTML = "<p style='color:#666; margin-top:50px;'>ምንም የተመዘገበ ታሪክ የለም።</p>";
-                return;
-            }
-
-            list.innerHTML = data.map(item => `
-                <div class="history-card">
-                    <span class="history-time">🕒 ሰዓት: ${item.time}</span>
-                    <div class="ball-container">
-                        <div class="ball-wrapper">
-                            <div class="h-ball" style="background: radial-gradient(circle at 30% 30%, #fff, ${getBallColor(item.results[0])})">
-                                ${item.results[0]}
-                            </div>
-                            <span class="ball-label">1ኛ ዕጣ</span>
-                        </div>
-                        <div class="ball-wrapper">
-                            <div class="h-ball" style="background: radial-gradient(circle at 30% 30%, #fff, ${getBallColor(item.results[1])})">
-                                ${item.results[1]}
-                            </div>
-                            <span class="ball-label">2ኛ ዕጣ</span>
-                        </div>
-                        <div class="ball-wrapper">
-                            <div class="h-ball" style="background: radial-gradient(circle at 30% 30%, #fff, ${getBallColor(item.results[2])})">
-                                ${item.results[2]}
-                            </div>
-                            <span class="ball-label">3ኛ ዕጣ</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            let g = cx.createRadialGradient(70,70,10,100,100,80);
+            g.addColorStop(0,'#fcf6ba'); g.addColorStop(1, ballColor);
+            cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill();
+            cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(d||"?",100,125);
         }
 
-        // ዕጣውን ለማስጀመር (አሳጥሬዋለሁ ለሙከራ)
-        async function startDraw() {
-            let wins = []; while(wins.length < 3) { let r = Math.floor(Math.random()*100)+1; if(!wins.includes(r)) wins.push(r); }
+        async function runSequence() {
+            document.getElementById('drawBtn').style.display = 'none';
+            const ov = document.getElementById('statusOverlay'); ov.style.display = 'flex';
+            for(let s of ["READY","VERIFYING","GO!"]) { ov.innerText = s; playSfx(400,0.3,0.1); await new Promise(r=>setTimeout(r,800)); }
+            ov.style.display = 'none'; startLiveDraw();
+        }
+
+        async function startLiveDraw() {
+            let winners = []; while(winners.length < 3) { let r = Math.floor(Math.random()*100)+1; if(!winners.includes(r)) winners.push(r); }
+            
             for(let i=1; i<=3; i++) {
-                document.getElementById('v'+i).innerText = wins[i-1];
-                await new Promise(r=>setTimeout(r, 500));
+                let win = winners[i-1];
+                for(let j=0; j<25; j++) {
+                    let temp = Math.floor(Math.random()*100)+1;
+                    let cell = document.getElementById('g'+temp);
+                    cell.classList.add('tracking');
+                    renderBall(0, false);
+                    playSfx(1000, 0.03, 0.05);
+                    await new Promise(r=>setTimeout(r, 60));
+                    cell.classList.remove('tracking');
+                }
+                renderBall(win, true);
+                playSfx(300, 1, 0.3);
+                document.getElementById('v'+i).innerText = win;
+                document.getElementById('g'+win).classList.add('winner-hit');
+                await new Promise(r=>setTimeout(r, 1500));
             }
-            saveHistory(wins);
-            alert("ዕጣ ወጥቷል! ታሪክ ገፅ ላይ ማየት ይችላሉ።");
+            saveHist(winners); document.getElementById('resetBtn').style.display = 'block';
         }
 
-        function saveHistory(results) {
-            let h = JSON.parse(localStorage.getItem('fasil_history') || "[]");
-            h.unshift({ time: new Date().toLocaleTimeString('en-GB'), results: results });
-            localStorage.setItem('fasil_history', JSON.stringify(h.slice(0, 20)));
+        function resetGame() {
+            document.getElementById('resetBtn').style.display = 'none'; document.getElementById('drawBtn').style.display = 'block';
+            for(let i=1; i<=3; i++) document.getElementById('v'+i).innerText = "?";
+            document.querySelectorAll('.grid-cell').forEach(c=>c.classList.remove('winner-hit'));
+            renderBall(0, true);
         }
 
-        function clearHistory() {
-            if(confirm("ሁሉንም የታሪክ መዝገብ ማጥፋት ትፈልጋለህ?")) {
-                localStorage.removeItem('fasil_history');
-                loadHistory();
-            }
+        function saveHist(w) {
+            let h = JSON.parse(localStorage.getItem('f_h')||"[]");
+            h.unshift({t: new Date().toLocaleTimeString(), r: w});
+            localStorage.setItem('f_h', JSON.stringify(h.slice(0,20)));
         }
 
-        function checkAccess() {
-            // ለዕጣ ገፁ ሰንጠረዥ ማዘጋጃ
-            const gg = document.getElementById('gameGrid');
-            for(let i=1; i<=100; i++) {
-                let gc = document.createElement('div');
-                gc.className = 'grid-cell';
-                gc.innerText = i;
-                gc.style.borderColor = rowColors[Math.floor((i-1)/10)];
-                gg.appendChild(gc);
+        function loadHistory() {
+            let h = JSON.parse(localStorage.getItem('f_h')||"[]");
+            document.getElementById('historyList').innerHTML = h.map(x => `
+                <div style="background:#111; border:1px solid #333; margin:10px; padding:15px; border-left:4px solid var(--gold); border-radius:10px; text-align:left;">
+                    <small>🕒 ሰዓት: ${x.t}</small><br><b>1ኛ: ${x.r[0]} | 2ኛ: ${x.r[1]} | 3ኛ: ${x.r[2]}</b>
+                </div>`).join('');
+        }
+
+        function clearData() {
+            if(confirm("መዝገብና ታሪክ ይጥፋ?")) {
+                Object.keys(localStorage).forEach(k => { if(k.startsWith('bk_') || k==='f_h') localStorage.removeItem(k); });
+                location.reload();
             }
         }
     </script>
