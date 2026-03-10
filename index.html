@@ -8,7 +8,6 @@
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --dark-gold: #8a6d29; --red: #ff3333; --blue: #007bff; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
-        /* መቆለፊያ ገጽ */
         #lockScreen { position: fixed; inset: 0; background: #000; z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .lock-box { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; width: 85%; }
         .lock-input { width: 100%; padding: 15px; margin: 15px 0; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; font-size: 28px; border-radius: 10px; letter-spacing: 5px; }
@@ -89,9 +88,8 @@
 
         <div id="setupPage" class="page">
             <h3 style="margin-top:40px;">⚙️ TELEGRAM SETUP</h3>
-            <p style="font-size: 13px; color: #888;">ውጤት የሚላክበትን የግሩፕ Chat ID እዚህ ይሙሉ</p>
-            <input type="text" id="chatIdInput" class="setup-input" placeholder="Chat ID አስገባ (ለምሳሌ: -100xxxx)">
-            <button class="save-btn" onclick="saveSettings()">ሴቭ አድርግ (SAVE)</button>
+            <input type="text" id="chatIdInput" class="setup-input" placeholder="Chat ID አስገባ">
+            <button class="save-btn" onclick="saveSettings()">SAVE</button>
         </div>
 
         <div class="tabs">
@@ -107,11 +105,23 @@
         const BOT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         
+        // ድምፅ ማጫወቻ ፈንክሽን
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSfx(freq, dur, vol) {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.connect(g); g.connect(audioCtx.destination);
+                o.frequency.value = freq; g.gain.value = vol;
+                o.start(); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+                o.stop(audioCtx.currentTime + dur);
+            } catch(e) {}
+        }
+
         function checkAccess() {
             let start = localStorage.getItem('f_start') || Date.now();
             if (!localStorage.getItem('f_start')) localStorage.setItem('f_start', start);
             let days = Math.floor((Date.now() - start) / 86400000);
-
             if (localStorage.getItem('f_ok') === '1' || days < 5) {
                 document.getElementById('appContent').style.display = 'flex';
             } else {
@@ -125,7 +135,7 @@
         function unlockApp() {
             if(document.getElementById('passCode').value === MASTER_KEY) {
                 localStorage.setItem('f_ok', '1'); location.reload();
-            } else alert("የተሳሳተ ኮድ!");
+            } else alert("ስህተት!");
         }
 
         function saveSettings() {
@@ -168,10 +178,14 @@
         }
 
         async function runSequence() {
-            if(!localStorage.getItem('f_chat_id')) { alert("መጀመሪያ Setup ገፅ ላይ Chat ID ያስገቡ!"); return; }
+            if(!localStorage.getItem('f_chat_id')) { alert("Chat ID ያስገቡ!"); return; }
             document.getElementById('drawBtn').style.display = 'none';
             const ov = document.getElementById('statusOverlay'); ov.style.display = 'flex';
-            for(let s of ["READY","VERIFYING","GO!"]) { ov.innerText = s; await new Promise(r=>setTimeout(r,800)); }
+            for(let s of ["READY","VERIFYING","GO!"]) { 
+                ov.innerText = s; 
+                playSfx(440, 0.4, 0.1); // Ready ድምፅ
+                await new Promise(r=>setTimeout(r,800)); 
+            }
             ov.style.display = 'none'; startLiveDraw();
         }
 
@@ -189,10 +203,12 @@
                     let t = Math.floor(Math.random()*100)+1; 
                     document.getElementById('g'+t).classList.add('tracking');
                     renderBall(Math.floor(Math.random()*100)+1, false);
+                    playSfx(1000, 0.05, 0.05); // እጣ መሽከርከሪያ ድምፅ
                     await new Promise(r=>setTimeout(r, 60));
                     document.getElementById('g'+t).classList.remove('tracking');
                 }
                 renderBall(win, true);
+                playSfx(300, 0.8, 0.2); // ውጤት መውጫ ድምፅ
                 document.getElementById('v'+i).innerText = win;
                 document.getElementById('g'+win).classList.add('winner-hit');
                 await new Promise(r=>setTimeout(r, 1200));
@@ -204,7 +220,7 @@
         function sendToTelegram(w) {
             const cid = localStorage.getItem('f_chat_id');
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
-            const msg = `🎰 **የቢንጎ ዕጣ ውጤት** 🎰\n━━━━━━━━━━━━━━\n🥇 1ኛ፡ ቁጥር 【 ${w[0]} 】- ${n[0]}\n🥈 2ኛ፡ ቁጥር 【 ${w[1]} 】- ${n[1]}\n🥉 3ኛ፡ ቁጥር 【 ${w[2]} 】- ${n[2]}\n━━━━━━━━━━━━━━`;
+            const msg = `🎰 **የቢንጎ ውጤት** 🎰\n🥇 1ኛ: 【${w[0]}】- ${n[0]}\n🥈 2ኛ: 【${w[1]}】- ${n[1]}\n🥉 3ኛ: 【${w[2]}】- ${n[2]}`;
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
         }
 
@@ -218,7 +234,7 @@
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
             document.getElementById('historyList').innerHTML = h.map(x => {
                 let balls = x.r.map((num, idx) => `<div class="h-ball" style="background:${rowColors[Math.floor((num-1)/10)]}">${num}</div>`).join('');
-                return `<div style="background:#111; border:1px solid #333; margin:10px; padding:12px; border-radius:10px; text-align:left;"><small style="color:#888;">🕒 ሰዓት: ${x.t}</small><div class="h-ball-row">${balls}</div></div>`;
+                return `<div style="background:#111; margin:10px; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;"><small>${x.t}</small><div class="h-ball-row">${balls}</div></div>`;
             }).join('');
         }
         function clearData() { if(confirm("ሁሉንም አጽዳ?")) { localStorage.clear(); location.reload(); } }
