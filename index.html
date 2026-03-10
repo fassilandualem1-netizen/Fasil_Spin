@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP - Master Edition</title>
+    <title>FASIL VIP PRO</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --dark-gold: #8a6d29; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
         #lockScreen { position: fixed; inset: 0; background: #000; z-index: 100001; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .lock-box { border: 2px solid var(--gold); padding: 30px; border-radius: 25px; background: #0a0a0a; width: 85%; max-width: 400px; }
+        .lock-box { border: 2px solid var(--gold); padding: 30px; border-radius: 25px; background: #0a0a0a; width: 85%; }
         input[type="number"] { width: 90%; padding: 15px; text-align: center; font-size: 24px; border-radius: 12px; border: 1px solid var(--gold); background: #000; color: #fff; margin-top: 20px; }
         
         #appContent { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -20,50 +20,54 @@
         .tab-btn { flex: 1; padding: 10px; color: #777; border: none; background: none; font-weight: bold; font-size: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 5px solid var(--gold); background: #1a1a1a; }
 
-        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; background: #1a1a1a; padding: 8px; border-radius: 8px; width: 100%; margin: 15px 0; }
-        .grid-cell { background: #050505; color: var(--gold); font-size: 11px; font-weight: bold; padding: 10px 0; border: 1px solid #222; border-radius: 4px; }
+        /* ሰዓቱ ከላይ እንዲርቅ (Margin Top) እና ሰንጠረዡ እንዲያጥር የተደረገበት */
+        .live-box { background: #111; border: 1px solid var(--gold); padding: 8px; border-radius: 10px; width: 90%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-top: 40px; margin-bottom: 10px; }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; background: #1a1a1a; padding: 5px; border-radius: 8px; width: 100%; margin: 10px 0; }
+        .grid-cell { background: #050505; color: var(--gold); font-size: 10px; font-weight: bold; padding: 7px 0; border: 1px solid #222; border-radius: 3px; }
         .booked { background: linear-gradient(135deg, var(--gold), var(--dark-gold)) !important; color: #000 !important; }
         .active-hit { background: red !important; color: #fff !important; }
 
         .res-row { display: flex; justify-content: space-between; margin: 10px 0; gap: 8px; }
         .res-card { background: #0a0a0a; border: 1px solid var(--gold); padding: 8px; border-radius: 12px; width: 32%; }
-        .res-card b { font-size: 28px; color: #fff; display: block; }
+        .res-card b { font-size: 26px; color: #fff; display: block; }
 
-        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 140px; height: 140px; margin: 10px auto; }
+        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 135px; height: 135px; margin: 5px auto; }
         button#drawBtn { width: 95%; padding: 16px; border-radius: 15px; font-size: 20px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 10px auto; }
-        .live-box { background: #111; border: 1px solid var(--gold); padding: 8px; border-radius: 10px; width: 95%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-bottom: 5px; }
     </style>
 </head>
 <body onload="checkAccess()">
 
     <div id="lockScreen">
         <div class="lock-box">
-            <h2 style="letter-spacing: 2px;">FASIL VIP</h2>
-            <p id="lockMsg" style="color: #ff4444; font-size: 14px;">የ 5 ቀን ነፃ የሙከራ ጊዜ አልቋል!</p>
-            <p style="color: #888; font-size: 12px;">ለመክፈት Master Key ያስገቡ</p>
+            <h2>FASIL VIP</h2>
+            <p id="lockMsg" style="color: #ff4444;">የ 5 ቀን ነፃ ጊዜ አልቋል!</p>
             <input type="number" id="masterKeyInput" placeholder="Master Key">
-            <button onclick="verifyKey()" style="margin-top:25px; padding:15px 45px; background:var(--gold); border:none; border-radius:12px; font-weight:bold; width: 100%;">አግብር (ACTIVATE)</button>
+            <button onclick="verifyKey()" style="margin-top:20px; padding:15px; background:var(--gold); border:none; border-radius:12px; font-weight:bold; width: 100%;">አግብር</button>
         </div>
     </div>
 
     <div id="appContent">
         <div id="bookingPage" class="page">
-            <h3 style="margin:10px;">የተመዘገቡ ስሞች</h3>
+            <h3 style="margin-top:40px;">የተመዘገቡ ስሞች</h3>
             <div id="bookingGrid" class="grid-container"></div>
-            <button style="color:red; margin-top:30px; border:1px solid #444; background:none; padding:12px; border-radius:12px; width: 60%; align-self: center;" onclick="clearData()">ሁሉንም አጽዳ</button>
+            <button style="color:red; border:1px solid #444; background:none; padding:10px; border-radius:12px; margin-top:20px;" onclick="clearData()">ሁሉንም አጽዳ</button>
         </div>
         
         <div id="gamePage" class="page active">
             <div class="live-box">🕒 <span id="liveClock">00:00:00</span></div>
+            
             <div id="gameGrid" class="grid-container"></div>
+            
             <div class="res-row">
                 <div class="res-card"><span>1ኛ</span><b id="v1">?</b></div>
                 <div class="res-card"><span>2ኛ</span><b id="v2">?</b></div>
                 <div class="res-card"><span>3ኛ</span><b id="v3">?</b></div>
             </div>
+            
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
             <button id="drawBtn" onclick="startDrawProcess()">START DRAW</button>
-            <button id="resetBtn" onclick="resetGame()" style="display:none; background:#111; color:#fff; padding:15px; border-radius:15px; border:1px solid #444; width:95%; margin:10px auto;">RE-START</button>
+            <button id="resetBtn" onclick="resetGame()" style="display:none; background:#111; color:#fff; padding:15px; border-radius:15px; border:1px solid #444; width:95%; margin:5px auto;">RE-START</button>
         </div>
 
         <div id="historyPage" class="page"><div id="historyList"></div></div>
@@ -76,34 +80,22 @@
     </div>
 
     <script>
+        // ቀኑን እና መቆለፊያውን የሚቆጣጠር
         function checkAccess() {
-            // መጀመሪያ የተከፈተበትን ቀን መመዝገቢያ (አፅዳ ቢባልም የማይጠፋ)
-            if (!localStorage.getItem('_sys_init_time')) {
-                localStorage.setItem('_sys_init_time', Date.now());
-            }
-
-            const startTime = parseInt(localStorage.getItem('_sys_init_time'));
-            const daysPassed = (Date.now() - startTime) / (1000 * 60 * 60 * 24);
-            const isUnlocked = localStorage.getItem('_sys_master_unlocked');
-
-            // ከ 5 ቀን በላይ ከሆነ እና በ Master Key ካልተከፈተ ቆልፍ
-            if (daysPassed > 5 && isUnlocked !== 'true') {
+            if (!localStorage.getItem('_sys_init_time')) localStorage.setItem('_sys_init_time', Date.now());
+            const daysPassed = (Date.now() - parseInt(localStorage.getItem('_sys_init_time'))) / 86400000;
+            if (daysPassed > 5 && localStorage.getItem('_sys_master_unlocked') !== 'true') {
                 document.getElementById('lockScreen').style.display = 'flex';
                 document.getElementById('appContent').style.display = 'none';
-            } else {
-                setupGrids();
-            }
+            } else { setupGrids(); }
             setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString(); }, 1000);
         }
 
         function verifyKey() {
-            const input = document.getElementById('masterKeyInput').value;
-            if (input === "9988") {
+            if (document.getElementById('masterKeyInput').value === "9988") {
                 localStorage.setItem('_sys_master_unlocked', 'true');
                 location.reload();
-            } else {
-                alert("የተሳሳተ Master Key ነው!");
-            }
+            } else { alert("የተሳሳተ Master Key!"); }
         }
 
         function setupGrids() {
@@ -111,14 +103,10 @@
             bg.innerHTML = ""; gg.innerHTML = "";
             for(let i=1; i<=100; i++) {
                 let bc = document.createElement('div'); bc.className = 'grid-cell'; bc.innerText = i;
-                if(localStorage.getItem('user_bk_'+i)) bc.classList.add('booked');
+                if(localStorage.getItem('ubk_'+i)) bc.classList.add('booked');
                 bc.onclick = () => {
-                    let v = prompt(i+" ስም/ስልክ:", localStorage.getItem('user_bk_'+i)||"");
-                    if(v!==null) { 
-                        if(v.trim()==="") localStorage.removeItem('user_bk_'+i); 
-                        else localStorage.setItem('user_bk_'+i, v); 
-                        setupGrids(); 
-                    }
+                    let v = prompt(i+" ስም:", localStorage.getItem('ubk_'+i)||"");
+                    if(v!==null) { if(v.trim()==="") localStorage.removeItem('ubk_'+i); else localStorage.setItem('ubk_'+i, v); setupGrids(); }
                 };
                 bg.appendChild(bc);
                 let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i; gg.appendChild(gc);
@@ -126,12 +114,8 @@
         }
 
         function clearData() {
-            if(confirm("መዝገብና ታሪክ ይጥፋ? (ፓስወርድ አይጠፋም)")) {
-                Object.keys(localStorage).forEach(key => {
-                    if(key.startsWith('user_bk_') || key === 'fasil_history') {
-                        localStorage.removeItem(key);
-                    }
-                });
+            if(confirm("መዝገብና ታሪክ ይጥፋ?")) {
+                Object.keys(localStorage).forEach(k => { if(k.startsWith('ubk_') || k === 'f_hist') localStorage.removeItem(k); });
                 location.reload();
             }
         }
@@ -153,43 +137,36 @@
 
         async function startDrawProcess() {
             document.getElementById('drawBtn').style.display = 'none';
-            let winners = [];
-            while(winners.length < 3) { let r = Math.floor(Math.random() * 100) + 1; if(!winners.includes(r)) winners.push(r); }
-            
+            let wins = []; while(wins.length < 3) { let r = Math.floor(Math.random()*100)+1; if(!wins.includes(r)) wins.push(r); }
             for(let i=1; i<=3; i++) {
-                for(let j=0; j<12; j++) { renderBalls(0, false); await new Promise(r=>setTimeout(r,80)); }
-                let winNum = winners[i-1];
-                renderBalls(winNum, true);
-                document.getElementById('v'+i).innerText = winNum;
-                document.getElementById('g'+winNum).classList.add('active-hit');
+                for(let j=0; j<10; j++) { renderBalls(0,false); await new Promise(r=>setTimeout(r,80)); }
+                renderBalls(wins[i-1], true);
+                document.getElementById('v'+i).innerText = wins[i-1];
+                document.getElementById('g'+wins[i-1]).classList.add('active-hit');
                 await new Promise(r=>setTimeout(r,1000));
             }
-            saveHistory(winners);
-            document.getElementById('resetBtn').style.display = 'block';
+            saveHistory(wins); document.getElementById('resetBtn').style.display = 'block';
         }
 
         function resetGame() {
-            document.getElementById('resetBtn').style.display = 'none';
-            document.getElementById('drawBtn').style.display = 'block';
-            for(let i=1; i<=3; i++) { document.getElementById('v'+i).innerText = "?"; }
+            document.getElementById('resetBtn').style.display = 'none'; document.getElementById('drawBtn').style.display = 'block';
+            for(let i=1; i<=3; i++) document.getElementById('v'+i).innerText = "?";
             document.querySelectorAll('#gameGrid .grid-cell').forEach(c=>c.classList.remove('active-hit'));
             renderBalls(0, true);
         }
 
         function saveHistory(w) {
-            let h = JSON.parse(localStorage.getItem('fasil_history')||"[]");
+            let h = JSON.parse(localStorage.getItem('f_hist')||"[]");
             h.unshift({time: new Date().toLocaleTimeString(), results: w});
-            localStorage.setItem('fasil_history', JSON.stringify(h.slice(0,20)));
+            localStorage.setItem('f_hist', JSON.stringify(h.slice(0,20)));
         }
 
         function loadHistory() {
-            let h = JSON.parse(localStorage.getItem('fasil_history')||"[]");
+            let h = JSON.parse(localStorage.getItem('f_hist')||"[]");
             document.getElementById('historyList').innerHTML = h.map(x => `
-                <div style="background:#111; border:1px solid #333; margin:10px; padding:15px; border-left:5px solid var(--gold); border-radius:10px; text-align:left;">
-                    <small>🕒 ሰዓት: ${x.time}</small><br>
-                    <b>1ኛ: ${x.results[0]} | 2ኛ: ${x.results[1]} | 3ኛ: ${x.results[2]}</b>
-                </div>
-            `).join('');
+                <div style="background:#111; border:1px solid #333; margin:10px; padding:15px; border-left:4px solid var(--gold); border-radius:10px; text-align:left;">
+                    <small>🕒 ${x.time}</small><br><b>1ኛ: ${x.results[0]} | 2ኛ: ${x.results[1]} | 3ኛ: ${x.results[2]}</b>
+                </div>`).join('');
         }
     </script>
 </body>
