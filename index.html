@@ -18,26 +18,20 @@
         .tab-btn { flex: 1; color: #777; border: none; background: none; font-weight: bold; font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
 
+        /* Setup Page Styles */
+        .setup-input { width: 90%; padding: 12px; margin: 10px auto; border-radius: 8px; border: 1px solid var(--gold); background: #111; color: #fff; display: block; }
+        .save-btn { background: var(--gold); color: #000; padding: 15px; width: 90%; border-radius: 12px; font-weight: bold; border: none; margin-top: 10px; }
+
         .live-box { background: #111; border: 1px solid var(--gold); padding: 6px; border-radius: 10px; width: 85%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-top: 40px; margin-bottom: 5px; gap: 8px; font-size: 14px; }
         .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
         
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 5px; border-radius: 8px; width: 100%; margin: 5px 0; }
         .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 6px 0; border: 1px solid #222; border-radius: 3px; transition: all 0.1s; }
-        
-        /* መዝገብ ገፅ ላይ ቁጥሮች ነጭ እና ጎላ እንዲሉ */
         #bookingGrid .grid-cell { color: #fff !important; font-size: 13px; border-color: #333; }
         .booked { border: 1px solid #fff !important; box-shadow: inset 0 0 5px #fff; background: #222 !important; }
-        
         .tracking { background: #fff !important; color: #000 !important; transform: scale(1.1); box-shadow: 0 0 10px #fff; z-index: 5; }
-        
-        .winner-hit { 
-            background: var(--red) !important; 
-            color: #fff !important; 
-            box-shadow: 0 0 15px var(--red);
-            animation: winner-pulse 0.8s infinite;
-            z-index: 10;
-        }
+        .winner-hit { background: var(--red) !important; color: #fff !important; box-shadow: 0 0 15px var(--red); animation: winner-pulse 0.8s infinite; z-index: 10; }
         @keyframes winner-pulse { 0% { transform: scale(1.1); } 50% { transform: scale(1.3); } 100% { transform: scale(1.1); } }
 
         .res-row { display: flex; justify-content: space-between; margin: 8px 0; gap: 6px; }
@@ -47,8 +41,6 @@
 
         canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 120px; height: 120px; margin: 5px auto; box-shadow: 0 0 20px rgba(191, 149, 63, 0.4); }
         button#drawBtn { width: 95%; padding: 15px; border-radius: 15px; font-size: 19px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; }
-
-        /* የታሪክ ኳሶች ዲዛይን */
         .h-ball-row { display: flex; gap: 10px; margin-top: 8px; justify-content: flex-start; }
         .h-ball-wrap { text-align: center; }
         .h-ball { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 14px; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.4); }
@@ -72,15 +64,12 @@
                 <span style="font-weight:bold; color:red;">LIVE TRACKING</span>
                 <span id="liveClock">00:00:00</span>
             </div>
-            
             <div id="gameGrid" class="grid-container"></div>
-            
             <div class="res-row">
                 <div class="res-card"><span>1ኛ</span><b id="v1">?</b></div>
                 <div class="res-card"><span>2ኛ</span><b id="v2">?</b></div>
                 <div class="res-card"><span>3ኛ</span><b id="v3">?</b></div>
             </div>
-            
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
             <button id="drawBtn" onclick="runSequence()">START DRAW</button>
             <button id="resetBtn" onclick="resetGame()" style="display:none; background:#111; color:#fff; padding:14px; border-radius:15px; border:1px solid #444; width:95%; margin:5px auto; font-weight:bold;">RE-START</button>
@@ -88,30 +77,43 @@
 
         <div id="historyPage" class="page"><div id="historyList"></div></div>
 
+        <div id="setupPage" class="page">
+            <h3 style="margin-top:40px;">⚙️ TELEGRAM SETUP</h3>
+            <p style="font-size: 13px; color: #888; padding: 0 15px;">የቴሌግራም መረጃዎችን እዚህ ይሙሉ (አንድ ጊዜ ብቻ)</p>
+            <input type="text" id="botTokenInput" class="setup-input" placeholder="Bot Token አስገባ">
+            <input type="text" id="chatIdInput" class="setup-input" placeholder="Chat ID አስገባ (ለምሳሌ -100...)">
+            <button class="save-btn" onclick="saveSettings()">ሴቭ አድርግ (SAVE)</button>
+        </div>
+
         <div class="tabs">
             <button class="tab-btn" onclick="showPage('bookingPage', this)">📋 መዝገብ</button>
             <button class="tab-btn active" onclick="showPage('gamePage', this)">🎰 ዕጣ</button>
             <button class="tab-btn" onclick="showPage('historyPage', this)">🕒 ታሪክ</button>
+            <button class="tab-btn" onclick="showPage('setupPage', this)">⚙️ SETUP</button>
         </div>
     </div>
 
     <script>
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
-
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playSfx(freq, dur, vol) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-            o.connect(g); g.connect(audioCtx.destination);
-            o.frequency.value = freq; g.gain.value = vol;
-            o.start(); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
-            o.stop(audioCtx.currentTime + dur);
-        }
 
         function checkAccess() {
-            if (!localStorage.getItem('_init')) localStorage.setItem('_init', Date.now());
+            // መረጃው ስልኩ ላይ ካለ ሳጥኖቹ ውስጥ ይሞላዋል
+            document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || "";
+            document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || "";
             setup();
             setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+        }
+
+        // ደረጃ 1: መረጃውን ስልኩ ላይ ሴቭ ማድረጊያ
+        function saveSettings() {
+            const token = document.getElementById('botTokenInput').value.trim();
+            const cid = document.getElementById('chatIdInput').value.trim();
+            if(!token || !cid) { alert("እባክህ ሁለቱንም ሳጥኖች ሙላ!"); return; }
+            localStorage.setItem('f_bot_token', token);
+            localStorage.setItem('f_chat_id', cid);
+            alert("መረጃው በተሳካ ሁኔታ ተቀምጧል! አሁን ዕጣ ማውጣት ይችላሉ።");
+            showPage('gamePage', document.querySelectorAll('.tab-btn')[1]);
         }
 
         function setup() {
@@ -119,7 +121,6 @@
             bg.innerHTML = ""; gg.innerHTML = "";
             for(let i=1; i<=100; i++) {
                 let color = rowColors[Math.floor((i-1)/10)];
-                
                 let bc = document.createElement('div'); bc.className = 'grid-cell'; bc.innerText = i;
                 if(localStorage.getItem('bk_'+i)) bc.classList.add('booked');
                 bc.onclick = () => {
@@ -127,7 +128,6 @@
                     if(v!==null) { if(v.trim()==="") localStorage.removeItem('bk_'+i); else localStorage.setItem('bk_'+i, v); setup(); }
                 };
                 bg.appendChild(bc);
-                
                 let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i; 
                 gc.style.color = color; gc.style.borderColor = color;
                 gg.appendChild(gc);
@@ -155,7 +155,7 @@
         async function runSequence() {
             document.getElementById('drawBtn').style.display = 'none';
             const ov = document.getElementById('statusOverlay'); ov.style.display = 'flex';
-            for(let s of ["READY","VERIFYING","GO!"]) { ov.innerText = s; playSfx(400,0.3,0.1); await new Promise(r=>setTimeout(r,800)); }
+            for(let s of ["READY","VERIFYING","GO!"]) { ov.innerText = s; await new Promise(r=>setTimeout(r,800)); }
             ov.style.display = 'none'; startLiveDraw();
         }
 
@@ -164,61 +164,32 @@
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
                 for(let j=0; j<25; j++) {
-                    let temp = Math.floor(Math.random()*100)+1;
-                    let cell = document.getElementById('g'+temp);
-                    cell.classList.add('tracking');
-                    renderBall(0, false);
-                    playSfx(1000, 0.03, 0.05);
-                    await new Promise(r=>setTimeout(r, 60));
-                    cell.classList.remove('tracking');
+                    let t = Math.floor(Math.random()*100)+1; document.getElementById('g'+t).classList.add('tracking');
+                    renderBall(0, false); await new Promise(r=>setTimeout(r, 60));
+                    document.getElementById('g'+t).classList.remove('tracking');
                 }
-                renderBall(win, true);
-                playSfx(300, 1, 0.3);
-                document.getElementById('v'+i).innerText = win;
+                renderBall(win, true); document.getElementById('v'+i).innerText = win;
                 document.getElementById('g'+win).classList.add('winner-hit');
                 await new Promise(r=>setTimeout(r, 1500));
             }
             saveHist(winners); document.getElementById('resetBtn').style.display = 'block';
         }
 
-        function resetGame() {
-            document.getElementById('resetBtn').style.display = 'none'; document.getElementById('drawBtn').style.display = 'block';
-            for(let i=1; i<=3; i++) document.getElementById('v'+i).innerText = "?";
-            document.querySelectorAll('.grid-cell').forEach(c=>c.classList.remove('winner-hit'));
-            renderBall(0, true);
-        }
-
+        function resetGame() { location.reload(); }
         function saveHist(w) {
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
             h.unshift({t: new Date().toLocaleTimeString(), r: w});
             localStorage.setItem('f_h', JSON.stringify(h.slice(0,20)));
         }
-
         function loadHistory() {
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
             document.getElementById('historyList').innerHTML = h.map(x => {
-                let balls = x.r.map((num, idx) => {
-                    let color = rowColors[Math.floor((num-1)/10)];
-                    return `
-                    <div class="h-ball-wrap">
-                        <div class="h-ball" style="background: radial-gradient(circle at 30% 30%, #fff, ${color})">${num}</div>
-                        <span class="h-ball-txt">${idx+1}ኛ</span>
-                    </div>`;
-                }).join('');
-                return `
-                <div style="background:#111; border:1px solid #333; margin:10px; padding:12px; border-left:4px solid var(--gold); border-radius:10px; text-align:left;">
-                    <small style="color:#888;">🕒 ሰዓት: ${x.t}</small>
-                    <div class="h-ball-row">${balls}</div>
-                </div>`;
+                let balls = x.r.map((num, idx) => `<div class="h-ball-wrap"><div class="h-ball" style="background:radial-gradient(circle at 30% 30%, #fff, ${rowColors[Math.floor((num-1)/10)]})">${num}</div><span class="h-ball-txt">${idx+1}ኛ</span></div>`).join('');
+                return `<div style="background:#111; border:1px solid #333; margin:10px; padding:12px; border-left:4px solid var(--gold); border-radius:10px; text-align:left;"><small style="color:#888;">🕒 ሰዓት: ${x.t}</small><div class="h-ball-row">${balls}</div></div>`;
             }).join('');
         }
-
-        function clearData() {
-            if(confirm("መዝገብና ታሪክ ይጥፋ?")) {
-                Object.keys(localStorage).forEach(k => { if(k.startsWith('bk_') || k==='f_h') localStorage.removeItem(k); });
-                location.reload();
-            }
-        }
+        function clearData() { if(confirm("ሁሉንም አጽዳ?")) { localStorage.clear(); location.reload(); } }
+        function playSfx(f,d,v){if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=f;g.gain.value=v;o.start();g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+d);o.stop(audioCtx.currentTime+d);}
     </script>
 </body>
 </html>
