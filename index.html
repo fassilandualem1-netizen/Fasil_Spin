@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP PRO</title>
+    <title>FASIL VIP - Animation Edition</title>
     <style>
-        :root { --gold: #bf953f; --bright-gold: #fcf6ba; --dark-gold: #8a6d29; }
+        :root { --gold: #bf953f; --bright-gold: #fcf6ba; --dark-gold: #8a6d29; --red: #ff0000; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
-        #lockScreen { position: fixed; inset: 0; background: #000; z-index: 100001; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .lock-box { border: 2px solid var(--gold); padding: 30px; border-radius: 25px; background: #0a0a0a; width: 85%; }
-        input[type="number"] { width: 90%; padding: 15px; text-align: center; font-size: 24px; border-radius: 12px; border: 1px solid var(--gold); background: #000; color: #fff; margin-top: 20px; }
-        
-        /* Status Overlay for Ready/Verifying/Go */
+        /* Status Overlay */
         #statusOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100002; display: none; justify-content: center; align-items: center; font-size: 50px; font-weight: bold; color: var(--bright-gold); text-shadow: 0 0 20px var(--gold); }
 
         #appContent { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -20,51 +16,59 @@
         .page.active { display: flex; flex-direction: column; }
 
         .tabs { display: flex; background: #111; border-top: 3px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 75px; z-index: 1000; } 
-        .tab-btn { flex: 1; color: #777; border: none; background: none; font-weight: bold; font-size: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .tab-btn { flex: 1; color: #777; border: none; background: none; font-weight: bold; font-size: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 5px solid var(--gold); background: #1a1a1a; }
 
-        /* LIVE Box Style */
-        .live-box { background: #111; border: 1px solid var(--gold); padding: 8px; border-radius: 10px; width: 90%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-top: 40px; margin-bottom: 10px; gap: 10px; }
-        .live-dot { width: 10px; height: 10px; background: red; border-radius: 50%; animation: blink 1s infinite; }
+        .live-box { background: #111; border: 1px solid var(--gold); padding: 5px; border-radius: 10px; width: 85%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-top: 35px; margin-bottom: 5px; gap: 8px; font-size: 14px; }
+        .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
         
-        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; background: #1a1a1a; padding: 5px; border-radius: 8px; width: 100%; margin: 10px 0; }
-        .grid-cell { background: #050505; color: var(--gold); font-size: 10px; font-weight: bold; padding: 7px 0; border: 1px solid #222; border-radius: 3px; }
-        .active-hit { background: red !important; color: #fff !important; }
-        .booked { background: linear-gradient(135deg, var(--gold), var(--dark-gold)) !important; color: #000 !important; }
+        /* የተስተካከለ ሰንጠረዥ */
+        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #111; padding: 6px; border-radius: 10px; width: 100%; margin: 5px 0; border: 1px solid #222; }
+        .grid-cell { background: #050505; color: var(--gold); font-size: 10px; font-weight: bold; padding: 6px 0; border: 0.5px solid #333; border-radius: 3px; transition: all 0.3s; }
+        
+        .booked { background: linear-gradient(135deg, var(--gold), var(--dark-gold)) !important; color: #000 !important; border: none !important; box-shadow: 0 0 5px rgba(191, 149, 63, 0.4); }
+        
+        /* ዕጣ ሲወጣ የሚሆን አኒሜሽን */
+        .active-hit { 
+            background: var(--red) !important; 
+            color: #fff !important; 
+            border-color: #fff !important;
+            transform: scale(1.2);
+            z-index: 10;
+            box-shadow: 0 0 15px var(--red);
+            animation: pulse-hit 1s infinite;
+        }
+        @keyframes pulse-hit { 
+            0% { transform: scale(1.1); box-shadow: 0 0 10px var(--red); }
+            50% { transform: scale(1.3); box-shadow: 0 0 25px var(--red); }
+            100% { transform: scale(1.1); box-shadow: 0 0 10px var(--red); }
+        }
 
-        .res-row { display: flex; justify-content: space-between; margin: 10px 0; gap: 8px; }
-        .res-card { background: #0a0a0a; border: 1px solid var(--gold); padding: 8px; border-radius: 12px; width: 32%; }
-        .res-card b { font-size: 26px; color: #fff; display: block; }
+        .res-row { display: flex; justify-content: space-between; margin: 8px 0; gap: 6px; }
+        .res-card { background: #0a0a0a; border: 1.5px solid var(--gold); padding: 6px; border-radius: 10px; width: 32%; position: relative; overflow: hidden; }
+        .res-card span { font-size: 11px; color: var(--gold); }
+        .res-card b { font-size: 24px; color: #fff; display: block; margin-top: 2px; }
 
-        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 135px; height: 135px; margin: 5px auto; }
-        button#drawBtn { width: 95%; padding: 16px; border-radius: 15px; font-size: 20px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 10px auto; }
+        canvas { border: 5px solid var(--gold); border-radius: 50%; background: #050505; width: 125px; height: 125px; margin: 5px auto; box-shadow: 0 0 20px rgba(191, 149, 63, 0.3); }
+        button#drawBtn { width: 95%; padding: 14px; border-radius: 15px; font-size: 18px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; box-shadow: 0 4px 15px rgba(191, 149, 63, 0.4); }
     </style>
 </head>
 <body onload="checkAccess()">
-
-    <div id="lockScreen">
-        <div class="lock-box">
-            <h2>FASIL VIP</h2>
-            <p id="lockMsg" style="color: #ff4444;">የ 5 ቀን ነፃ ጊዜ አልቋል!</p>
-            <input type="number" id="masterKeyInput" placeholder="Master Key">
-            <button onclick="verifyKey()" style="margin-top:20px; padding:15px; background:var(--gold); border:none; border-radius:12px; font-weight:bold; width: 100%;">አግብር</button>
-        </div>
-    </div>
 
     <div id="statusOverlay">READY</div>
 
     <div id="appContent">
         <div id="bookingPage" class="page">
-            <h3 style="margin-top:40px;">የተመዘገቡ ስሞች</h3>
+            <h3 style="margin-top:40px;">መዝገብ</h3>
             <div id="bookingGrid" class="grid-container"></div>
-            <button style="color:red; border:1px solid #444; background:none; padding:10px; border-radius:12px; margin-top:20px;" onclick="clearData()">ሁሉንም አጽዳ</button>
+            <button style="color:red; border:1px solid #444; background:none; padding:10px; border-radius:12px; margin-top:15px; font-size:12px;" onclick="clearData()">ሁሉንም አጽዳ</button>
         </div>
         
         <div id="gamePage" class="page active">
             <div class="live-box">
                 <div class="live-dot"></div>
-                <span style="font-weight:bold; color:red; margin-right:5px;">LIVE</span>
+                <span style="font-weight:bold; color:red;">LIVE</span>
                 <span id="liveClock">00:00:00</span>
             </div>
             
@@ -78,7 +82,7 @@
             
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
             <button id="drawBtn" onclick="initiateSequence()">START DRAW</button>
-            <button id="resetBtn" onclick="resetGame()" style="display:none; background:#111; color:#fff; padding:15px; border-radius:15px; border:1px solid #444; width:95%; margin:5px auto;">RE-START</button>
+            <button id="resetBtn" onclick="resetGame()" style="display:none; background:#111; color:#fff; padding:12px; border-radius:12px; border:1px solid #444; width:95%; margin:5px auto; font-weight:bold;">RE-START</button>
         </div>
 
         <div id="historyPage" class="page"><div id="historyList"></div></div>
@@ -94,6 +98,7 @@
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function playSound(freq, dur, vol = 0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
@@ -104,19 +109,8 @@
 
         function checkAccess() {
             if (!localStorage.getItem('_sys_init_time')) localStorage.setItem('_sys_init_time', Date.now());
-            const daysPassed = (Date.now() - parseInt(localStorage.getItem('_sys_init_time'))) / 86400000;
-            if (daysPassed > 5 && localStorage.getItem('_sys_master_unlocked') !== 'true') {
-                document.getElementById('lockScreen').style.display = 'flex';
-                document.getElementById('appContent').style.display = 'none';
-            } else { setupGrids(); }
+            setupGrids();
             setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
-        }
-
-        function verifyKey() {
-            if (document.getElementById('masterKeyInput').value === "9988") {
-                localStorage.setItem('_sys_master_unlocked', 'true');
-                location.reload();
-            } else { alert("የተሳሳተ Master Key!"); }
         }
 
         function setupGrids() {
@@ -145,21 +139,26 @@
         function renderBalls(val, isFinal) {
             cx.clearRect(0,0,200,200);
             let dVal = isFinal ? val : Math.floor(Math.random() * 100) + 1;
-            cx.beginPath(); cx.arc(100,100,70,0,Math.PI*2); cx.fillStyle="#bf953f"; cx.fill();
-            cx.fillStyle="#000"; cx.font="bold 60px Arial"; cx.textAlign="center"; cx.fillText(dVal || "?", 100, 120);
+            
+            // የኳስ ዲዛይን
+            let grad = cx.createRadialGradient(80, 80, 10, 100, 100, 70);
+            grad.addColorStop(0, '#fcf6ba'); grad.addColorStop(1, '#bf953f');
+            
+            cx.beginPath(); cx.arc(100,100,80,0,Math.PI*2); cx.fillStyle=grad; cx.fill();
+            cx.strokeStyle="#fff"; cx.lineWidth=2; cx.stroke();
+            
+            cx.fillStyle="#000"; cx.font="bold 70px Arial"; cx.textAlign="center"; 
+            cx.fillText(dVal || "?", 100, 125);
         }
 
         async function initiateSequence() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
             document.getElementById('drawBtn').style.display = 'none';
             const overlay = document.getElementById('statusOverlay');
             overlay.style.display = 'flex';
-            
-            const steps = ["READY", "VERIFYING", "GO!"];
-            for(let s of steps) {
+            for(let s of ["READY", "VERIFYING", "GO!"]) {
                 overlay.innerText = s;
-                playSound(440, 0.5, 0.2); // ዝግጅት ድምፅ
-                await new Promise(r=>setTimeout(r,900));
+                playSound(440, 0.4, 0.2);
+                await new Promise(r=>setTimeout(r,800));
             }
             overlay.style.display = 'none';
             startDrawProcess();
@@ -167,18 +166,27 @@
 
         async function startDrawProcess() {
             let wins = []; while(wins.length < 3) { let r = Math.floor(Math.random()*100)+1; if(!wins.includes(r)) wins.push(r); }
+            
             for(let i=1; i<=3; i++) {
-                for(let j=0; j<15; j++) { 
+                // መሽከርከር
+                for(let j=0; j<18; j++) { 
                     renderBalls(0,false); 
-                    playSound(800, 0.05, 0.05); // ሲሽከረከር የሚወጣ ድምፅ
-                    await new Promise(r=>setTimeout(r,70)); 
+                    playSound(900, 0.04, 0.05);
+                    await new Promise(r=>setTimeout(r,60)); 
                 }
+                
                 let w = wins[i-1];
                 renderBalls(w, true);
-                playSound(500, 0.8, 0.3); // ቁጥሩ ሲቆም የሚወጣ ድምፅ
+                
+                // ድምፅና ሰንጠረዥ ትስስር
+                playSound(300, 1.2, 0.4); 
                 document.getElementById('v'+i).innerText = w;
-                document.getElementById('g'+w).classList.add('active-hit');
-                await new Promise(r=>setTimeout(r,1200));
+                
+                // በሰንጠረዡ ላይ አኒሜሽን ማሳየት
+                let cell = document.getElementById('g'+w);
+                cell.classList.add('active-hit');
+                
+                await new Promise(r=>setTimeout(r,1500));
             }
             saveHistory(wins); document.getElementById('resetBtn').style.display = 'block';
         }
@@ -186,7 +194,7 @@
         function resetGame() {
             document.getElementById('resetBtn').style.display = 'none'; document.getElementById('drawBtn').style.display = 'block';
             for(let i=1; i<=3; i++) document.getElementById('v'+i).innerText = "?";
-            document.querySelectorAll('#gameGrid .grid-cell').forEach(c=>c.classList.remove('active-hit'));
+            document.querySelectorAll('.grid-cell').forEach(c=>c.classList.remove('active-hit'));
             renderBalls(0, true);
         }
 
@@ -203,8 +211,9 @@
                     <small>🕒 ${x.time}</small><br><b>1ኛ: ${x.results[0]} | 2ኛ: ${x.results[1]} | 3ኛ: ${x.results[2]}</b>
                 </div>`).join('');
         }
+        
         function clearData() {
-            if(confirm("መዝገብና ታሪክ ይጥፋ?")) {
+            if(confirm("ዳታ ይጥፋ?")) {
                 Object.keys(localStorage).forEach(k => { if(k.startsWith('ubk_') || k === 'f_hist') localStorage.removeItem(k); });
                 location.reload();
             }
