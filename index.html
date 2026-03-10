@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP BINGO - FREE TRIAL</title>
+    <title>FASIL VIP BINGO</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
-        /* Lock Screen (ለጊዜው ተደብቆ ይቆያል) */
+        /* Lock Screen */
         #lockScreen { position: fixed; inset: 0; background: #000; z-index: 20000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .lock-box { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; width: 85%; box-sizing: border-box; }
-        .lock-input { width: 100%; padding: 15px; margin: 15px 0; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; font-size: 28px; border-radius: 10px; letter-spacing: 5px; outline: none; }
+        .lock-box { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; width: 85%; }
+        .lock-input { width: 100%; padding: 15px; margin: 15px 0; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; font-size: 28px; border-radius: 10px; letter-spacing: 5px; }
         
         #appContent { display: none; flex: 1; flex-direction: column; overflow: hidden; }
         .page { display: none; flex: 1; padding: 10px; overflow-y: auto; padding-bottom: 90px; }
@@ -23,7 +23,6 @@
 
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 5px; border-radius: 8px; margin-top: 35px; }
         .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 8px 0; border: 1px solid #222; border-radius: 3px; }
-        #bookingGrid .grid-cell { color: #fff; border-color: #333; }
         .booked { border: 1px solid #fff !important; background: #333 !important; }
         .tracking { background: #fff !important; color: #000 !important; transform: scale(1.1); }
         .winner-hit { background: var(--red) !important; color: #fff !important; animation: pulse 0.8s infinite; }
@@ -42,11 +41,10 @@
 
     <div id="lockScreen">
         <div class="lock-box">
-            <h2 id="lockStatus">FASIL VIP</h2>
-            <p id="trialMsg" style="color:#ff3333; font-size:14px; margin-top:5px;">የሙከራ ጊዜው አልቋል!</p>
-            <p style="color:#888; font-size:12px;">ለመቀጠል የመክፈቻ ኮድ ያስገቡ</p>
-            <input type="password" id="passCode" class="lock-input" placeholder="CODE" maxlength="4" inputmode="numeric">
-            <button onclick="checkPass()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold; color:#000; font-size:18px;">UNLOCK APP</button>
+            <h2>FASIL VIP</h2>
+            <p style="color:red;">የሙከራ ጊዜው አልቋል!</p>
+            <input type="password" id="passCode" class="lock-input" placeholder="CODE" maxlength="4">
+            <button onclick="checkPass()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">UNLOCK</button>
         </div>
     </div>
 
@@ -54,7 +52,7 @@
         <div id="bookingPage" class="page">
             <h3 style="margin-top:40px;">📋 መዝገብ</h3>
             <div id="bookingGrid" class="grid-container"></div>
-            <button style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:20px;" onclick="clearData()">RESET</button>
+            <button style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:20px;" onclick="localStorage.clear(); location.reload();">ሁሉንም አጽዳ</button>
         </div>
 
         <div id="gamePage" class="page active">
@@ -89,38 +87,21 @@
 
         function initApp() {
             let start = localStorage.getItem('f_start');
-            if (!start) { 
-                start = Date.now(); 
-                localStorage.setItem('f_start', start); 
-            }
+            if (!start) { start = Date.now(); localStorage.setItem('f_start', start); }
+            let days = Math.floor((Date.now() - start) / 86400000);
             
-            let daysPassed = Math.floor((Date.now() - start) / 86400000);
-            let isPermanentlyUnlocked = localStorage.getItem('f_ok') === '1';
-
-            // ቼክ ማድረጊያ ሎጂክ
-            if (isPermanentlyUnlocked || daysPassed < TRIAL_DAYS) {
-                // በሙከራ ጊዜ ውስጥ ከሆነ ወይም ከተከፈለ በቀጥታ ይከፈታል
-                unlockApp(); 
+            if (localStorage.getItem('f_ok') === '1' || days < TRIAL_DAYS) {
+                document.getElementById('appContent').style.display = 'flex';
             } else {
-                // 5 ቀን ካለፈው ግን መቆለፊያው ይታያል
                 document.getElementById('lockScreen').style.display = 'flex';
-                document.getElementById('appContent').style.display = 'none';
             }
             setup();
         }
 
         function checkPass() {
             if (document.getElementById('passCode').value === MASTER_KEY) {
-                localStorage.setItem('f_ok', '1'); 
-                unlockApp();
-            } else { 
-                alert("የተሳሳተ ኮድ ነው!"); 
-            }
-        }
-
-        function unlockApp() { 
-            document.getElementById('lockScreen').style.display = 'none'; 
-            document.getElementById('appContent').style.display = 'flex'; 
+                localStorage.setItem('f_ok', '1'); location.reload();
+            } else { alert("ስህተት!"); }
         }
 
         function setup() {
@@ -167,8 +148,8 @@
         }
 
         function sendTele(w) {
-            const names = w.map(x => localStorage.getItem('bk_'+x) || "ያልተመዘገበ");
-            const msg = `🎰 የቢንጎ ውጤት 🎰\n🥇 1ኛ፡ 【 ${w[0]} 】 - ${names[0]}\n🥈 2ኛ፡ 【 ${w[1]} 】 - ${names[1]}\n🥉 3ኛ፡ 【 ${w[2]} 】 - ${names[2]}`;
+            const n = w.map(x => localStorage.getItem('bk_'+x) || "ያልተመዘገበ");
+            const msg = `🎰 የቢንጎ ውጤት 🎰\n🥇 1ኛ፡ 【 ${w[0]} 】- ${n[0]}\n🥈 2ኛ፡ 【 ${w[1]} 】- ${n[1]}\n🥉 3ኛ፡ 【 ${w[2]} 】- ${n[2]}`;
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}`);
         }
 
@@ -181,13 +162,11 @@
         function loadHistory() {
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
             document.getElementById('historyList').innerHTML = h.map(x => `
-                <div style="background:#111; margin:10px; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid #333;">
-                    <small style="color:#888;">🕒 ${x.t}</small>
-                    <div style="display:flex; gap:6px;">${x.r.map(n => `<div class="h-ball">${n}</div>`).join('')}</div>
+                <div style="background:#111; margin:10px; padding:12px; border-radius:10px; display:flex; justify-content:space-between; border:1px solid #333;">
+                    <small>${x.t}</small>
+                    <div style="display:flex; gap:5px;">${x.r.map(n => `<div class="h-ball">${n}</div>`).join('')}</div>
                 </div>`).join('');
         }
-
-        function clearData() { if(confirm("ሁሉንም አጽዳ?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
