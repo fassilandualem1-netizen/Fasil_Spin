@@ -78,7 +78,7 @@
 
         <div id="setupPage" class="page">
             <h3 style="margin-top:40px;">⚙️ TELEGRAM SETUP</h3>
-            <p style="font-size: 13px; color: #888; padding: 0 15px;">የቴሌግራም መረጃዎችን እዚህ ይሙሉ</p>
+            <p style="font-size: 13px; color: #888;">የቴሌግራም መረጃዎችን እዚህ ይሙሉ</p>
             <input type="text" id="botTokenInput" class="setup-input" placeholder="Bot Token አስገባ">
             <input type="text" id="chatIdInput" class="setup-input" placeholder="Chat ID አስገባ">
             <button class="save-btn" onclick="saveSettings()">ሴቭ አድርግ (SAVE)</button>
@@ -95,7 +95,6 @@
     <script>
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         
-        // ድምፅ የሚያመነጭ ሲስተም
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSfx(freq, dur, vol) {
             try {
@@ -105,7 +104,7 @@
                 o.frequency.value = freq; g.gain.value = vol;
                 o.start(); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
                 o.stop(audioCtx.currentTime + dur);
-            } catch(e) { console.log("Audio Error"); }
+            } catch(e) {}
         }
 
         function checkAccess() {
@@ -116,10 +115,8 @@
         }
 
         function saveSettings() {
-            const token = document.getElementById('botTokenInput').value.trim();
-            const cid = document.getElementById('chatIdInput').value.trim();
-            localStorage.setItem('f_bot_token', token);
-            localStorage.setItem('f_chat_id', cid);
+            localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim());
+            localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim());
             alert("ተቀምጧል!");
             showPage('gamePage', document.querySelectorAll('.tab-btn')[1]);
         }
@@ -163,34 +160,47 @@
         async function runSequence() {
             document.getElementById('drawBtn').style.display = 'none';
             const ov = document.getElementById('statusOverlay'); ov.style.display = 'flex';
-            // READY, VERIFYING, GO ድምፅ
             for(let s of ["READY","VERIFYING","GO!"]) { 
-                ov.innerText = s; 
-                playSfx(440, 0.5, 0.1); 
+                ov.innerText = s; playSfx(440, 0.5, 0.1); 
                 await new Promise(r=>setTimeout(r,800)); 
             }
             ov.style.display = 'none'; startLiveDraw();
         }
 
         async function startLiveDraw() {
-            let winners = []; while(winners.length < 3) { let r = Math.floor(Math.random()*100)+1; if(!winners.includes(r)) winners.push(r); }
+            // [ደረጃ 2] ቁጥሮቹን በደንብ መበጥበጥ (Shuffle)
+            let all = []; for(let n=1; n<=100; n++) all.push(n);
+            for(let i=all.length-1; i>0; i--) {
+                const j = Math.floor(Math.random()*(i+1));
+                [all[i], all[j]] = [all[j], all[i]];
+            }
+            let winners = [all[0], all[1], all[2]];
+
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
                 for(let j=0; j<25; j++) {
                     let t = Math.floor(Math.random()*100)+1; 
                     document.getElementById('g'+t).classList.add('tracking');
-                    renderBall(0, false); 
-                    playSfx(1000, 0.05, 0.05); // የኳስ ማሽከርከር ድምፅ
+                    renderBall(0, false); playSfx(1000, 0.05, 0.05); 
                     await new Promise(r=>setTimeout(r, 60));
                     document.getElementById('g'+t).classList.remove('tracking');
                 }
-                renderBall(win, true); 
-                playSfx(300, 0.8, 0.2); // የዕጣ መውጣት ድምፅ
+                renderBall(win, true); playSfx(300, 0.8, 0.2); 
                 document.getElementById('v'+i).innerText = win;
                 document.getElementById('g'+win).classList.add('winner-hit');
                 await new Promise(r=>setTimeout(r, 1500));
             }
-            saveHist(winners); document.getElementById('resetBtn').style.display = 'block';
+            saveHist(winners); 
+            sendToTelegram(winners); // [ደረጃ 2] ውጤቱን መላክ
+            document.getElementById('resetBtn').style.display = 'block';
+        }
+
+        function sendToTelegram(w) {
+            const token = localStorage.getItem('f_bot_token'), cid = localStorage.getItem('f_chat_id');
+            if(!token || !cid) return;
+            const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
+            const msg = `🎰 **የቢንጎ ዕጣ ውጤት** 🎰\n━━━━━━━━━━━━━━\n🥇 1ኛ፡ ቁጥር 【 ${w[0]} 】- ${n[0]}\n🥈 2ኛ፡ ቁጥር 【 ${w[1]} 】- ${n[1]}\n🥉 3ኛ፡ ቁጥር 【 ${w[2]} 】- ${n[2]}\n━━━━━━━━━━━━━━`;
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
         }
 
         function resetGame() { location.reload(); }
