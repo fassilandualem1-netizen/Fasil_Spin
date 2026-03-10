@@ -22,17 +22,15 @@
         .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
         
-        /* በቀለም ያሸበረቀ ሰንጠረዥ */
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 5px; border-radius: 8px; width: 100%; margin: 5px 0; }
-        .grid-cell { background: #0a0a0a; color: #666; font-size: 10px; font-weight: bold; padding: 6px 0; border: 0.5px solid #222; border-radius: 3px; transition: all 0.1s; }
+        .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 6px 0; border: 1px solid #222; border-radius: 3px; transition: all 0.1s; }
         
-        /* መዝገብ ላይ ስም ያላቸው ቁጥሮች ቀለም */
-        .booked { background: linear-gradient(135deg, #1e1e1e, #333) !important; color: var(--gold) !important; border-color: var(--dark-gold) !important; }
+        /* መዝገብ ገፅ ላይ ቁጥሮች ነጭ እና ጎላ እንዲሉ */
+        #bookingGrid .grid-cell { color: #fff !important; font-size: 13px; border-color: #333; }
+        .booked { border: 1px solid #fff !important; box-shadow: inset 0 0 5px #fff; background: #222 !important; }
         
-        /* Live Tracking Animation - ዕጣው ሲሽከረከር */
-        .tracking { background: var(--gold) !important; color: #000 !important; transform: scale(1.1); box-shadow: 0 0 10px var(--gold); z-index: 5; }
+        .tracking { background: #fff !important; color: #000 !important; transform: scale(1.1); box-shadow: 0 0 10px #fff; z-index: 5; }
         
-        /* ዕጣ ሲወጣ የሚሆን ቋሚ አኒሜሽን */
         .winner-hit { 
             background: var(--red) !important; 
             color: #fff !important; 
@@ -40,11 +38,7 @@
             animation: winner-pulse 0.8s infinite;
             z-index: 10;
         }
-        @keyframes winner-pulse { 
-            0% { transform: scale(1.1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1.1); }
-        }
+        @keyframes winner-pulse { 0% { transform: scale(1.1); } 50% { transform: scale(1.3); } 100% { transform: scale(1.1); } }
 
         .res-row { display: flex; justify-content: space-between; margin: 8px 0; gap: 6px; }
         .res-card { background: #0a0a0a; border: 1.5px solid var(--gold); padding: 5px; border-radius: 10px; width: 32%; }
@@ -53,6 +47,12 @@
 
         canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 120px; height: 120px; margin: 5px auto; box-shadow: 0 0 20px rgba(191, 149, 63, 0.4); }
         button#drawBtn { width: 95%; padding: 15px; border-radius: 15px; font-size: 19px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; }
+
+        /* የታሪክ ኳሶች ዲዛይን */
+        .h-ball-row { display: flex; gap: 10px; margin-top: 8px; justify-content: flex-start; }
+        .h-ball-wrap { text-align: center; }
+        .h-ball { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 14px; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.4); }
+        .h-ball-txt { font-size: 10px; color: #888; display: block; margin-top: 2px; }
     </style>
 </head>
 <body onload="checkAccess()">
@@ -96,6 +96,8 @@
     </div>
 
     <script>
+        const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSfx(freq, dur, vol) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -116,6 +118,8 @@
             const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
             bg.innerHTML = ""; gg.innerHTML = "";
             for(let i=1; i<=100; i++) {
+                let color = rowColors[Math.floor((i-1)/10)];
+                
                 let bc = document.createElement('div'); bc.className = 'grid-cell'; bc.innerText = i;
                 if(localStorage.getItem('bk_'+i)) bc.classList.add('booked');
                 bc.onclick = () => {
@@ -123,7 +127,10 @@
                     if(v!==null) { if(v.trim()==="") localStorage.removeItem('bk_'+i); else localStorage.setItem('bk_'+i, v); setup(); }
                 };
                 bg.appendChild(bc);
-                let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i; gg.appendChild(gc);
+                
+                let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i; 
+                gc.style.color = color; gc.style.borderColor = color;
+                gg.appendChild(gc);
             }
         }
 
@@ -138,8 +145,9 @@
         function renderBall(val, final) {
             cx.clearRect(0,0,200,200);
             let d = final ? val : Math.floor(Math.random()*100)+1;
+            let ballColor = (final && val > 0) ? rowColors[Math.floor((val-1)/10)] : '#bf953f';
             let g = cx.createRadialGradient(70,70,10,100,100,80);
-            g.addColorStop(0,'#fcf6ba'); g.addColorStop(1,'#bf953f');
+            g.addColorStop(0,'#fcf6ba'); g.addColorStop(1, ballColor);
             cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill();
             cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(d||"?",100,125);
         }
@@ -153,10 +161,8 @@
 
         async function startLiveDraw() {
             let winners = []; while(winners.length < 3) { let r = Math.floor(Math.random()*100)+1; if(!winners.includes(r)) winners.push(r); }
-            
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
-                // Live Tracking Animation on Grid
                 for(let j=0; j<25; j++) {
                     let temp = Math.floor(Math.random()*100)+1;
                     let cell = document.getElementById('g'+temp);
@@ -166,7 +172,6 @@
                     await new Promise(r=>setTimeout(r, 60));
                     cell.classList.remove('tracking');
                 }
-                // ማረፊያ
                 renderBall(win, true);
                 playSfx(300, 1, 0.3);
                 document.getElementById('v'+i).innerText = win;
@@ -191,10 +196,21 @@
 
         function loadHistory() {
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
-            document.getElementById('historyList').innerHTML = h.map(x => `
-                <div style="background:#111; border:1px solid #333; margin:10px; padding:15px; border-left:4px solid var(--gold); border-radius:10px; text-align:left;">
-                    <small>🕒 ሰዓት: ${x.t}</small><br><b>1ኛ: ${x.r[0]} | 2ኛ: ${x.r[1]} | 3ኛ: ${x.r[2]}</b>
-                </div>`).join('');
+            document.getElementById('historyList').innerHTML = h.map(x => {
+                let balls = x.r.map((num, idx) => {
+                    let color = rowColors[Math.floor((num-1)/10)];
+                    return `
+                    <div class="h-ball-wrap">
+                        <div class="h-ball" style="background: radial-gradient(circle at 30% 30%, #fff, ${color})">${num}</div>
+                        <span class="h-ball-txt">${idx+1}ኛ</span>
+                    </div>`;
+                }).join('');
+                return `
+                <div style="background:#111; border:1px solid #333; margin:10px; padding:12px; border-left:4px solid var(--gold); border-radius:10px; text-align:left;">
+                    <small style="color:#888;">🕒 ሰዓት: ${x.t}</small>
+                    <div class="h-ball-row">${balls}</div>
+                </div>`;
+            }).join('');
         }
 
         function clearData() {
@@ -206,4 +222,3 @@
     </script>
 </body>
 </html>
- 
