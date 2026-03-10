@@ -43,8 +43,12 @@
 
         canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 120px; height: 120px; margin: 5px auto; }
         button#drawBtn { width: 95%; padding: 15px; border-radius: 15px; font-size: 19px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; }
-        .h-ball-row { display: flex; gap: 10px; margin-top: 8px; }
-        .h-ball { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 14px; }
+        
+        /* ታሪክ ገፅ ኳሶች */
+        .h-ball-row { display: flex; gap: 15px; margin-top: 8px; justify-content: center; flex: 1; }
+        .h-ball-wrap { text-align: center; }
+        .h-ball { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 16px; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.4); }
+        .h-ball-txt { font-size: 10px; color: #aaa; display: block; margin-top: 4px; font-weight: bold; }
     </style>
 </head>
 <body onload="checkAccess()">
@@ -84,7 +88,10 @@
             <button id="resetBtn" onclick="location.reload()" style="display:none; background:#111; color:#fff; padding:14px; border-radius:15px; border:1px solid #444; width:95%; margin:5px auto; font-weight:bold;">RE-START</button>
         </div>
 
-        <div id="historyPage" class="page"><div id="historyList"></div></div>
+        <div id="historyPage" class="page">
+            <h3 style="margin-top:40px;">የዕጣ ታሪክ</h3>
+            <div id="historyList"></div>
+        </div>
 
         <div id="setupPage" class="page">
             <h3 style="margin-top:40px;">⚙️ TELEGRAM SETUP</h3>
@@ -229,18 +236,23 @@
         function loadHistory() {
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
             document.getElementById('historyList').innerHTML = h.map(x => {
-                let balls = x.r.map(num => `<div class="h-ball" style="background:${rowColors[Math.floor((num-1)/10)]}">${num}</div>`).join('');
-                return `<div style="background:#111; margin:10px; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;"><small>${x.t}</small><div class="h-ball-row">${balls}</div></div>`;
+                let balls = x.r.map((num, idx) => `
+                    <div class="h-ball-wrap">
+                        <div class="h-ball" style="background:${rowColors[Math.floor((num-1)/10)]}">${num}</div>
+                        <span class="h-ball-txt">${idx+1}ኛ</span>
+                    </div>`).join('');
+                return `
+                <div style="background:#111; border:1px solid #333; margin:10px; padding:12px; border-radius:10px; display:flex; flex-direction:column; align-items:flex-start;">
+                    <small style="color:#888; margin-bottom:5px;">🕒 ሰዓት: ${x.t}</small>
+                    <div class="h-ball-row">${balls}</div>
+                </div>`;
             }).join('');
         }
 
-        // አዲሱ ማጽጃ ፈንክሽን - መዝገብን ብቻ የሚያጠፋ
         function clearBookingOnly() {
             if(confirm("የተመዘገቡ ስሞችን ብቻ አጽዳ?")) {
-                for(let i=1; i<=100; i++) {
-                    localStorage.removeItem('bk_'+i);
-                }
-                setup(); // ገጹን ሪፍሬሽ ሳያደርግ ጽሁፎቹን ያጠፋል
+                for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i);
+                setup();
             }
         }
     </script>
