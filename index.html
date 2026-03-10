@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FASIL VIP - Live Edition</title>
     <style>
-        :root { --gold: #bf953f; --bright-gold: #fcf6ba; --dark-gold: #8a6d29; --red: #ff3333; --blue: #007bff; }
+        :root { --gold: #bf953f; --bright-gold: #fcf6ba; --dark-gold: #8a6d29; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
         #lockScreen { position: fixed; inset: 0; background: #000; z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; }
@@ -23,7 +23,7 @@
         .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
 
         .setup-input { width: 90%; padding: 15px; margin: 20px auto; border-radius: 8px; border: 1px solid var(--gold); background: #111; color: #fff; display: block; font-size: 18px; text-align: center; }
-        .save-btn { background: var(--gold); color: #000; padding: 15px; width: 90%; border-radius: 12px; font-weight: bold; border: none; margin-top: 10px; font-size: 16px; }
+        .save-btn { background: var(--gold); color: #000; padding: 15px; width: 90%; border-radius: 12px; font-weight: bold; border: none; margin-top: 10px; }
 
         .live-box { background: #111; border: 1px solid var(--gold); padding: 6px; border-radius: 10px; width: 85%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-top: 40px; margin-bottom: 5px; gap: 8px; font-size: 14px; }
         .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
@@ -64,7 +64,7 @@
         <div id="bookingPage" class="page">
             <h3 style="margin-top:40px;">የተመዘገቡ</h3>
             <div id="bookingGrid" class="grid-container"></div>
-            <button style="color:red; border:1px solid #444; background:none; padding:10px; border-radius:10px; margin-top:15px;" onclick="clearData()">ሁሉንም አጽዳ</button>
+            <button style="color:red; border:1px solid #444; background:none; padding:10px; border-radius:10px; margin-top:15px;" onclick="clearBookingOnly()">አፅዳ</button>
         </div>
         
         <div id="gamePage" class="page active">
@@ -105,7 +105,6 @@
         const BOT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         
-        // ድምፅ ማጫወቻ ፈንክሽን
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSfx(freq, dur, vol) {
             try {
@@ -182,8 +181,7 @@
             document.getElementById('drawBtn').style.display = 'none';
             const ov = document.getElementById('statusOverlay'); ov.style.display = 'flex';
             for(let s of ["READY","VERIFYING","GO!"]) { 
-                ov.innerText = s; 
-                playSfx(440, 0.4, 0.1); // Ready ድምፅ
+                ov.innerText = s; playSfx(440, 0.4, 0.1); 
                 await new Promise(r=>setTimeout(r,800)); 
             }
             ov.style.display = 'none'; startLiveDraw();
@@ -196,19 +194,17 @@
                 [all[i], all[j]] = [all[j], all[i]];
             }
             let winners = [all[0], all[1], all[2]];
-
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
                 for(let j=0; j<20; j++) {
                     let t = Math.floor(Math.random()*100)+1; 
                     document.getElementById('g'+t).classList.add('tracking');
                     renderBall(Math.floor(Math.random()*100)+1, false);
-                    playSfx(1000, 0.05, 0.05); // እጣ መሽከርከሪያ ድምፅ
+                    playSfx(1000, 0.05, 0.05);
                     await new Promise(r=>setTimeout(r, 60));
                     document.getElementById('g'+t).classList.remove('tracking');
                 }
-                renderBall(win, true);
-                playSfx(300, 0.8, 0.2); // ውጤት መውጫ ድምፅ
+                renderBall(win, true); playSfx(300, 0.8, 0.2); 
                 document.getElementById('v'+i).innerText = win;
                 document.getElementById('g'+win).classList.add('winner-hit');
                 await new Promise(r=>setTimeout(r, 1200));
@@ -233,11 +229,20 @@
         function loadHistory() {
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
             document.getElementById('historyList').innerHTML = h.map(x => {
-                let balls = x.r.map((num, idx) => `<div class="h-ball" style="background:${rowColors[Math.floor((num-1)/10)]}">${num}</div>`).join('');
+                let balls = x.r.map(num => `<div class="h-ball" style="background:${rowColors[Math.floor((num-1)/10)]}">${num}</div>`).join('');
                 return `<div style="background:#111; margin:10px; padding:12px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;"><small>${x.t}</small><div class="h-ball-row">${balls}</div></div>`;
             }).join('');
         }
-        function clearData() { if(confirm("ሁሉንም አጽዳ?")) { localStorage.clear(); location.reload(); } }
+
+        // አዲሱ ማጽጃ ፈንክሽን - መዝገብን ብቻ የሚያጠፋ
+        function clearBookingOnly() {
+            if(confirm("የተመዘገቡ ስሞችን ብቻ አጽዳ?")) {
+                for(let i=1; i<=100; i++) {
+                    localStorage.removeItem('bk_'+i);
+                }
+                setup(); // ገጹን ሪፍሬሽ ሳያደርግ ጽሁፎቹን ያጠፋል
+            }
+        }
     </script>
 </body>
 </html>
