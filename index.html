@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP PRO - Master Edition</title>
+    <title>FASIL VIP PRO - Grid Fixed</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; position: fixed; }
@@ -23,36 +23,53 @@
         .res-box span { font-size: 10px; color: var(--gold); display: block; }
         .res-box b { font-size: 22px; color: #fff; text-shadow: 0 0 10px var(--gold); }
 
-        /* DYNAMIC WINNER DISPLAY (ያንተ ሃሳብ) */
+        /* WINNER DISPLAY */
         #focusWinnerDisplay { margin: 2px 0; min-height: 110px; display: flex; flex-direction: column; justify-content: center; }
-        .focus-num { 
-            font-size: 95px; 
-            font-weight: 900; 
-            color: #fff; 
-            text-shadow: 0 0 35px var(--gold); 
-            line-height: 0.9; 
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-        }
-        .focus-label { font-size: 18px; font-weight: bold; color: var(--bright-gold); letter-spacing: 2px; }
+        .focus-num { font-size: 90px; font-weight: 900; color: #fff; text-shadow: 0 0 35px var(--gold); line-height: 1; }
+        .focus-label { font-size: 18px; font-weight: bold; color: var(--bright-gold); }
 
-        /* GRID SYSTEM */
-        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: #151515; padding: 5px; border-radius: 8px; overflow-y: auto; max-height: 175px; border: 1px solid #222; }
-        .grid-cell { background: #0a0a0a; font-size: 11px; font-weight: bold; padding: 5px 0; border: 1px solid #222; border-radius: 3px; }
+        /* --- FIXED GRID SYSTEM (የተስተካከለው ሰንጠረዥ) --- */
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(10, 1fr); 
+            gap: 3px; 
+            background: #151515; 
+            padding: 8px; 
+            border-radius: 10px; 
+            overflow-y: auto; 
+            max-height: 200px; /* ለሰንጠረዡ በቂ ቦታ */
+            border: 2px solid #222;
+            width: 95%;
+            margin: 5px auto;
+        }
+        .grid-cell { 
+            background: #0a0a0a; 
+            font-size: 12px; 
+            font-weight: bold; 
+            padding: 8px 0; 
+            border: 1px solid #333; 
+            border-radius: 4px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .booked { border: 1px solid #fff !important; background: #333 !important; }
-        .winner-hit { background: var(--red) !important; color: #fff !important; animation: winner-pulse 0.8s infinite; }
-        @keyframes winner-pulse { 50% { transform: scale(1.15); } }
+        .winner-hit { background: var(--red) !important; color: #fff !important; animation: winner-pulse 0.8s infinite; border: 1px solid #fff !important; }
+        @keyframes winner-pulse { 50% { transform: scale(1.1); } }
         
         canvas { border: 3px solid var(--gold); border-radius: 50%; background: #050505; width: 100px; height: 100px; margin: 5px auto; }
-        button.main-btn { width: 95%; padding: 14px; border-radius: 12px; font-size: 18px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 8px auto; box-shadow: 0 4px 10px rgba(191,149,63,0.3); }
+        button.main-btn { width: 90%; padding: 14px; border-radius: 12px; font-size: 18px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 10px auto; }
         
         .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 70px; } 
         .tab-btn { flex: 1; color: #777; border: none; background: none; font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 3px solid var(--gold); background: #1a1a1a; }
+        
+        #lockScreen { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; flex-direction: column; justify-content: center; align-items: center; }
     </style>
 </head>
 <body onload="checkLicense()">
 
-    <div id="lockScreen" style="position:fixed; inset:0; background:#000; z-index:2000; display:none; flex-direction:column; justify-content:center; align-items:center;">
+    <div id="lockScreen">
         <div style="background:#111; padding:30px; border:2px solid var(--gold); border-radius:20px; width:80%;">
             <h2>FASIL VIP PRO</h2>
             <div id="myDeviceId" style="color:#fff; margin:10px; font-size:18px;">---</div>
@@ -64,7 +81,7 @@
     <div id="appContent">
         <div id="bookingPage" class="page">
             <h3>📋 መዝገብ</h3>
-            <div id="bookingGrid" class="grid-container" style="max-height: 65vh;"></div>
+            <div id="bookingGrid" class="grid-container" style="max-height: 70vh;"></div>
             <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid red; padding:8px; border-radius:8px; margin-top:10px; width:90%;">RESET NAMES</button>
         </div>
         
@@ -92,7 +109,8 @@
             <button id="resetBtn" class="main-btn" onclick="location.reload()" style="display:none;">አዲስ ዕጣ</button>
         </div>
 
-        <div id="historyPage" class="page"><h3>🕒 የታሪክ ማህደር</h3><div id="historyList" style="overflow-y:auto; flex:1;"></div></div>
+        <div id="historyPage" class="page"><h3>🕒 ታሪክ</h3><div id="historyList" style="overflow-y:auto; flex:1;"></div></div>
+        
         <div id="setupPage" class="page">
             <h3>⚙️ Settings</h3>
             <input type="text" id="botTokenInput" style="width:90%; padding:12px; margin:10px; border-radius:8px;" placeholder="Bot Token">
@@ -115,7 +133,6 @@
         let liveMsgId = null;
         const cv = document.getElementById('bingoCanvas'), cx = cv.getContext('2d');
 
-        // ከፍተኛ ድምፅ ማውጫ (Max Volume)
         function playImpactSound(freq, type, duration, vol) {
             if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             let o = audioCtx.createOscillator(), g = audioCtx.createGain();
@@ -161,7 +178,6 @@
                 let win = winners[i-1];
                 let winColor = rowColors[Math.floor((win-1)/10)];
 
-                // Ready... Verifying...
                 document.getElementById('levelLabel').innerText = "VERIFYING...";
                 playImpactSound(150, 'sine', 0.5, 0.8);
                 await new Promise(r=>setTimeout(r, 800));
@@ -169,7 +185,7 @@
                 document.getElementById('levelLabel').innerText = i + "ኛ ዕጣ GO!";
                 playImpactSound(800, 'square', 0.3, 0.5);
 
-                for(let j=0; j<50; j++) { 
+                for(let j=0; j<40; j++) { 
                     playImpactSound(Math.random()*200+300,'triangle',0.05, 0.2);
                     let rand = Math.floor(Math.random()*100)+1;
                     renderBall(rand, false); 
@@ -178,21 +194,16 @@
                     await new Promise(r=>setTimeout(r, 60)); 
                 }
 
-                // ድምፅ Volume UP (Win!)
-                playImpactSound(523, 'square', 1.0, 1.0); // 1.0 is Max Volume
-                playImpactSound(659, 'square', 1.0, 0.8); 
-
+                playImpactSound(523, 'square', 1.0, 1.0);
                 renderBall(win, true);
                 document.getElementById('currentResult').innerText = win; 
-                document.getElementById('currentResult').style.color = winColor; // ጎላ ያለው ቁጥር በራሱ ቀለም ይደምቃል
-                document.getElementById('currentResult').style.textShadow = `0 0 40px ${winColor}`;
-                
+                document.getElementById('currentResult').style.color = winColor;
                 document.getElementById('s' + i).innerText = win;
                 document.getElementById('s' + i).style.color = winColor;
                 document.getElementById('g'+win).classList.add('winner-hit');
                 
                 updateTelegramLive(i, win);
-                await new Promise(r=>setTimeout(r, 3000));
+                await new Promise(r=>setTimeout(r, 2500));
             }
             finalTelegramPost(winners);
             saveHist(winners);
