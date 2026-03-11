@@ -222,19 +222,23 @@
         function sendToTelegram(w) {
             const cid = localStorage.getItem('f_chat_id');
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
-            const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-            
-            // የተስተካከለ እና ያማረ መልእክት
-            const msg = `🎰 **FASIL VIP BINGO** 🎰\n` +
-                        `━━━━━━━━━━━━━━\n` +
-                        `🥇 **1ኛ ዕጣ:** 【 **${w[0]}** 】 — _${n[0]}_\n` +
-                        `🥈 **2ኛ ዕጣ:** 【 **${w[1]}** 】 — _${n[1]}_\n` +
-                        `🥉 **3ኛ ዕጣ:** 【 **${w[2]}** 】 — _${n[2]}_\n` +
-                        `━━━━━━━━━━━━━━\n` +
-                        `🕒 ሰዓት: ${time}\n` +
-                        `✨ **እንኳን ደስ አላችሁ!** ✨`;
+            const t = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
+            const msg = `🎰 *FASIL VIP BINGO* 🎰\n` +
+                        `━━━━━━━━━━━━━━\n` +
+                        `🥇 *1ኛ ዕጣ:* 【 *${w[0]}* 】 — _${n[0]}_\n` +
+                        `🥈 *2ኛ ዕጣ:* 【 *${w[1]}* 】 — _${n[1]}_\n` +
+                        `🥉 *3ኛ ዕጣ:* 【 *${w[2]}* 】 — _${n[2]}_\n` +
+                        `━━━━━━━━━━━━━━\n` +
+                        `🕒 ሰዓት: ${t}\n` +
+                        `⚡️ *Powered by FASIL*\n` +
+                        `✨ *እንኳን ደስ አላችሁ!* ✨`;
+
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`;
+            
+            fetch(url).then(res => res.json()).then(data => {
+                if(!data.ok) console.error("Telegram Error:", data.description);
+            }).catch(err => console.error("Fetch Error:", err));
         }
 
         function saveHist(w) {
