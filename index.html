@@ -224,15 +224,15 @@
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
             const t = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-            const msg = `🎰 *FASIL VIP BINGO* 🎰\n` +
+            const msg = `🎰 **FASIL VIP BINGO** 🎰\n` +
                         `━━━━━━━━━━━━━━\n` +
-                        `🥇 *1ኛ ዕጣ:* 【 *${w[0]}* 】 — _${n[0]}_\n` +
-                        `🥈 *2ኛ ዕጣ:* 【 *${w[1]}* 】 — _${n[1]}_\n` +
-                        `🥉 *3ኛ ዕጣ:* 【 *${w[2]}* 】 — _${n[2]}_\n` +
+                        `🥇 **1ኛ ዕጣ:** 【 **${w[0]}** 】 — _${n[0]}_\n` +
+                        `🥈 **2ኛ ዕጣ:** 【 **${w[1]}** 】 — _${n[1]}_\n` +
+                        `🥉 **3ኛ ዕጣ:** 【 **${w[2]}** 】 — _${n[2]}_\n` +
                         `━━━━━━━━━━━━━━\n` +
                         `🕒 ሰዓት: ${t}\n` +
-                        `⚡️ *Powered by FASIL*\n` +
-                        `✨ *እንኳን ደስ አላችሁ!* ✨`;
+                        `✨ **እንኳን ደስ አላችሁ!** ✨\n` +
+                        `⚡️ **Powered by FASIL**`;
 
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`;
             
