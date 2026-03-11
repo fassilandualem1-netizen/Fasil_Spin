@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP BINGO</title>
+    <title>FASIL VIP - Live Edition</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --dark-gold: #8a6d29; --red: #ff3333; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
         #lockScreen { position: fixed; inset: 0; background: #000; z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .lock-box { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; width: 85%; }
@@ -107,9 +107,9 @@
     </div>
 
     <script>
-        // *** ያንተ ቦት Token እዚህ ተስተካክሏል ***
-        const BOT_TOKEN = "8106733230:AAEmw1-x616Xn_rG5L6YyI4pM7-7K4V5uYQ";
         const MASTER_KEY = "9988";
+        // ያንተ ትክክለኛ BOT TOKEN እዚህ ገብቷል
+        const BOT_TOKEN = "8106733230:AAEmw1-x616Xn_rG5L6YyI4pM7-7K4V5uYQ";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -224,13 +224,13 @@
             const cid = localStorage.getItem('f_chat_id');
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
             
-            // የቴሌግራም መልእክት ቅርጽ (አይን ውስጥ በሚገባ መልክ)
+            // የቴሌግራም መልእክት አጻጻፍ ተስተካክሏል
             const msg = `🎰 **ፋሲል VIP ቢንጎ** 🎰\n` +
-                        `▬▬▬▬▬▬▬▬▬▬\n` +
-                        `🥇 **1ኛ ዕጣ:** 【 **${w[0]}** 】— _${n[0]}_\n` +
-                        `🥈 **2ኛ ዕጣ:** 【 **${w[1]}** 】— _${n[1]}_\n` +
-                        `🥉 **3ኛ ዕጣ:** 【 **${w[2]}** 】— _${n[2]}_\n` +
-                        `▬▬▬▬▬▬▬▬▬▬\n` +
+                        `━━━━━━━━━━━━━━\n` +
+                        `🥇 **1ኛ ዕጣ:** 【 **${w[0]}** 】 — _${n[0]}_\n` +
+                        `🥈 **2ኛ ዕጣ:** 【 **${w[1]}** 】 — _${n[1]}_\n` +
+                        `🥉 **3ኛ ዕጣ:** 【 **${w[2]}** 】 — _${n[2]}_\n` +
+                        `━━━━━━━━━━━━━━\n` +
                         `✨ **እንኳን ደስ አላችሁ!** ✨`;
 
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
