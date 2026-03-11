@@ -2,129 +2,41 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FASIL SPIN VIP</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FASIL VIP - Final Digital Edition</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #0f2027; color: white; padding: 15px; margin: 0; }
-        .container { max-width: 450px; margin: 20px auto; background: #1a2a33; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334756; }
-        h2 { color: #ffcc00; text-transform: uppercase; letter-spacing: 2px; }
-        .wheel-container { position: relative; margin: 30px auto; width: 220px; height: 220px; }
-        .wheel { width: 100%; height: 100%; border: 8px solid #ffcc00; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; background: radial-gradient(circle, #ffffff 0%, #ffcc00 100%); color: #1a2a33; transition: all 3s cubic-bezier(0.15, 0, 0.15, 1); box-shadow: 0 0 25px #ffcc0066; }
-        .pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff3e3e; z-index: 10; }
-        button { background: linear-gradient(45deg, #ffcc00, #ff9500); border: none; padding: 18px; font-size: 20px; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; color: #1a2a33; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.3s; }
-        button:active { transform: scale(0.96); }
-        .setup-section { margin-top: 35px; padding: 20px; background: #121f26; border-radius: 15px; text-align: left; border: 1px solid #2c3e50; }
-        .setup-section h3 { margin-top: 0; font-size: 16px; color: #8899a6; border-bottom: 1px solid #2c3e50; padding-bottom: 10px; }
-        label { display: block; margin: 12px 0 5px; font-size: 14px; color: #ffcc00; }
-        input { width: 100%; padding: 12px; box-sizing: border-box; border-radius: 8px; border: 1px solid #2c3e50; background: #1a2a33; color: white; font-size: 14px; }
-        .save-btn { background: #28a745; color: white; margin-top: 15px; font-size: 16px; }
-        #result { margin-top: 20px; font-weight: bold; font-size: 18px; height: 25px; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>🎰 FASIL SPIN VIP</h2>
-    
-    <div class="wheel-container">
-        <div class="pointer"></div>
-        <div id="wheel" class="wheel">?</div>
-    </div>
-
-    <button onclick="spinWheel()">ዕጣ አውጣ (SPIN)</button>
-    <div id="result"></div>
-
-    <div class="setup-section">
-        <h3>⚙️ የቦት ማስተካከያ (Settings)</h3>
-        <label>Bot Token:</label>
-        <input type="password" id="botToken" placeholder="ከ @BotFather ያገኙትን Token ያስገቡ">
+        :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
+        body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
-        <label>Chat ID (Group):</label>
-        <input type="text" id="chatId" placeholder="ለምሳሌ፦ -100123456789">
-        
-        <button onclick="saveSettings()" class="save-btn">መረጃውን አስቀምጥ (Save)</button>
-    </div>
-</div>
+        #lockScreen { position: fixed; inset: 0; background: #000; z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .lock-box { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; width: 85%; }
+        .lock-input { width: 100%; padding: 15px; margin: 15px 0; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; font-size: 24px; border-radius: 10px; }
+        .device-id-tag { background: #222; padding: 10px; border-radius: 5px; color: #fff; font-family: monospace; font-size: 18px; margin: 10px 0; border: 1px dashed var(--gold); }
 
-<script>
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-    }
+        #statusOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100002; display: none; justify-content: center; align-items: center; font-size: 55px; font-weight: bold; color: var(--bright-gold); }
 
-    window.onload = function() {
-        document.getElementById('botToken').value = localStorage.getItem('fasil_token') || '';
-        document.getElementById('chatId').value = localStorage.getItem('fasil_chatid') || '';
-    };
+        #appContent { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+        .page { display: none; flex: 1; padding: 10px; overflow-y: auto; box-sizing: border-box; padding-bottom: 90px; }
+        .page.active { display: flex; flex-direction: column; }
 
-    function saveSettings() {
-        const token = document.getElementById('botToken').value;
-        const cid = document.getElementById('chatId').value;
-        localStorage.setItem('fasil_token', token);
-        localStorage.setItem('fasil_chatid', cid);
-        alert("✅ መረጃው በትክክል ተቀምጧል!");
-    }
+        .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 75px; z-index: 1000; } 
+        .tab-btn { flex: 1; color: #777; border: none; background: none; font-weight: bold; font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
 
-    function spinWheel() {
-        const wheel = document.getElementById('wheel');
-        const resultDiv = document.getElementById('result');
-        const token = localStorage.getItem('fasil_token');
-        
-        if (!token) {
-            alert("እባክዎ መጀመሪያ Setup ውስጥ የቦት ቶከን ያስገቡ!");
-            return;
-        }
+        .live-box { background: #111; border: 1px solid var(--gold); padding: 8px; border-radius: 10px; width: 85%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-top: 40px; margin-bottom: 5px; gap: 8px; font-size: 14px; }
+        .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        const randomNumber = Math.floor(Math.random() * 90) + 1;
-        const rotation = 1800 + Math.floor(Math.random() * 360); 
-        
-        wheel.style.transition = "all 3s cubic-bezier(0.15, 0, 0.15, 1)";
-        wheel.style.transform = `rotate(${rotation}deg)`;
-        resultDiv.style.color = "#8899a6";
-        resultDiv.innerText = "እጣው እየተሽከረከረ ነው...";
+        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 5px; border-radius: 8px; width: 100%; margin: 5px 0; }
+        .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 6px 0; border: 1px solid #222; border-radius: 3px; }
+        .booked { border: 1px solid #fff !important; background: #222 !important; }
+        .winner-hit { background: var(--red) !important; color: #fff !important; animation: winner-pulse 0.8s infinite; }
+        @keyframes winner-pulse { 50% { transform: scale(1.3); } }
 
-        setTimeout(() => {
-            wheel.innerText = randomNumber;
-            resultDiv.style.color = "#ffcc00";
-            resultDiv.innerText = "አሸናፊ ቁጥር፦ " + randomNumber;
-            
-            sendToTelegram(randomNumber);
-        }, 3000);
-    }
+        .res-row { display: flex; justify-content: space-between; margin: 8px 0; gap: 6px; }
+        .res-card { background: #0a0a0a; border: 1.5px solid var(--gold); padding: 5px; border-radius: 10px; width: 32%; }
+        .res-card b { font-size: 26px; color: #fff; display: block; }
 
-    async function sendToTelegram(num) {
-        const token = localStorage.getItem('fasil_token');
-        const cid = localStorage.getItem('fasil_chatid');
-        
-        // ያንተ ቦት መረጃ እዚህ ተስተካክሏል
-        const botUsername = "fasil_spin_vip_bot"; 
-        const miniAppLink = `https://t.me/${botUsername}/Spin`;
-
-        const msg = `🎰 **አዲስ የቢንጎ እጣ ወጥቷል!**\n\n🌟 አሸናፊ ቁጥር፦ **${num}**\n\nመልካም እድል ለሁላችሁም!`;
-
-        const url = `https://api.telegram.org/bot${token}/sendMessage`;
-        
-        try {
-            await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: cid,
-                    text: msg,
-                    parse_mode: 'Markdown',
-                    reply_markup: {
-                        inline_keyboard: [[
-                            { text: "🎰 LIVE ውጤቱን እዚህ ይመልከቱ", url: miniAppLink }
-                        ]]
-                    }
-                })
-            });
-        } catch (e) {
-            console.error("Error:", e);
-        }
-    }
-</script>
-
-</body>
-</html>
+        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 120px; height: 120px; margin: 5px auto; }
+        button#drawBtn { width: 95%; padding: 15px; border-radius: 15px; font-size: 19px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; }
+        .setup-input { width: 90%; padding: 15px; margin: 20px auto; border-radius: 8px; border: 1px solid var(--gold); background: #111; color: #fff; text-align: center; }
