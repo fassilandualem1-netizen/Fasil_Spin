@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP - Final Edition</title>
+    <title>FASIL VIP - Final Digital Edition</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
@@ -47,7 +47,7 @@
     <div id="lockScreen">
         <div class="lock-box">
             <h2>FASIL VIP</h2>
-            <p style="color:#ccc;">ይህ ስልክ አልተመዘገበም!</p>
+            <p id="lockMsg" style="color:#ccc;">ይህ ስልክ አልተመዘገበም!</p>
             <div class="device-id-tag" id="myDeviceId">---</div>
             <input type="text" id="licenseKey" class="lock-input" placeholder="ኮድ ያስገቡ">
             <button onclick="validateKey()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">ACTIVATE</button>
@@ -102,7 +102,33 @@
 
     <script>
         const BOT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
+        const MASTER_KEY = "9988";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
+
+        // --- Digital Audio Engine ---
+        let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playDigitalSound(freq, type, duration, vol=0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+
+        const sounds = {
+            beep: () => { playDigitalSound(800, 'sine', 0.2, 0.1); if(navigator.vibrate) navigator.vibrate(50); },
+            go: () => { playDigitalSound(1200, 'square', 0.4, 0.1); if(navigator.vibrate) navigator.vibrate(200); },
+            spin: () => playDigitalSound(Math.random()*300+400, 'triangle', 0.05, 0.05),
+            win: () => {
+                playDigitalSound(523, 'square', 0.2);
+                setTimeout(() => playDigitalSound(659, 'square', 0.2), 100);
+                setTimeout(() => playDigitalSound(783, 'square', 0.4), 200);
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            }
+        };
 
         function generateUID() {
             let uid = localStorage.getItem('f_uid');
@@ -114,22 +140,44 @@
             const myId = generateUID();
             document.getElementById('myDeviceId').innerText = myId;
             const savedKey = localStorage.getItem('f_license');
+            const savedDate = localStorage.getItem('f_date');
             const expectedKey = (parseInt(myId.split('-')[1]) + 1000).toString();
-            if(savedKey === expectedKey) {
-                document.getElementById('appContent').style.display = 'flex';
-                document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || "";
-                setup();
-                setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+
+            if(savedKey === MASTER_KEY) {
+                openApp();
+            } else if(savedKey === expectedKey) {
+                // 30 Days Expiry Check
+                const now = new Date().getTime();
+                if (now - parseInt(savedDate) > 30 * 24 * 60 * 60 * 1000) {
+                    localStorage.removeItem('f_license');
+                    document.getElementById('lockMsg').innerText = "የ 30 ቀን ጊዜዎ አልቋል!";
+                    document.getElementById('lockScreen').style.display = 'flex';
+                } else { openApp(); }
             } else {
                 document.getElementById('lockScreen').style.display = 'flex';
             }
         }
 
         function validateKey() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             const input = document.getElementById('licenseKey').value.trim();
             const myId = localStorage.getItem('f_uid');
             const expectedKey = (parseInt(myId.split('-')[1]) + 1000).toString();
-            if(input === expectedKey) { localStorage.setItem('f_license', input); location.reload(); } else { alert("ስህተት!"); }
+
+            if(input === "0000") { localStorage.clear(); location.reload(); return; } // Master Reset
+
+            if(input === MASTER_KEY || input === expectedKey) {
+                localStorage.setItem('f_license', input);
+                localStorage.setItem('f_date', new Date().getTime().toString());
+                location.reload();
+            } else { alert("ስህተት!"); }
+        }
+
+        function openApp() {
+            document.getElementById('appContent').style.display = 'flex';
+            document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || "";
+            setup();
+            setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
         }
 
         function saveSettings() {
@@ -172,10 +220,17 @@
         }
 
         async function runSequence() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             if(!localStorage.getItem('f_chat_id')) { alert("Chat ID ያስገቡ!"); return; }
             document.getElementById('drawBtn').style.display = 'none';
             const ov = document.getElementById('statusOverlay'); ov.style.display = 'flex';
-            for(let s of ["READY","VERIFYING","GO!"]) { ov.innerText = s; await new Promise(r=>setTimeout(r,800)); }
+            
+            const steps = ["READY", "VERIFYING", "GO!"];
+            for(let s of steps) { 
+                ov.innerText = s; 
+                if(s==="GO!") sounds.go(); else sounds.beep();
+                await new Promise(r=>setTimeout(r,800)); 
+            }
             ov.style.display = 'none'; startLiveDraw();
         }
 
@@ -188,7 +243,12 @@
             let winners = [all[0], all[1], all[2]];
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
-                for(let j=0; j<15; j++) { renderBall(Math.floor(Math.random()*100)+1, false); await new Promise(r=>setTimeout(r, 70)); }
+                for(let j=0; j<15; j++) { 
+                    sounds.spin();
+                    renderBall(Math.floor(Math.random()*100)+1, false); 
+                    await new Promise(r=>setTimeout(r, 70)); 
+                }
+                sounds.win();
                 renderBall(win, true); document.getElementById('v'+i).innerText = win;
                 document.getElementById('g'+win).classList.add('winner-hit');
                 await new Promise(r=>setTimeout(r, 1200));
