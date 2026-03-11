@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP - Master Edition</title>
+    <title>FASIL VIP PRO - Master Edition</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
@@ -100,7 +100,7 @@
 
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
-                // --- 5 ሰከንድ SPIN (70 ድግግሞሽ * 70ms = ~5 ሰከንድ) ---
+                // 5 ሰከንድ Spin አኒሜሽን
                 for(let j=0; j<70; j++) { 
                     snds.spin(); 
                     renderBall(Math.floor(Math.random()*100)+1, false); 
@@ -110,7 +110,6 @@
                 document.getElementById('v'+i).innerText = win;
                 document.getElementById('g'+win).classList.add('winner-hit');
                 
-                // ቴሌግራም Update (በየ 5 ሰከንዱ - Non-blocking)
                 updateTelegramLive(i, win).catch(e=>console.log("Tele Error"));
                 await new Promise(r=>setTimeout(r, 2000));
             }
@@ -118,9 +117,10 @@
             saveHist(winners); document.getElementById('resetBtn').style.display = 'block';
         }
 
+        // --- ፕሮፌሽናል ቴሌግራም መልዕክቶች ---
         async function initTelegramLive() {
             const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
-            const m = "🎰 **FASIL VIP BINGO** 🎰\n━━━━━━━━━━━━━━\nዕጣ እየወጣ ነው... ⏳\n━━━━━━━━━━━━━━";
+            const m = `🔥🔥 **FASIL VIP PRO BINGO** 🔥🔥\n\n📢 **ዕጣው ተጀምሯል!**\n━━━━━━━━━━━━━━━━━━━━\n🔄 **ሁኔታ:** _ዕጣ እየወጣ ነው... ⏳_\n━━━━━━━━━━━━━━━━━━━━\n🏆 **FASIL VIP PRO EDITION**`;
             let res = await fetch(`https://api.telegram.org/bot${t}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, text:m, parse_mode:'Markdown'}) });
             let d = await res.json(); if(d.ok) liveMsgId = d.result.message_id;
         }
@@ -129,12 +129,17 @@
             if(!liveMsgId) return;
             const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
             let v1 = document.getElementById('v1').innerText, v2 = document.getElementById('v2').innerText, v3 = document.getElementById('v3').innerText;
-            let txt = `🎰 **FASIL VIP BINGO** 🎰\n━━━━━━━━━━━━━━\n`;
-            if(step>=1) txt += `🥇 1ኛ ዕጣ: 【 **${v1}** 】\n`;
-            if(step>=2) txt += `🥈 2ኛ ዕጣ: 【 **${v2}** 】\n`;
-            if(step>=3) txt += `🥉 3ኛ ዕጣ: 【 **${v3}** 】\n`;
-            if(step<3) txt += `\nቀጣዩ ዕጣ እየተሽከረከረ ነው... ⏳\n`;
-            txt += `━━━━━━━━━━━━━━`;
+            
+            let txt = `🔥🔥 **FASIL VIP PRO BINGO** 🔥🔥\n\n`;
+            txt += `🥇 **1ኛ ዕጣ:** 【 **${v1 !== '?' ? v1 : '⏳'}** 】\n`;
+            if(step >= 2) txt += `🥈 **2ኛ ዕጣ:** 【 **${v2 !== '?' ? v2 : '⏳'}** 】\n`;
+            if(step >= 3) txt += `🥉 **3ኛ ዕጣ:** 【 **${v3 !== '?' ? v3 : '⏳'}** 】\n`;
+            
+            txt += `\n━━━━━━━━━━━━━━━━━━━━\n`;
+            txt += `🔄 **ሁኔታ:** _ቀጣዩ ዕጣ እየተሽከረከረ ነው... 🎰_\n`;
+            txt += `━━━━━━━━━━━━━━━━━━━━\n`;
+            txt += `🏆 **FASIL VIP PRO EDITION**`;
+            
             await fetch(`https://api.telegram.org/bot${t}/editMessageText`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, message_id:liveMsgId, text:txt, parse_mode:'Markdown'}) });
         }
 
@@ -142,10 +147,21 @@
             if(!liveMsgId) return;
             const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
-            const m = `🎰 **FASIL VIP BINGO** 🎰\n━━━━━━━━━━━━━━\n🥇 **1ኛ ዕጣ:** 【 **${w[0]}** 】 — _${n[0]}_\n🥈 **2ኛ ዕጣ:** 【 **${w[1]}** 】 — _${n[1]}_\n🥉 **3ኛ ዕጣ:** 【 **${w[2]}** 】 — _${n[2]}_\n━━━━━━━━━━━━━━\n✨ **እንኳን ደስ አላችሁ!** ✨`;
+            
+            const m = `🔥🔥 **FASIL VIP PRO BINGO** 🔥🔥\n\n` +
+                      `🥇 **1ኛ ዕጣ:** 【 **${w[0]}** 】 — _${n[0]}_ 🏆\n` +
+                      `🥈 **2ኛ ዕጣ:** 【 **${w[1]}** 】 — _${n[1]}_ ✨\n` +
+                      `🥉 **3ኛ ዕጣ:** 【 **${w[2]}** 】 — _${n[2]}_ 🎖️\n\n` +
+                      `━━━━━━━━━━━━━━━━━━━━\n` +
+                      `✅ **ዕጣው በሰላም ተጠናቋል!**\n` +
+                      `🎊 **እንኳን ደስ አላችሁ!**\n` +
+                      `━━━━━━━━━━━━━━━━━━━━\n` +
+                      `🚀 **POWERED BY FASIL VIP PRO**`;
+            
             await fetch(`https://api.telegram.org/bot${t}/editMessageText`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, message_id:liveMsgId, text:m, parse_mode:'Markdown'}) });
         }
 
+        // --- Helper Functions ---
         function setup() {
             const bg=document.getElementById('bookingGrid'), gg=document.getElementById('gameGrid'); bg.innerHTML=""; gg.innerHTML="";
             for(let i=1; i<=100; i++){
@@ -161,7 +177,7 @@
             cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill();
             cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(v||"?",100,125);
         }
-        function saveSettings() { localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); alert("Saved!"); }
+        function saveSettings() { localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); alert("Settings Saved!"); }
         function showPage(p, b) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); document.getElementById(p).classList.add('active'); b.classList.add('active'); if(p==='historyPage') loadHistory(); }
         function saveHist(w) { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); h.unshift({t:new Date().toLocaleTimeString(), r:w}); localStorage.setItem('f_h', JSON.stringify(h.slice(0,20))); }
         function loadHistory() { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); document.getElementById('historyList').innerHTML = h.map(x=>`<div style="background:#111; padding:10px; margin:5px; border-radius:10px; border:1px solid #333;"><small>${x.t}</small><br><b>${x.r.join(' - ')}</b></div>`).join(''); }
