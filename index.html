@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP BINGO</title>
+    <title>FASIL VIP - Live Edition</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --dark-gold: #8a6d29; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
@@ -108,8 +108,7 @@
 
     <script>
         const MASTER_KEY = "9988";
-        // ፋሲል፡ ያንተ ትክክለኛ BOT TOKEN እዚህ ገብቷል
-        const BOT_TOKEN = "8106733230:AAEmw1-x616Xn_rG5L6YyI4pM7-7K4V5uYQ";
+        const BOT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -223,16 +222,16 @@
         function sendToTelegram(w) {
             const cid = localStorage.getItem('f_chat_id');
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
-            const d = new Date().toLocaleDateString();
-            const t = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-
+            const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            
+            // የተስተካከለ እና ያማረ መልእክት
             const msg = `🎰 **FASIL VIP BINGO** 🎰\n` +
                         `━━━━━━━━━━━━━━\n` +
                         `🥇 **1ኛ ዕጣ:** 【 **${w[0]}** 】 — _${n[0]}_\n` +
                         `🥈 **2ኛ ዕጣ:** 【 **${w[1]}** 】 — _${n[1]}_\n` +
                         `🥉 **3ኛ ዕጣ:** 【 **${w[2]}** 】 — _${n[2]}_\n` +
                         `━━━━━━━━━━━━━━\n` +
-                        `📅 **${d}** | 🕒 **${t}**\n` +
+                        `🕒 ሰዓት: ${time}\n` +
                         `✨ **እንኳን ደስ አላችሁ!** ✨`;
 
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
