@@ -33,18 +33,17 @@
         button#drawBtn { width: 95%; padding: 15px; border-radius: 15px; font-size: 19px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; }
         .setup-input { width: 90%; padding: 12px; margin: 10px auto; border-radius: 8px; border: 1px solid var(--gold); background: #111; color: #fff; text-align: center; font-size: 13px; }
         .save-btn { background: var(--gold); color: #000; padding: 15px; width: 90%; border-radius: 10px; font-weight: bold; border: none; margin: 10px auto; }
-        .viewer-hide { display: none !important; }
     </style>
 </head>
 <body onload="checkLicense()">
 
-    <div id="lockScreen"><div class="lock-box"><h2>FASIL VIP</h2><p id="lockMsg" style="color:#ccc;">ይህ ስልክ አልተመዘገበም!</p><div class="device-id-tag" id="myDeviceId">---</div><input type="text" id="licenseKey" class="lock-input" placeholder="ኮድ ያስገቡ"><button onclick="validateKey()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">ACTIVATE</button></div></div>
+    <div id="lockScreen"><div class="lock-box"><h2>FASIL VIP</h2><p id="lockMsg">ይህ ስልክ አልተመዘገበም!</p><div class="device-id-tag" id="myDeviceId">---</div><input type="text" id="licenseKey" class="lock-input" placeholder="ኮድ ያስገቡ"><button onclick="validateKey()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">ACTIVATE</button></div></div>
     <div id="statusOverlay">READY</div>
     <div id="appContent">
-        <div id="bookingPage" class="page"><h3 style="margin-top:40px;">የተመዘገቡ</h3><div id="bookingGrid" class="grid-container"></div><button id="clearBtn" class="admin-only" style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:15px;" onclick="clearBookingOnly()">አፅዳ</button></div>
-        <div id="gamePage" class="page active"><div class="live-box"><div class="live-dot"></div><span style="font-weight:bold; color:red;">LIVE TRACKING</span><span id="liveClock">00:00:00</span></div><div id="gameGrid" class="grid-container"></div><div class="res-row"><div class="res-card"><span>1ኛ</span><b id="v1">?</b></div><div class="res-card"><span>2ኛ</span><b id="v2">?</b></div><div class="res-card"><span>3ኛ</span><b id="v3">?</b></div></div><canvas id="bingoCanvas" width="200" height="200"></canvas><button id="drawBtn" class="admin-only" onclick="runSequence()">START DRAW</button><button id="resetBtn" onclick="location.reload()" style="display:none; background:#111; color:#fff; padding:15px; border-radius:15px; width:95%; margin:5px auto; font-weight:bold;">RE-START</button></div>
-        <div id="historyPage" class="page"><h3 style="margin-top:40px;">የዕጣ ታሪክ</h3><div id="historyList"></div></div>
-        <div id="setupPage" class="page"><h3 style="margin-top:40px;">⚙️ SETUP</h3><input type="text" id="botTokenInput" class="setup-input" placeholder="ቦት ቶከን"><input type="text" id="chatIdInput" class="setup-input" placeholder="Chat ID"><button class="save-btn" onclick="saveSettings()">SAVE</button></div>
+        <div id="bookingPage" class="page"><h3>የተመዘገቡ</h3><div id="bookingGrid" class="grid-container"></div><button id="clearBtn" class="admin-only" style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:15px;" onclick="clearBookingOnly()">አፅዳ</button></div>
+        <div id="gamePage" class="page active"><div class="live-box"><div class="live-dot"></div><span style="font-weight:bold; color:red;">LIVE TRACKING</span><span id="liveClock">00:00:00</span></div><div id="gameGrid" class="grid-container"></div><div class="res-row"><div class="res-card"><span>1ኛ</span><b id="v1">?</b></div><div class="res-card"><span>2ኛ</span><b id="v2">?</b></div><div class="res-card"><span>3ኛ</span><b id="v3">?</b></div></div><canvas id="bingoCanvas" width="200" height="200"></canvas><button id="drawBtn" onclick="runSequence()">START DRAW</button><button id="resetBtn" onclick="location.reload()" style="display:none; background:#111; color:#fff; padding:15px; border-radius:15px; width:95%; margin:5px auto; font-weight:bold;">RE-START</button></div>
+        <div id="historyPage" class="page"><h3>የዕጣ ታሪክ</h3><div id="historyList"></div></div>
+        <div id="setupPage" class="page"><h3>⚙️ SETUP</h3><input type="text" id="botTokenInput" class="setup-input" placeholder="Bot Token"><input type="text" id="chatIdInput" class="setup-input" placeholder="Chat ID (e.g. -100...)"><button class="save-btn" onclick="saveSettings()">SAVE</button></div>
         <div id="navTabs" class="tabs"><button class="tab-btn" onclick="showPage('bookingPage', this)">📋 መዝገብ</button><button class="tab-btn active" onclick="showPage('gamePage', this)">🎰 ዕጣ</button><button class="tab-btn" onclick="showPage('historyPage', this)">🕒 ታሪክ</button><button class="tab-btn" onclick="showPage('setupPage', this)">⚙️ SETUP</button></div>
     </div>
 
@@ -52,49 +51,55 @@
         const DEFAULT_BOT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        let liveMsgId = null; // የቴሌግራም መልዕክት ID መያዣ
+        let liveMsgId = null;
+        const cv = document.getElementById('bingoCanvas'), cx = cv.getContext('2d');
 
-        // --- ድምፅ እና የፍቃድ ተግባራት እንዳሉ ናቸው ---
+        // --- Core Functions ---
         function playDigitalSound(freq, type, duration, vol=0.5) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
-            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + duration);
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
         }
         const sounds = { beep: () => playDigitalSound(800, 'sine', 0.2), go: () => playDigitalSound(1200, 'square', 0.4), spin: () => playDigitalSound(Math.random()*300+400, 'triangle', 0.05), win: () => playDigitalSound(523, 'square', 0.5) };
 
         function checkLicense() {
-            const myId = generateUID(); document.getElementById('myDeviceId').innerText = myId;
+            let uid = localStorage.getItem('f_uid') || "FS-" + Math.floor(1000 + Math.random() * 9000);
+            localStorage.setItem('f_uid', uid);
+            document.getElementById('myDeviceId').innerText = uid;
             const savedKey = localStorage.getItem('f_license');
-            const expectedKey = (parseInt(myId.split('-')[1]) + 1000).toString();
+            const expectedKey = (parseInt(uid.split('-')[1]) + 1000).toString();
             if(savedKey === "9988" || savedKey === expectedKey) openApp();
             else document.getElementById('lockScreen').style.display = 'flex';
         }
-        function generateUID() { let uid = localStorage.getItem('f_uid') || "FS-" + Math.floor(1000 + Math.random() * 9000); localStorage.setItem('f_uid', uid); return uid; }
         function openApp() { 
             document.getElementById('appContent').style.display = 'flex'; 
             document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || "";
             document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || "";
             setup(); setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+            renderBall("?", false);
         }
 
-        // --- ዋናው የዕጣ ተግባር ---
+        // --- Draw Sequence ---
         async function runSequence() {
             if(!localStorage.getItem('f_chat_id')) { alert("Chat ID ያስገቡ!"); return; }
             document.getElementById('drawBtn').style.display = 'none';
             
-            // 1. ቦቱ መጀመሪያ "ዕጣ ተጀመረ" ብሎ እንዲልክ እና ID እንዲሰጠን እናደርጋለን
-            await initTelegramLive();
+            // ቦቱን ማስጀመር (Background)
+            initTelegramLive().catch(e => console.log("Bot Init Fail"));
 
             const ov = document.getElementById('statusOverlay'); ov.style.display = 'flex';
             for(let s of ["READY", "GO!"]) { 
                 ov.innerText = s; if(s==="GO!") sounds.go(); else sounds.beep();
                 await new Promise(r=>setTimeout(r,800)); 
             }
-            ov.style.display = 'none'; startLiveDraw();
+            ov.style.display = 'none'; 
+            startLiveDraw();
         }
 
         async function startLiveDraw() {
@@ -107,67 +112,67 @@
 
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
-                // አኒሜሽኑ ስልክህ ላይ በፍጥነት ይዞራል
-                for(let j=0; j<18; j++) { sounds.spin(); renderBall(Math.floor(Math.random()*100)+1, false); await new Promise(r=>setTimeout(r, 70)); }
-                sounds.win(); renderBall(win, true); document.getElementById('v'+i).innerText = win;
+                for(let j=0; j<18; j++) { 
+                    sounds.spin(); 
+                    renderBall(Math.floor(Math.random()*100)+1, false); 
+                    await new Promise(r=>setTimeout(r, 70)); 
+                }
+                sounds.win(); 
+                renderBall(win, true); 
+                document.getElementById('v'+i).innerText = win;
                 document.getElementById('g'+win).classList.add('winner-hit');
                 
-                // በየ 10 ሰከንዱ (ወይም እያንዳንዱ ዕጣ ሲወጣ) ቴሌግራም ላይ Update ማድረግ
-                await updateTelegramLive(i, win);
-                await new Promise(r=>setTimeout(r, 1500));
+                // ቴሌግራም Update (አይጠብቅም - Non-blocking)
+                updateTelegramLive(i, win).catch(e => console.log("Telegram Skip"));
+                await new Promise(r=>setTimeout(r, 2000));
             }
-            finalTelegramPost(winners);
+            finalTelegramPost(winners).catch(e => console.log("Final Fail"));
             saveHist(winners);
             document.getElementById('resetBtn').style.display = 'block';
         }
 
-        // --- ቴሌግራም LIVE LOGIC (የተስተካከለ) ---
+        // --- Telegram Logic ---
         async function initTelegramLive() {
             const token = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN;
             const cid = localStorage.getItem('f_chat_id');
             const msg = "🎰 **FASIL VIP BINGO** 🎰\n━━━━━━━━━━━━━━\nዕጣ እየወጣ ነው... ⏳\n━━━━━━━━━━━━━━";
-            try {
-                let res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: cid, text: msg, parse_mode: 'Markdown' })
-                });
-                let data = await res.json();
-                if(data.ok) liveMsgId = data.result.message_id;
-            } catch(e) { console.error("Telegram Init Error:", e); }
+            let res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: cid, text: msg, parse_mode: 'Markdown' })
+            });
+            let data = await res.json();
+            if(data.ok) liveMsgId = data.result.message_id;
         }
 
         async function updateTelegramLive(step, num) {
             if(!liveMsgId) return;
             const token = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN;
             const cid = localStorage.getItem('f_chat_id');
-            const name = localStorage.getItem('bk_'+num) || "ያልተመዘገበ";
-            
-            // የቆዩ ውጤቶችን ለማሳየት
             let v1 = document.getElementById('v1').innerText;
             let v2 = document.getElementById('v2').innerText;
-            
+            let v3 = document.getElementById('v3').innerText;
+
             let statusText = `🎰 **FASIL VIP BINGO** 🎰\n━━━━━━━━━━━━━━\n`;
             if(step >= 1) statusText += `🥇 1ኛ ዕጣ: 【 **${v1}** 】\n`;
             if(step >= 2) statusText += `🥈 2ኛ ዕጣ: 【 **${v2}** 】\n`;
+            if(step >= 3) statusText += `🥉 3ኛ ዕጣ: 【 **${v3}** 】\n`;
             if(step < 3) statusText += `\nቀጣዩ ዕጣ እየተሽከረከረ ነው... ⏳\n`;
             statusText += `━━━━━━━━━━━━━━`;
 
-            try {
-                await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: cid, message_id: liveMsgId, text: statusText, parse_mode: 'Markdown' })
-                });
-            } catch(e) { console.error("Edit Error:", e); }
+            await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: cid, message_id: liveMsgId, text: statusText, parse_mode: 'Markdown' })
+            });
         }
 
         async function finalTelegramPost(w) {
+            if(!liveMsgId) return;
             const token = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN;
             const cid = localStorage.getItem('f_chat_id');
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
             const finalMsg = `🎰 **FASIL VIP BINGO** 🎰\n━━━━━━━━━━━━━━\n🥇 **1ኛ ዕጣ:** 【 **${w[0]}** 】 — _${n[0]}_\n🥈 **2ኛ ዕጣ:** 【 **${w[1]}** 】 — _${n[1]}_\n🥉 **3ኛ ዕጣ:** 【 **${w[2]}** 】 — _${n[2]}_\n━━━━━━━━━━━━━━\n✨ **እንኳን ደስ አላችሁ!** ✨`;
-            
             await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -175,7 +180,7 @@
             });
         }
 
-        // --- ሌሎች ተግባራት (Setup, History, ወዘተ) ---
+        // --- Helper Functions ---
         function setup() {
             const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
             bg.innerHTML = ""; gg.innerHTML = "";
@@ -196,12 +201,6 @@
             localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim());
             alert("Saved!");
         }
-        function showPage(p, b) {
-            document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
-            document.getElementById(p).classList.add('active'); b.classList.add('active');
-            if(p==='historyPage') loadHistory();
-        }
         function renderBall(val, final) {
             cx.clearRect(0,0,200,200);
             let ballColor = (final && val > 0) ? rowColors[Math.floor((val-1)/10)] : '#bf953f';
@@ -209,6 +208,12 @@
             g.addColorStop(0,'#fcf6ba'); g.addColorStop(1, ballColor);
             cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill();
             cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(val||"?",100,125);
+        }
+        function showPage(p, b) {
+            document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+            document.getElementById(p).classList.add('active'); b.classList.add('active');
+            if(p==='historyPage') loadHistory();
         }
         function saveHist(w) {
             let h = JSON.parse(localStorage.getItem('f_h')||"[]");
