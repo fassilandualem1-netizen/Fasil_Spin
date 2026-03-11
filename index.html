@@ -3,39 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP - Realtime & Bot Edition</title>
+    <title>FASIL VIP - Fixed Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
+        :root { --gold: #bf953f; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
-        
         #lockScreen { position: fixed; inset: 0; background: #000; z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .lock-box { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; width: 85%; }
         .lock-input { width: 100%; padding: 15px; margin: 15px 0; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; font-size: 24px; border-radius: 10px; }
-
-        #statusOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100002; display: none; justify-content: center; align-items: center; font-size: 55px; font-weight: bold; color: var(--bright-gold); }
-
         #appContent { flex: 1; display: none; flex-direction: column; overflow: hidden; }
         .page { display: none; flex: 1; padding: 10px; overflow-y: auto; box-sizing: border-box; padding-bottom: 90px; }
         .page.active { display: flex; flex-direction: column; }
-
         .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 75px; z-index: 1000; } 
         .tab-btn { flex: 1; color: #777; border: none; background: none; font-size: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
-
         .live-box { background: #111; border: 1px solid var(--gold); padding: 8px; border-radius: 10px; width: 85%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-top: 40px; margin-bottom: 5px; gap: 8px; font-size: 14px; }
         .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
-
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 5px; border-radius: 8px; width: 100%; margin: 5px 0; }
         .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 6px 0; border: 1px solid #222; border-radius: 3px; }
-        .winner-hit { background: var(--red) !important; color: #fff !important; animation: winner-pulse 0.8s infinite; }
-        @keyframes winner-pulse { 50% { transform: scale(1.3); } }
-
+        .winner-hit { background: var(--red) !important; color: #fff !important; transform: scale(1.1); transition: 0.3s; }
         .res-row { display: flex; justify-content: space-between; margin: 8px 0; gap: 6px; }
         .res-card { background: #0a0a0a; border: 1.5px solid var(--gold); padding: 5px; border-radius: 10px; width: 32%; }
         .res-card b { font-size: 26px; color: #fff; display: block; }
-
         canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 120px; height: 120px; margin: 5px auto; }
         button#drawBtn { width: 95%; padding: 15px; border-radius: 15px; font-size: 19px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; display: none; }
         .setup-input { width: 90%; padding: 12px; margin: 10px auto; border-radius: 8px; border: 1px solid var(--gold); background: #111; color: #fff; text-align: center; font-size: 13px; }
@@ -46,25 +36,22 @@
     <div id="lockScreen">
         <div class="lock-box">
             <h2>FASIL VIP</h2>
-            <div id="myDeviceId" style="font-family:monospace; margin-bottom:10px;">ID: ---</div>
-            <input type="text" id="licenseKey" class="lock-input" placeholder="አክቲቬሽን ኮድ">
-            <button onclick="validateKey()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">ACTIVATE</button>
+            <input type="password" id="licenseKey" class="lock-input" placeholder="ኮድ ያስገቡ">
+            <button onclick="validateKey()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">ENTER</button>
         </div>
     </div>
 
-    <div id="statusOverlay">READY</div>
-
     <div id="appContent">
         <div id="bookingPage" class="page">
-            <h3 style="margin-top:40px;">የተመዘገቡ</h3>
+            <h3 style="margin-top:40px;">መዝገብ</h3>
             <div id="bookingGrid" class="grid-container"></div>
-            <button style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:15px;" onclick="clearBookingOnly()">አፅዳ</button>
+            <button style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:15px;" onclick="clearAll()">አፅዳ</button>
         </div>
         
         <div id="gamePage" class="page active">
             <div class="live-box">
                 <div class="live-dot"></div>
-                <span style="font-weight:bold; color:red;">LIVE TRACKING</span>
+                <span style="font-weight:bold; color:red;">LIVE BINGO</span>
                 <span id="liveClock">00:00:00</span>
             </div>
             <div id="gameGrid" class="grid-container"></div>
@@ -74,56 +61,46 @@
                 <div class="res-card"><span>3ኛ</span><b id="v3">?</b></div>
             </div>
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
-            
             <button id="drawBtn" onclick="runSequence()">START DRAW</button>
             <p id="viewerMsg" style="color:#444; font-size:12px; margin-top:10px;">እባክዎ አጫዋቹ እጣ እስኪያወጣ ይጠብቁ...</p>
         </div>
 
         <div id="setupPage" class="page">
             <h3 style="margin-top:40px;">⚙️ SETUP</h3>
-            <label>Telegram Bot Token:</label>
-            <input type="text" id="botTokenInput" class="setup-input" placeholder="ቦት ቶከን ያስገቡ">
-            <label>Telegram Chat ID:</label>
-            <input type="text" id="chatIdInput" class="setup-input" placeholder="የግሩፕ ID ያስገቡ">
-            <button style="background:var(--gold); padding:15px; width:90%; border-radius:10px;" onclick="saveSettings()">SAVE SETTINGS</button>
+            <label>Chat ID:</label>
+            <input type="text" id="chatIdInput" class="setup-input" placeholder="የግሩፕ ID">
+            <label>Bot Token:</label>
+            <input type="text" id="botTokenInput" class="setup-input" placeholder="ቦት ቶከን">
+            <button style="background:var(--gold); padding:15px; width:90%; border-radius:10px; font-weight:bold;" onclick="saveSettings()">SAVE</button>
         </div>
 
         <div class="tabs">
-            <button class="tab-btn" onclick="showPage('bookingPage', this)">📋 መዝገብ</button>
-            <button class="tab-btn active" onclick="showPage('gamePage', this)">🎰 ዕጣ</button>
-            <button class="tab-btn" onclick="showPage('setupPage', this)">⚙️ SETUP</button>
+            <button class="tab-btn" id="btn_booking" onclick="showPage('bookingPage', 'btn_booking')">📋 መዝገብ</button>
+            <button class="tab-btn active" id="btn_game" onclick="showPage('gamePage', 'btn_game')">🎰 ዕጣ</button>
+            <button class="tab-btn" id="btn_setup" onclick="showPage('setupPage', 'btn_setup')">⚙️ SETUP</button>
         </div>
     </div>
 
     <script>
-        // --- SUPABASE CONFIG ---
         const SB_URL = "https://hpdhhomunbpcluuhmila.supabase.co";
         const SB_KEY = "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhwZGhob211bmJwY2x1dWhtaWxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNDM2MDcsImV4cCI6MjA4ODgxOTYwN30.EIDhhsFaR6Qw5VVobmQs5JYlbJaDBjxWf_F7kM-jEn0";
-        const supabase = supabase.createClient(SB_URL, SB_KEY);
-
-        const DEFAULT_BOT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         let isAdmin = false;
 
         function checkLicense() {
             const isTG = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData !== "";
-            if (isTG) {
-                isAdmin = false;
-                openApp();
-            } else {
-                isAdmin = true;
-                const myId = "FS-" + Math.floor(1000 + Math.random() * 9000);
-                document.getElementById('myDeviceId').innerText = myId;
-                if(localStorage.getItem('f_license') === "9988") openApp();
-                else document.getElementById('lockScreen').style.display = 'flex';
+            if (isTG) { isAdmin = false; openApp(); } 
+            else {
+                if(localStorage.getItem('f_auth') === "9988") { isAdmin = true; openApp(); }
+                else { document.getElementById('lockScreen').style.display = 'flex'; }
             }
         }
 
         function validateKey() {
             if(document.getElementById('licenseKey').value === "9988") {
-                localStorage.setItem('f_license', "9988");
-                location.reload();
-            } else alert("ስህተት!");
+                localStorage.setItem('f_auth', "9988"); location.reload();
+            } else { alert("የተሳሳተ ኮድ!"); }
         }
 
         function openApp() {
@@ -134,8 +111,7 @@
             }
             document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || "";
             document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || "";
-            setupGrids();
-            listenRealtime();
+            setupGrids(); listenRealtime();
             setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString(); }, 1000);
         }
 
@@ -156,22 +132,23 @@
         }
 
         function listenRealtime() {
-            supabase.channel('bingo_live').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bingo_live' }, payload => {
+            supabaseClient.channel('bingo_live').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bingo_live' }, payload => {
                 triggerAnimation(payload.new.current_nums);
             }).subscribe();
         }
 
         async function triggerAnimation(winners) {
+            document.querySelectorAll('.grid-cell').forEach(el => el.classList.remove('winner-hit'));
             for(let i=0; i<winners.length; i++) {
                 let win = winners[i];
-                for(let j=0; j<10; j++) {
+                for(let j=0; j<12; j++) {
                     renderBall(Math.floor(Math.random()*100)+1, false);
                     await new Promise(r => setTimeout(r, 60));
                 }
                 renderBall(win, true);
                 document.getElementById('v' + (i+1)).innerText = win;
                 document.getElementById('g' + win).classList.add('winner-hit');
-                await new Promise(r => setTimeout(r, 1000));
+                await new Promise(r => setTimeout(r, 1200));
             }
         }
 
@@ -180,7 +157,8 @@
             cx.clearRect(0,0,200,200);
             cx.beginPath(); cx.arc(100,100,80,0,Math.PI*2);
             cx.fillStyle = final ? rowColors[Math.floor((val-1)/10)] : "#333";
-            cx.fill(); cx.fillStyle="#fff"; cx.font="bold 60px Arial"; cx.textAlign="center";
+            cx.fill(); cx.strokeStyle = "#bf953f"; cx.lineWidth = 4; cx.stroke();
+            cx.fillStyle="#fff"; cx.font="bold 60px Arial"; cx.textAlign="center";
             cx.fillText(val||"?", 100, 120);
         }
 
@@ -190,34 +168,38 @@
                 let r = Math.floor(Math.random()*100)+1;
                 if(!winners.includes(r)) winners.push(r);
             }
-            // Supabase Update
-            await supabase.from('bingo_live').update({ current_nums: winners, status: 'drawing' }).eq('id', 1);
-            // Telegram Send
+            const { error } = await supabaseClient.from('bingo_live').update({ current_nums: winners, status: 'drawing' }).eq('id', 1);
+            if(error) alert("Error: " + error.message);
             sendToTelegram(winners);
         }
 
         function sendToTelegram(w) {
             const cid = localStorage.getItem('f_chat_id');
-            const token = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN;
-            if(!cid) return;
+            const token = localStorage.getItem('f_bot_token');
+            if(!cid || !token) return;
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
-            const msg = `🎰 **FASIL VIP BINGO** 🎰\n🥇 1ኛ: ${w[0]} (${n[0]})\n🥈 2ኛ: ${w[1]} (${n[1]})\n🥉 3ኛ: ${w[2]} (${n[2]})`;
-            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
+            const msg = `🎰 FASIL VIP BINGO 🎰\n🥇 1ኛ: ${w[0]} (${n[0]})\n🥈 2ኛ: ${w[1]} (${n[1]})\n🥉 3ኛ: ${w[2]} (${n[2]})`;
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}`);
         }
 
         function saveSettings() {
             localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value);
             localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value);
-            alert("Saved!");
+            alert("ዳታው ተቀምጧል!");
         }
 
-        function showPage(p, b) {
-            document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-            document.getElementById(p).classList.add('active');
+        function showPage(pageId, btnId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.getElementById(btnId).classList.add('active');
         }
 
-        function clearBookingOnly() {
-            if(confirm("አጽዳ?")) { for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i); setupGrids(); }
+        function clearAll() {
+            if(confirm("ሁሉንም ስሞች አጽዳ?")) {
+                for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i);
+                setupGrids();
+            }
         }
     </script>
 </body>
