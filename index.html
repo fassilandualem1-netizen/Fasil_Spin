@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP BINGO</title>
+    <title>FASIL VIP BINGO - Fixed Setup</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --gold: #bf953f; --red: #ff3333; --bg: #000; }
         body { font-family: sans-serif; background: var(--bg); color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         #lockScreen { position: fixed; inset: 0; background: #000; z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .lock-box { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; width: 85%; }
-        .lock-input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; font-size: 20px; border-radius: 10px; box-sizing: border-box; }
+        .lock-input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid var(--gold); color: #fff; text-align: center; font-size: 18px; border-radius: 10px; box-sizing: border-box; }
         #appContent { flex: 1; display: none; flex-direction: column; overflow: hidden; }
         .page { display: none; flex: 1; padding: 10px; overflow-y: auto; box-sizing: border-box; padding-bottom: 90px; }
         .page.active { display: flex; flex-direction: column; }
         .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 70px; z-index: 1000; } 
         .tab-btn { flex: 1; color: #777; border: none; background: none; font-size: 13px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
-        .live-box { background: #111; border: 1px solid var(--gold); padding: 8px; border-radius: 10px; width: 90%; align-self: center; display: flex; justify-content: center; align-items: center; color: #fff; margin-top: 40px; margin-bottom: 10px; gap: 8px; }
-        .live-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: #151515; padding: 5px; border-radius: 8px; width: 100%; box-sizing: border-box; }
         .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 6px 0; border: 1px solid #222; border-radius: 3px; }
         .winner-hit { background: var(--red) !important; color: #fff !important; transform: scale(1.1); transition: 0.3s; }
@@ -29,16 +26,15 @@
         canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 120px; height: 120px; margin: 5px auto; }
         button#drawBtn { width: 95%; padding: 15px; border-radius: 15px; font-size: 19px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 10px auto; display: none; }
         .hist-item { background: #111; border: 1px solid #333; margin: 5px 0; padding: 12px; border-radius: 10px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
-        .hist-nums { font-weight: bold; font-size: 18px; color: #fff; }
     </style>
 </head>
 <body onload="checkLicense()">
 
     <div id="lockScreen">
         <div class="lock-box">
-            <h2 style="margin-top:0;">FASIL VIP</h2>
+            <h2>FASIL VIP</h2>
             <input type="password" id="licenseKey" class="lock-input" placeholder="ኮድ ያስገቡ">
-            <button onclick="validateKey()" style="background:var(--gold); border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">ENTER</button>
+            <button onclick="validateKey()" style="background:var(--gold); padding:15px; width:100%; border-radius:10px; font-weight:bold;">ENTER</button>
         </div>
     </div>
 
@@ -46,15 +42,11 @@
         <div id="bookingPage" class="page">
             <h3 style="margin-top:40px;">📋 መዝገብ</h3>
             <div id="bookingGrid" class="grid-container"></div>
-            <button style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:20px; width:80%; align-self:center;" onclick="clearAll()">ሁሉንም አፅዳ</button>
+            <button style="color:red; background:none; border:1px solid #444; padding:10px; margin-top:20px;" onclick="clearAll()">አፅዳ</button>
         </div>
         
         <div id="gamePage" class="page active">
-            <div class="live-box">
-                <div class="live-dot"></div>
-                <span style="font-weight:bold; color:red;">LIVE BINGO</span>
-                <span id="liveClock">00:00:00</span>
-            </div>
+            <h3 style="margin-top:40px; color:red;">LIVE BINGO</h3>
             <div id="gameGrid" class="grid-container"></div>
             <div class="res-row">
                 <div class="res-card"><span>1ኛ</span><b id="v1">?</b></div>
@@ -63,19 +55,21 @@
             </div>
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
             <button id="drawBtn" onclick="runSequence()">START DRAW</button>
-            <p id="viewerMsg" style="color:#666; font-size:12px; margin-top:10px;">እባክዎ አጫዋቹ እጣ እስኪያወጣ ይጠብቁ...</p>
         </div>
 
         <div id="historyPage" class="page">
-            <h3 style="margin-top:40px;">🕒 የዕጣ ታሪክ</h3>
+            <h3 style="margin-top:40px;">🕒 ታሪክ</h3>
             <div id="historyList"></div>
         </div>
 
         <div id="setupPage" class="page">
             <h3 style="margin-top:40px;">⚙️ SETUP</h3>
-            <input type="text" id="chatIdInput" class="lock-input" placeholder="Telegram Chat ID">
-            <input type="text" id="botTokenInput" class="lock-input" placeholder="Bot Token">
-            <button style="background:var(--gold); padding:15px; width:100%; border-radius:10px; font-weight:bold; border:none;" onclick="saveSettings()">SAVE</button>
+            <p style="font-size:12px;">እዚህ የሚያስገቡት መረጃ በስልክዎ ላይ በቋሚነት ይቀመጣል።</p>
+            <label>Chat ID:</label>
+            <input type="text" id="chatIdInput" class="lock-input" placeholder="-100...">
+            <label>Bot Token:</label>
+            <input type="text" id="botTokenInput" class="lock-input" placeholder="7123...">
+            <button style="background:var(--gold); padding:15px; width:100%; border-radius:10px; font-weight:bold; margin-top:10px;" onclick="saveSettings()">💾 SAVE & REFRESH</button>
         </div>
 
         <div class="tabs">
@@ -90,32 +84,52 @@
         const SB_URL = "https://hpdhhomunbpcluuhmila.supabase.co";
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhwZGhob211bmJwY2x1dWhtaWxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNDM2MDcsImV4cCI6MjA4ODgxOTYwN30.EIDhhsFaR6Qw5VVobmQs5JYlbJaDBjxWf_F7kM-jEn0";
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-        const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         let isAdmin = false;
 
         function checkLicense() {
-            if(localStorage.getItem('f_auth') === "9988") { isAdmin = true; openApp(); }
-            else { document.getElementById('lockScreen').style.display = 'flex'; }
+            if(localStorage.getItem('f_auth') === "9988") { 
+                isAdmin = true; 
+                openApp(); 
+            } else { 
+                document.getElementById('lockScreen').style.display = 'flex'; 
+            }
         }
 
         function validateKey() {
             if(document.getElementById('licenseKey').value === "9988") {
-                localStorage.setItem('f_auth', "9988"); location.reload();
+                localStorage.setItem('f_auth', "9988"); 
+                location.reload();
             } else { alert("ስህተት!"); }
         }
 
         function openApp() {
             document.getElementById('appContent').style.display = 'flex';
             if(isAdmin) document.getElementById('drawBtn').style.display = 'block';
-            setupGrids(); listenRealtime();
-            setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString(); }, 1000);
+            
+            // የቆዩ የ Setup መረጃዎችን አውጥቶ ማስገቢያ (Load)
+            document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || "";
+            document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || "";
+            
+            setupGrids(); 
+            listenRealtime();
+        }
+
+        function saveSettings() {
+            const cid = document.getElementById('chatIdInput').value;
+            const btk = document.getElementById('botTokenInput').value;
+            
+            localStorage.setItem('f_chat_id', cid);
+            localStorage.setItem('f_bot_token', btk);
+            
+            alert("መረጃው ተቀምጧል! ✅");
+            // መረጃው መቆየቱን ለማረጋገጥ ገጹን ራሱ Refresh ያደርገዋል
+            location.reload();
         }
 
         function setupGrids() {
             const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
             bg.innerHTML = ""; gg.innerHTML = "";
             for(let i=1; i<=100; i++) {
-                let color = rowColors[Math.floor((i-1)/10)];
                 let bc = document.createElement('div'); bc.className = 'grid-cell'; bc.innerText = i;
                 if(localStorage.getItem('bk_'+i)) bc.style.background = "#fff";
                 bc.onclick = () => {
@@ -123,14 +137,14 @@
                     if(v!==null) { localStorage.setItem('bk_'+i, v); setupGrids(); }
                 }; bg.appendChild(bc);
                 let gc = document.createElement('div'); gc.className = 'grid-cell'; gc.id = 'g'+i; gc.innerText = i; 
-                gc.style.color = color; gg.appendChild(gc);
+                gg.appendChild(gc);
             }
         }
 
         function listenRealtime() {
             supabaseClient.channel('bingo_live').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bingo_live' }, payload => {
                 const wins = payload.new.current_nums;
-                if(wins && wins.length > 0) { triggerAnimation(wins); saveToLocalHistory(wins); }
+                if(wins) { triggerAnimation(wins); saveToLocalHistory(wins); }
             }).subscribe();
         }
 
@@ -138,22 +152,10 @@
             document.querySelectorAll('.grid-cell').forEach(el => el.classList.remove('winner-hit'));
             for(let i=0; i<winners.length; i++) {
                 let win = winners[i];
-                for(let j=0; j<8; j++) { renderBall(Math.floor(Math.random()*100)+1, false); await new Promise(r => setTimeout(r, 60)); }
-                renderBall(win, true);
                 document.getElementById('v' + (i+1)).innerText = win;
                 document.getElementById('g' + win).classList.add('winner-hit');
-                await new Promise(r => setTimeout(r, 1200));
+                await new Promise(r => setTimeout(r, 1000));
             }
-        }
-
-        const cv = document.getElementById('bingoCanvas'), cx = cv.getContext('2d');
-        function renderBall(val, final) {
-            cx.clearRect(0,0,200,200);
-            cx.beginPath(); cx.arc(100,100,80,0,Math.PI*2);
-            cx.fillStyle = final ? rowColors[Math.floor((val-1)/10)] : "#333";
-            cx.fill(); cx.strokeStyle = "#bf953f"; cx.lineWidth = 4; cx.stroke();
-            cx.fillStyle="#fff"; cx.font="bold 60px Arial"; cx.textAlign="center";
-            cx.fillText(val||"?", 100, 120);
         }
 
         async function runSequence() {
@@ -167,27 +169,25 @@
         }
 
         function sendToTelegram(w) {
-            const cid = localStorage.getItem('f_chat_id'), token = localStorage.getItem('f_bot_token');
+            const cid = localStorage.getItem('f_chat_id');
+            const token = localStorage.getItem('f_bot_token');
             if(!cid || !token) return;
             const names = w.map(num => localStorage.getItem('bk_'+num) || "የሌለ");
-            const msg = `🎰 FASIL VIP BINGO 🎰\n🥇: ${w[0]} (${names[0]})\n🥈: ${w[1]} (${names[1]})\n🥉: ${w[2]} (${names[2]})`;
+            const msg = `🎰 FASIL VIP \n🥇: ${w[0]} (${names[0]})\n🥈: ${w[1]} (${names[1]})\n🥉: ${w[2]} (${names[2]})`;
             fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${cid}&text=${encodeURIComponent(msg)}`);
         }
 
         function saveToLocalHistory(w) {
             let h = JSON.parse(localStorage.getItem('f_hist') || "[]");
             h.unshift({ time: new Date().toLocaleTimeString(), nums: w });
-            localStorage.setItem('f_hist', JSON.stringify(h.slice(0, 15)));
+            localStorage.setItem('f_hist', JSON.stringify(h.slice(0, 10)));
         }
 
         function loadHistory() {
             let h = JSON.parse(localStorage.getItem('f_hist') || "[]");
             document.getElementById('historyList').innerHTML = h.map(x => `
-                <div class="hist-item">
-                    <div><small>${x.time}</small></div>
-                    <div class="hist-nums">${x.nums.join(" - ")}</div>
-                </div>
-            `).join("") || "<p>ምንም ታሪክ የለም</p>";
+                <div class="hist-item"><b>${x.time}</b> <span>${x.nums.join(" - ")}</span></div>
+            `).join("") || "ታሪክ የለም";
         }
 
         function showPage(pageId, btnId) {
@@ -196,19 +196,6 @@
             document.getElementById(pageId).classList.add('active');
             document.getElementById(btnId).classList.add('active');
             if(pageId === 'historyPage') loadHistory();
-        }
-
-        function saveSettings() {
-            localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value);
-            localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value);
-            alert("ዳታው ተቀምጧል!");
-        }
-
-        function clearAll() {
-            if(confirm("ሁሉንም ስሞች አጽዳ?")) {
-                for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i);
-                setupGrids();
-            }
         }
     </script>
 </body>
