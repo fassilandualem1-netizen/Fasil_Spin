@@ -6,56 +6,46 @@
     <title>FASIL VIP PRO - Secured Enterprise</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; --dark: #000; }
-        
-        /* VERSATILE APPROACH: በማንኛውም ስልክ ላይ ተስማሚ እንዲሆን */
-        html, body { 
-            overflow: hidden; height: 100vh; width: 100vw; margin: 0; padding: 0; 
-            position: fixed; touch-action: none; background: var(--dark); 
-            font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; user-select: none; 
-        }
-        
+        html, body { overflow: hidden; height: 100vh; width: 100vw; margin: 0; padding: 0; position: fixed; touch-action: none; background: var(--dark); font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; user-select: none; }
         body { color: var(--gold); text-align: center; display: flex; flex-direction: column; }
-
-        /* Auto-Scaling for smaller screens (Versatile Logic) */
+        
+        /* Versatile Approach - Auto Scaling */
         @media screen and (max-height: 720px) {
             #appContent { transform: scale(0.93); transform-origin: top; }
         }
 
-        .top-container { margin-top: 10px; }
-        .live-status-bar { display: flex; align-items: center; justify-content: center; background: #111; padding: 4px 12px; border-radius: 50px; border: 1px solid #333; width: fit-content; margin: 0 auto 8px auto; }
+        .top-container { margin-top: 15px; }
+        .live-status-bar { display: flex; align-items: center; justify-content: center; background: #111; padding: 4px 12px; border-radius: 50px; border: 1px solid #333; width: fit-content; margin: 0 auto 10px auto; }
         .blink-dot { width: 8px; height: 8px; background-color: var(--red); border-radius: 50%; margin-right: 8px; animation: live-blink 1s infinite; }
         @keyframes live-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        #focusWinnerDisplay { height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .focus-label { font-size: 24px; font-weight: bold; color: var(--bright-gold); text-shadow: 0 0 10px var(--gold); min-height: 30px; }
-        .focus-num { font-size: 85px; font-weight: 900; color: #fff; text-shadow: 0 0 25px var(--gold); line-height: 1; }
+        #focusWinnerDisplay { height: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .focus-label { font-size: 26px; font-weight: bold; color: var(--bright-gold); text-shadow: 0 0 10px var(--gold); min-height: 35px; }
+        .focus-num { font-size: 90px; font-weight: 900; color: #fff; text-shadow: 0 0 25px var(--gold); line-height: 1; }
 
         #appContent { flex: 1; display: none; flex-direction: column; overflow: hidden; }
-        .page { display: none; flex: 1; padding: 12px; box-sizing: border-box; overflow: hidden; position: relative; }
+        .page { display: none; flex: 1; padding: 15px; box-sizing: border-box; overflow: hidden; position: relative; }
         .page.active { display: flex; flex-direction: column; }
         
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2.5px; background: #151515; padding: 4px; border-radius: 8px; margin: 5px 0; }
         .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 8px 0; border: 1px solid #222; border-radius: 3px; }
-        .booked { border: 1.5px solid #fff !important; background: #333 !important; }
+        .booked { border: 1px solid #fff !important; background: #333 !important; }
         .winner-hit { background: var(--red) !important; color: #fff !important; animation: winner-pulse 0.8s infinite; }
-        @keyframes winner-pulse { 50% { transform: scale(1.15); } }
+        @keyframes winner-pulse { 50% { transform: scale(1.2); } }
         
-        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 105px; height: 105px; margin: 2px auto; }
-        button.main-btn { width: 100%; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; background: var(--gold); color: #000; border: none; box-shadow: 0 4px 15px rgba(191,149,63,0.4); cursor: pointer; }
-        button.main-btn:disabled { background: #444; color: #777; cursor: not-allowed; box-shadow: none; }
+        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 110px; height: 110px; margin: 2px auto; }
+        button.main-btn { width: 100%; padding: 16px; border-radius: 12px; font-size: 18px; font-weight: bold; background: var(--gold); color: #000; border: none; box-shadow: 0 4px 15px rgba(191,149,63,0.4); cursor: pointer; transition: 0.2s; }
+        button.main-btn:disabled { background: #444; color: #777; box-shadow: none; cursor: not-allowed; }
 
-        /* Footer Branding */
         .footer-brand { font-size: 9px; color: #333; margin-top: auto; padding-bottom: 85px; letter-spacing: 1px; }
 
         /* About Page Enhanced */
-        .about-scroll { overflow-y: auto; flex: 1; padding-bottom: 90px; text-align: left; }
+        .about-scroll { overflow-y: auto; height: 70vh; padding-bottom: 20px; text-align: left; }
         .about-card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 15px; margin-bottom: 15px; border-left: 3px solid var(--gold); }
         .card-title { font-size: 16px; font-weight: bold; color: var(--gold); margin-bottom: 8px; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        .about-text { font-size: 13px; color: #bbb; line-height: 1.6; }
-        .contact-btn { display: flex; align-items: center; background: #111; padding: 12px; border-radius: 10px; text-decoration: none; color: #fff; margin-bottom: 10px; border: 1px solid #222; font-size: 14px; }
 
         .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 75px; z-index: 1000; } 
-        .tab-btn { flex: 1; color: #777; border: none; background: none; font-size: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .tab-btn { flex: 1; color: #777; border: none; background: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
         
         #finalOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; flex-direction: column; justify-content: center; align-items: center; }
@@ -99,42 +89,22 @@
         <div id="aboutPage" class="page">
             <div class="about-scroll">
                 <h3 style="color:var(--bright-gold); border-bottom:1px solid var(--gold); padding-bottom:10px;">FASIL VIP TECH</h3>
-                
-                <div class="about-card">
-                    <div class="card-title">🚀 ስለ ሲስተሙ</div>
-                    <div class="about-text">
-                        ይህ FASIL VIP BINGO ሲስተም ዘመናዊ የሆነ የዕጣ አወጣጥ ቴክኖሎጂን በመጠቀም ፍጹም ፍትሃዊ እና ግልጽነት ያለው አሰራርን ያረጋግጣል። እያንዳንዱ ቁጥር በዘፈቀደ (Randomly) የሚመረጥ ሲሆን ምንም አይነት የሰው ጣልቃ ገብነት የለበትም።
-                    </div>
-                </div>
-
-                <div class="about-card">
-                    <div class="card-title">🔐 ደህንነት (Security)</div>
-                    <div class="about-text">
-                        የተጠቃሚዎች ደህንነት እና የዕጣ ፍትሃዊነት ቅድሚያ የምንሰጠው ጉዳይ ነው። ሲስተሙ የተቆለፈው በልዩ መሳሪያ መለያ (Device ID) ሲሆን፣ ይህም ያልተፈቀደ አጠቃቀምን ሙሉ በሙሉ ይከላከላል።
-                    </div>
-                </div>
-
-                <div class="about-card">
-                    <div class="card-title">📧 Support Email</div>
-                    <div style="font-size:13px; color:#bbb;">Fassilandualem1@gmail.com</div>
-                </div>
-
-                <a href="https://t.me/Fassilandualem" target="_blank" class="contact-btn">📱 Telegram: @Fassilandualem</a>
-                <a href="tel:+251951381356" class="contact-btn">📞 Phone: +251 951 381 356</a>
+                <div class="about-card"><div class="card-title">🚀 ስለ ሲስተሙ</div><div style="font-size:13px; color:#bbb;">ይህ FASIL VIP BINGO ሲስተም ዘመናዊ የሆነ የዕጣ አወጣጥ ቴክኖሎጂን በመጠቀም ፍጹም ፍትሃዊ እና ግልጽነት ያለው አሰራርን ያረጋግጣል።</div></div>
+                <div class="about-card"><div class="card-title">🔐 ደህንነት (Security)</div><div style="font-size:13px; color:#bbb;">የተጠቃሚዎች ደህንነት እና የዕጣ ፍትሃዊነት ቅድሚያ የምንሰጠው ጉዳይ ነው። ሲስተሙ በልዩ Device ID የተቆለፈ ነው።</div></div>
+                <div class="about-card"><div class="card-title">📧 Support Email</div><div style="font-size:13px; color:#bbb;">Fassilandualem1@gmail.com</div></div>
+                <a href="https://t.me/Fassilandualem" target="_blank" style="display: flex; align-items: center; background: #111; padding: 12px; border-radius: 10px; text-decoration: none; color: #fff; margin-bottom: 10px; border: 1px solid #222;">📱 Telegram: @Fassilandualem</a>
+                <a href="tel:+251951381356" style="display: flex; align-items: center; background: #111; padding: 12px; border-radius: 10px; text-decoration: none; color: #fff; margin-bottom: 10px; border: 1px solid #222;">📞 Phone: +251 951 381 356</a>
             </div>
         </div>
 
-        <div id="bookingPage" class="page"><h3>📋 መዝገብ</h3><div id="bookingGrid" class="grid-container" style="overflow-y:auto; flex:1;"></div><button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:10px; width: 100%;">መዝገብ አፅዳ</button></div>
-        
-        <div id="historyPage" class="page"><h3>🕒 ታሪክ</h3><div id="historyList" style="overflow-y:auto; flex:1;"></div></div>
+        <div id="bookingPage" class="page"><h3>📋 መዝገብ</h3><div id="bookingGrid" class="grid-container"></div><button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:10px; width: 100%;">መዝገብ አፅዳ</button></div>
+        <div id="historyPage" class="page"><h3>🕒 ታሪክ</h3><div id="historyList"></div></div>
         
         <div id="setupPage" class="page">
             <h3>⚙️ SETUP</h3>
-            <div style="padding:20px;">
-                <input type="text" id="botTokenInput" style="width:100%; padding:14px; margin-bottom:15px; border-radius:8px; border:1px solid var(--gold); background:#111; color:#fff;" placeholder="Bot Token">
-                <input type="text" id="chatIdInput" style="width:100%; padding:14px; margin-bottom:15px; border-radius:8px; border:1px solid var(--gold); background:#111; color:#fff;" placeholder="Chat ID">
-                <button class="main-btn" onclick="saveSettings()">SAVE SETTINGS</button>
-            </div>
+            <input type="text" id="botTokenInput" style="width:90%; padding:14px; margin:5px auto 15px auto; border-radius:8px; border:1px solid var(--gold); background:#111; color:#fff;" placeholder="Bot Token">
+            <input type="text" id="chatIdInput" style="width:90%; padding:14px; margin:5px auto 15px auto; border-radius:8px; border:1px solid var(--gold); background:#111; color:#fff;" placeholder="Chat ID">
+            <button class="main-btn" onclick="saveSettings()">SAVE SETTINGS</button>
         </div>
 
         <div class="tabs">
@@ -147,13 +117,13 @@
     </div>
 
     <script>
-        // JS Logic remains identical to your clean original code for stability
         const DEFAULT_BOT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         let audioCtx = null;
         const cv = document.getElementById('bingoCanvas'), cx = cv.getContext('2d');
 
-        function playSound(f, t, d, v=1.0) { 
+        // ከፍተኛ ድምፅ ያለው አዲስ playSound
+        function playSound(f, t, d, v=2.5) { 
             try { 
                 if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if(audioCtx.state==='suspended') audioCtx.resume(); 
@@ -163,6 +133,7 @@
                 g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+d); 
                 o.connect(g); g.connect(audioCtx.destination); 
                 o.start(); o.stop(audioCtx.currentTime+d); 
+                if(navigator.vibrate) navigator.vibrate(40);
             } catch(e){} 
         }
 
@@ -173,13 +144,13 @@
 
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
-                document.getElementById('levelLabel').innerText = "READY?"; playSound(440, 'sine', 0.5); await new Promise(r=>setTimeout(r, 2000));
-                document.getElementById('levelLabel').innerText = "VERIFYING..."; playSound(200, 'square', 1.0); await new Promise(r=>setTimeout(r, 2000));
-                document.getElementById('levelLabel').innerText = "GO!"; playSound(880, 'sine', 0.3); await new Promise(r=>setTimeout(r, 1000));
+                document.getElementById('levelLabel').innerText = "READY?"; playSound(523, 'sawtooth', 0.6, 2.5); await new Promise(r=>setTimeout(r, 2000));
+                document.getElementById('levelLabel').innerText = "VERIFYING..."; playSound(220, 'square', 1.0, 2.0); await new Promise(r=>setTimeout(r, 2000));
+                document.getElementById('levelLabel').innerText = "GO!"; playSound(880, 'sawtooth', 0.5, 3.0); await new Promise(r=>setTimeout(r, 1000));
 
                 let startTime = Date.now();
                 while(Date.now() - startTime < 5000) {
-                    playSound(Math.random()*400+400, 'triangle', 0.05, 1.0);
+                    playSound(Math.random()*600+200, 'triangle', 0.08, 1.8);
                     let rand = Math.floor(Math.random()*100)+1;
                     renderBall(rand, false); document.getElementById('currentResult').innerText = rand;
                     await new Promise(r=>setTimeout(r, 70));
@@ -187,6 +158,7 @@
                 renderBall(win, true); document.getElementById('currentResult').innerText = win; document.getElementById('levelLabel').innerText = i + "ኛ ዕጣ";
                 document.getElementById('g'+win).classList.add('winner-hit');
                 updateTelegramLive(i, win).catch(e=>console.log("Error"));
+                playSound(660, 'sawtooth', 0.8, 3.0);
                 await new Promise(r=>setTimeout(r, 3000));
             }
             showFinalSummary(winners);
@@ -263,8 +235,7 @@
         function renderBall(v, f) { cx.clearRect(0,0,200,200); let clr = (f && v>0)?rowColors[Math.floor((v-1)/10)]:'#bf953f'; let g=cx.createRadialGradient(70,70,10,100,100,80); g.addColorStop(0,'#fcf6ba'); g.addColorStop(1, clr); cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill(); cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(v||"?",100,125); }
         async function runSequence() { 
             if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID First!"); 
-            const btn = document.getElementById('drawBtn');
-            btn.disabled = true; 
+            document.getElementById('drawBtn').disabled = true; 
             await initTelegramLive().catch(e=>console.log("Error")); 
             startLiveDraw(); 
         }
