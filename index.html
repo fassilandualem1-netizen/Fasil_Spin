@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP PRO - Full Grid View</title>
+    <title>FASIL VIP PRO - Ultimate Edition</title>
     <style>
-        :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
-        body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; position: fixed; }
+        :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; --dark: #0a0a0a; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; position: fixed; }
         
         #appContent { height: 100vh; display: none; flex-direction: column; }
         .page { display: none; flex: 1; padding: 5px; box-sizing: border-box; overflow: hidden; }
@@ -18,41 +18,19 @@
         @keyframes live-blink { 50% { opacity: 0.3; } }
 
         /* STATIC RESULTS */
-        .static-results { display: flex; justify-content: space-around; background: #0a0a0a; border: 1px solid #222; padding: 5px; border-radius: 10px; margin: 2px 0; min-height: 40px; }
+        .static-results { display: flex; justify-content: space-around; background: var(--dark); border: 1px solid #222; padding: 5px; border-radius: 10px; margin: 2px 0; min-height: 40px; }
         .res-box { text-align: center; width: 30%; }
         .res-box span { font-size: 9px; color: var(--gold); display: block; }
         .res-box b { font-size: 18px; color: #fff; text-shadow: 0 0 8px var(--gold); }
 
-        /* WINNER DISPLAY (መጠኑ የቀነሰ) */
+        /* WINNER DISPLAY */
         #focusWinnerDisplay { margin: 0; min-height: 70px; display: flex; flex-direction: column; justify-content: center; }
         .focus-num { font-size: 65px; font-weight: 900; color: #fff; text-shadow: 0 0 25px var(--gold); line-height: 1; }
         .focus-label { font-size: 14px; font-weight: bold; color: var(--bright-gold); }
 
-        /* FULL GRID SYSTEM (1-100 እንዲታይ የተስተካከለ) */
-        .grid-container { 
-            display: grid; 
-            grid-template-columns: repeat(10, 1fr); 
-            gap: 2px; 
-            background: #151515; 
-            padding: 4px; 
-            border-radius: 8px; 
-            overflow-y: auto; 
-            max-height: 220px; /* መጠኑ ጨምሯል */
-            border: 1px solid #222;
-            width: 98%;
-            margin: 2px auto;
-        }
-        .grid-cell { 
-            background: #0a0a0a; 
-            font-size: 10px; 
-            font-weight: bold; 
-            padding: 4px 0; 
-            border: 1px solid #222; 
-            border-radius: 3px; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* GRID SYSTEM */
+        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: #151515; padding: 4px; border-radius: 8px; overflow-y: auto; max-height: 220px; border: 1px solid #222; width: 98%; margin: 2px auto; }
+        .grid-cell { background: var(--dark); font-size: 10px; font-weight: bold; padding: 4px 0; border: 1px solid #222; border-radius: 3px; display: flex; align-items: center; justify-content: center; }
         .booked { border: 1px solid #fff !important; background: #333 !important; }
         .winner-hit { background: var(--red) !important; color: #fff !important; animation: winner-pulse 0.8s infinite; }
         @keyframes winner-pulse { 50% { transform: scale(1.1); } }
@@ -60,8 +38,15 @@
         canvas { border: 2px solid var(--gold); border-radius: 50%; background: #050505; width: 85px; height: 85px; margin: 2px auto; }
         button.main-btn { width: 95%; padding: 12px; border-radius: 10px; font-size: 16px; font-weight: bold; background: var(--gold); color: #000; border: none; margin: 5px auto; }
         
-        .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 60px; } 
-        .tab-btn { flex: 1; color: #777; border: none; background: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* ABOUT PAGE STYLE */
+        .about-card { background: #111; border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin: 10px; text-align: left; }
+        .about-card h2 { color: var(--bright-gold); margin-top: 0; font-size: 20px; text-align: center; }
+        .about-card p { color: #ccc; font-size: 14px; line-height: 1.6; }
+        .contact-btn { display: block; background: #222; color: var(--gold); padding: 10px; margin-top: 10px; text-decoration: none; text-align: center; border-radius: 8px; border: 1px solid var(--gold); font-weight: bold; }
+
+        /* TABS */
+        .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 60px; z-index: 100; } 
+        .tab-btn { flex: 1; color: #777; border: none; background: none; font-size: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 3px solid var(--gold); background: #1a1a1a; }
     </style>
 </head>
@@ -78,9 +63,9 @@
 
     <div id="appContent">
         <div id="bookingPage" class="page">
-            <h3>📋 መዝገብ</h3>
+            <h3>📋 ተጫዋቾች መዝገብ</h3>
             <div id="bookingGrid" class="grid-container" style="max-height: 75vh;"></div>
-            <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid red; padding:8px; border-radius:8px; margin-top:10px; width:90%;">RESET NAMES</button>
+            <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid red; padding:8px; border-radius:8px; margin-top:10px; width:90%;">RESET NAMES ONLY</button>
         </div>
         
         <div id="gamePage" class="page active">
@@ -103,12 +88,27 @@
             <button id="resetBtn" class="main-btn" onclick="location.reload()" style="display:none;">አዲስ ዕጣ</button>
         </div>
 
-        <div id="historyPage" class="page"><h3>🕒 ታሪክ</h3><div id="historyList" style="overflow-y:auto; flex:1;"></div></div>
+        <div id="historyPage" class="page"><h3>🕒 የታሪክ ማህደር</h3><div id="historyList" style="overflow-y:auto; flex:1;"></div></div>
+        
         <div id="setupPage" class="page">
             <h3>⚙️ Settings</h3>
-            <input type="text" id="botTokenInput" style="width:90%; padding:12px; margin:5px; border-radius:8px;" placeholder="Bot Token">
-            <input type="text" id="chatIdInput" style="width:90%; padding:12px; margin:5px; border-radius:8px;" placeholder="Chat ID">
+            <input type="text" id="botTokenInput" style="width:90%; padding:12px; margin:10px; border-radius:8px;" placeholder="Bot Token">
+            <input type="text" id="chatIdInput" style="width:90%; padding:12px; margin:10px; border-radius:8px;" placeholder="Chat ID">
             <button onclick="saveSettings()" class="main-btn">SAVE SETTINGS</button>
+        </div>
+
+        <div id="aboutPage" class="page">
+            <h3>ℹ️ ስለ ሶፍትዌሩ</h3>
+            <div class="about-card">
+                <h2>FASIL VIP PRO</h2>
+                <p>ይህ ሶፍትዌር ማንኛውንም የዕጣ ድልድል (ቢንጎ) በቴክኖሎጂ የታገዘ፣ ግልፅ እና ፈጣን በሆነ መልኩ ለማከናወን የተዘጋጀ ነው።</p>
+                <p><b>Version:</b> 2.5.0 (Ultimate Edition)<br>
+                <b>Developer:</b> FASIL TECH<br>
+                <b>Status:</b> Licensed & Secured</p>
+                <hr style="border-color: #333;">
+                <p>ማንኛውም ጥያቄ ወይም የአክቲቬሽን ኮድ ሲፈልጉ ከታች ባለው ሊንክ ያግኙን።</p>
+                <a href="#" class="contact-btn">📱 በቴሌግራም ያግኙን</a>
+            </div>
         </div>
         
         <div class="tabs">
@@ -116,6 +116,7 @@
             <button class="tab-btn active" onclick="showPage('gamePage', this)">🎰 ዕጣ</button>
             <button class="tab-btn" onclick="showPage('historyPage', this)">🕒 ታሪክ</button>
             <button class="tab-btn" onclick="showPage('setupPage', this)">⚙️ SETUP</button>
+            <button class="tab-btn" onclick="showPage('aboutPage', this)">ℹ️ ABOUT</button>
         </div>
     </div>
 
@@ -145,7 +146,7 @@
 
         function validateKey() {
             let k = document.getElementById('licenseKey').value.trim(), uid = localStorage.getItem('f_uid'), expected = (parseInt(uid.split('-')[1]) + 1000).toString();
-            if (k === "9988" || k === expected) { localStorage.setItem('f_license', k); location.reload(); } else { alert("WRONG!"); }
+            if (k === "9988" || k === expected) { localStorage.setItem('f_license', k); location.reload(); } else { alert("WRONG KEY!"); }
         }
 
         function openApp() {
@@ -190,7 +191,6 @@
                 document.getElementById('s' + i).innerText = win;
                 document.getElementById('s' + i).style.color = winColor;
                 document.getElementById('g'+win).classList.add('winner-hit');
-                
                 await updateTelegramLive(i, win);
                 await new Promise(r=>setTimeout(r, 2000));
             }
@@ -240,8 +240,8 @@
         function saveSettings() { localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); alert("SAVED!"); }
         function showPage(p, b) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); document.getElementById(p).classList.add('active'); b.classList.add('active'); if(p==='historyPage') loadHistory(); }
         function saveHist(w) { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); h.unshift({t:new Date().toLocaleString(), r:w}); localStorage.setItem('f_h', JSON.stringify(h.slice(0,20))); }
-        function loadHistory() { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); document.getElementById('historyList').innerHTML = h.map(x=>`<div style="background:#111; padding:10px; margin:5px; border-radius:10px;">🏆 <b>${x.r.join(' - ')}</b></div>`).join(''); }
-        function clearBookingOnly() { if(confirm("CLEAR NAMES?")){ for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i); setup(); } }
+        function loadHistory() { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); document.getElementById('historyList').innerHTML = h.map(x=>`<div style="background:#111; padding:10px; margin:5px; border-radius:10px; border:1px solid #333; text-align:left;">🏆 <b>${x.r.join(' - ')}</b><br><small>${x.t}</small></div>`).join(''); }
+        function clearBookingOnly() { if(confirm("CLEAR ALL NAMES?")){ for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i); setup(); } }
     </script>
 </body>
 </html>
