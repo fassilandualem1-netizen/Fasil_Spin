@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL BINGO PRO - Sound Edition</title>
+    <title>FASIL BINGO PRO - Final Optimized</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; position: fixed; }
@@ -22,8 +22,9 @@
         .res-box span { font-size: 11px; color: var(--gold); display: block; font-weight: bold;}
         .res-box b { font-size: 26px; color: #fff; display: block; }
 
+        /* ትልቁን ዕጣ ቦታ የሚተካው Label */
         #focusWinnerDisplay { margin: 20px 0; min-height: 100px; display: flex; flex-direction: column; justify-content: center; }
-        .focus-label { font-size: 45px; font-weight: 900; color: var(--bright-gold); letter-spacing: 2px; text-shadow: 0 0 15px var(--gold); }
+        .focus-label { font-size: 40px; font-weight: 900; color: var(--bright-gold); letter-spacing: 2px; text-shadow: 0 0 15px var(--gold); }
         .focus-current-num { font-size: 25px; color: #fff; margin-top: 5px; opacity: 0.8; }
 
         .grid-container { 
@@ -42,7 +43,10 @@
         .draw-section { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; flex: 1; padding-bottom: 85px; }
         button.main-btn { width: 95%; padding: 18px; border-radius: 15px; font-size: 22px; font-weight: bold; background: var(--gold); color: #000; border: none; box-shadow: 0 5px 15px rgba(191,149,63,0.4); }
         
+        /* About Page Styles */
         .about-card { background: #111; border: 1px solid var(--gold); border-radius: 20px; padding: 20px; width: 92%; margin: 10px auto; text-align: left; overflow-y: auto; max-height: 70vh; }
+        .about-title { color: var(--bright-gold); text-align: center; margin-bottom: 15px; font-size: 24px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .about-text { color: #ccc; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
         .contact-btn { display: block; background: #222; color: var(--gold); padding: 14px; margin-top: 15px; text-decoration: none; text-align: center; border-radius: 12px; border: 1px solid var(--gold); font-weight: bold; }
 
         .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 70px; z-index: 1000; } 
@@ -104,10 +108,20 @@
         
         <div id="aboutPage" class="page">
             <div class="about-card">
-                <h2 style="color:var(--bright-gold); text-align:center;">FASIL BINGO PRO</h2>
-                <p>ይህ ሶፍትዌር ለቢንጎ እና ለተለያዩ የዕጣ ጨዋታዎች ተዓማኒነት ያለውና ፈጣን የሆነ የዲጂታል ዕጣ ማውጫ ሲስተም ነው።</p>
-                <hr style="border:0.5px solid #333;">
-                <p>📞 <b>Phone:</b> +251951381356</p>
+                <h2 class="about-title">FASIL BINGO PRO</h2>
+                <div class="about-text">
+                    <p><b>ስለ አፕሊኬሽኑ፦</b></p>
+                    <p>ይህ ሶፍትዌር ለቢንጎ እና ለተለያዩ የዕጣ ጨዋታዎች ተዓማኒነት ያለውና ፈጣን የሆነ የዲጂታል ዕጣ ማውጫ ሲስተም ነው።</p>
+                    <p><b>ዋና አላማ፦</b></p>
+                    <ul>
+                        <li>የዕጣ አወጣጥ ሂደቱን ግልጽና ፍትሃዊ ማድረግ።</li>
+                        <li>በቀጥታ የቴሌግራም መልእክት ውጤቱን ለተሳታፊዎች ማሳወቅ።</li>
+                        <li>የተሸላሚዎችን ታሪክ በስርአት መመዝገብ።</li>
+                    </ul>
+                    <hr style="border:0.5px solid #333;">
+                    <p>📞 <b>ስልክ:</b> +251951381356</p>
+                    <p>📧 <b>ኢሜይል:</b> Fassilandualem1@gmail.com</p>
+                </div>
                 <a href="tg://resolve?domain=Fassilandualem" class="contact-btn">📱 በቴሌግራም አግኙኝ</a>
             </div>
         </div>
@@ -124,54 +138,66 @@
     <script>
         const DEFAULT_BOT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
-        let audioCtx = null;
+        let audioCtx = null, liveMsgId = null;
 
-        function playTone(freq, type, duration, vol, fade = true) {
+        function playSound(freq, type, duration, vol) {
             if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             let o = audioCtx.createOscillator(), g = audioCtx.createGain();
             o.type = type; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
             g.gain.setValueAtTime(vol, audioCtx.currentTime);
-            if(fade) g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
             o.connect(g); g.connect(audioCtx.destination);
             o.start(); o.stop(audioCtx.currentTime + duration);
+        }
+
+        function checkLicense() {
+            let uid = localStorage.getItem('f_uid') || "FS-" + Math.floor(1000 + Math.random() * 9000);
+            localStorage.setItem('f_uid', uid); document.getElementById('myDeviceId').innerText = uid;
+            const savedKey = localStorage.getItem('f_license'), expectedKey = (parseInt(uid.split('-')[1]) + 1000).toString();
+            if (savedKey === "9988" || savedKey === expectedKey) { openApp(); } else { document.getElementById('lockScreen').style.display = 'flex'; }
+        }
+
+        function validateKey() {
+            let k = document.getElementById('licenseKey').value.trim(), uid = localStorage.getItem('f_uid'), expected = (parseInt(uid.split('-')[1]) + 1000).toString();
+            if (k === "9988" || k === expected) { localStorage.setItem('f_license', k); location.reload(); } else { alert("WRONG KEY!"); }
+        }
+
+        function openApp() {
+            document.getElementById('appContent').style.display = 'flex';
+            document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || "";
+            document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || "";
+            setup();
+            setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+        }
+
+        async function runSequence() {
+            if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID!");
+            document.getElementById('drawBtn').style.display = 'none';
+            await initTelegramLive(); startLiveDraw();
         }
 
         async function startLiveDraw() {
             let all = Array.from({length: 100}, (_, i) => i + 1);
             for(let i=all.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [all[i], all[j]]=[all[j], all[i]]; }
             let winners = [all[0], all[1], all[2]];
-
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
-                
-                // 1. READY Sound
-                document.getElementById('levelLabel').innerText = "READY?";
-                playTone(440, 'sine', 0.3, 0.5); 
+                document.getElementById('levelLabel').innerText = "VERIFYING...";
+                document.getElementById('levelLabel').style.color = "var(--gold)";
+                playSound(150, 'sine', 0.5, 0.8);
                 await new Promise(r=>setTimeout(r, 1000));
                 
-                // 2. VERIFYING Sound
-                document.getElementById('levelLabel').innerText = "VERIFYING...";
-                playTone(150, 'square', 0.8, 0.2);
-                await new Promise(r=>setTimeout(r, 1200));
-                
-                // 3. GO Sound
                 document.getElementById('levelLabel').innerText = "GO!";
-                playTone(880, 'sine', 0.4, 0.6);
-                await new Promise(r=>setTimeout(r, 500));
+                document.getElementById('levelLabel').style.color = "#fff";
                 
-                // 4. SPIN (Rolling) Sounds
                 for(let j=0; j<25; j++) { 
-                    playTone(600 + (Math.random()*400), 'triangle', 0.05, 0.1, false);
+                    playSound(Math.random()*200+300,'triangle',0.05, 0.1);
                     let rand = Math.floor(Math.random()*100)+1;
                     document.getElementById('rollingNum').innerText = "ቁጥር: " + rand;
                     await new Promise(r=>setTimeout(r, 60)); 
                 }
                 
-                // 5. WINNER (Jackpot) Sound
-                playTone(523.25, 'square', 0.2, 0.5); // C5
-                setTimeout(() => playTone(659.25, 'square', 0.2, 0.5), 150); // E5
-                setTimeout(() => playTone(783.99, 'square', 0.5, 0.6), 300); // G5
-
+                playSound(523, 'square', 0.8, 0.8);
                 document.getElementById('levelLabel').innerText = win;
                 document.getElementById('levelLabel').style.color = rowColors[Math.floor((win-1)/10)];
                 document.getElementById('rollingNum').innerText = i + "ኛ ዕጣ ወጣ!";
@@ -180,30 +206,38 @@
                 document.getElementById('s' + i).style.color = rowColors[Math.floor((win-1)/10)];
                 document.getElementById('g'+win).classList.add('winner-hit');
                 await updateTelegramLive(i, win);
-                await new Promise(r=>setTimeout(r, 2500));
+                await new Promise(r=>setTimeout(r, 2000));
             }
+            await finalTelegramPost(winners);
+            saveHist(winners);
             document.getElementById('levelLabel').innerText = "DONE!";
+            document.getElementById('rollingNum').innerText = "ዕጣው ተጠናቅቋል";
             document.getElementById('resetBtn').style.display = 'block';
         }
 
-        // --- ሌሎች የቀድሞ Functions (setup, checkLicense, ወዘተ) እዚህ ይቀጥላሉ ---
-        function checkLicense() {
-            let uid = localStorage.getItem('f_uid') || "FS-" + Math.floor(1000 + Math.random() * 9000);
-            localStorage.setItem('f_uid', uid); document.getElementById('myDeviceId').innerText = uid;
-            const savedKey = localStorage.getItem('f_license'), expectedKey = (parseInt(uid.split('-')[1]) + 1000).toString();
-            if (savedKey === "9988" || savedKey === expectedKey) { openApp(); } else { document.getElementById('lockScreen').style.display = 'flex'; }
+        async function initTelegramLive() {
+            const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
+            const m = `✨ **FASIL BINGO PRO** ✨\n\n📢 **ዕጣው ተጀምሯል...**\n━━━━━━━━━━━━━━━`;
+            let res = await fetch(`https://api.telegram.org/bot${t}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, text:m, parse_mode:'Markdown'}) });
+            let d = await res.json(); if(d.ok) liveMsgId = d.result.message_id;
         }
-        function validateKey() {
-            let k = document.getElementById('licenseKey').value.trim(), uid = localStorage.getItem('f_uid'), expected = (parseInt(uid.split('-')[1]) + 1000).toString();
-            if (k === "9988" || k === expected) { localStorage.setItem('f_license', k); location.reload(); } else { alert("WRONG KEY!"); }
+
+        async function updateTelegramLive(step, num) {
+            if(!liveMsgId) return;
+            const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
+            const name = localStorage.getItem('bk_'+num) || "ያልተመዘገበ";
+            let txt = `✨ **FASIL BINGO PRO** ✨\n\n🎯 **${step}ኛ ዕጣ፦ ቁጥር ${num}**\n👤 **ስም፦ ${name}**\n━━━━━━━━━━━━━━━`;
+            await fetch(`https://api.telegram.org/bot${t}/editMessageText`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, message_id:liveMsgId, text:txt, parse_mode:'Markdown'}) });
         }
-        function openApp() {
-            document.getElementById('appContent').style.display = 'flex';
-            document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || "";
-            document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || "";
-            setup();
-            setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+
+        async function finalTelegramPost(w) {
+            if(!liveMsgId) return;
+            const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
+            const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
+            const m = `🔥🔥 **የዕጣው ማጠቃለያ** 🔥🔥\n\n🥇 **1ኛ ዕጣ፦ ቁጥር ${w[0]}** (${n[0]})\n🥈 **2ኛ ዕጣ፦ ቁጥር ${w[1]}** (${n[1]})\n🥉 **3ኛ ዕጣ፦ ቁጥር ${w[2]}** (${n[2]})\n━━━━━━━━━━━━━━━\n🎊 **እንኳን ደስ አላችሁ!**\n🚀 **Powered by FASIL TECH**`;
+            await fetch(`https://api.telegram.org/bot${t}/editMessageText`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, message_id:liveMsgId, text:m, parse_mode:'Markdown'}) });
         }
+
         function setup() {
             const bg=document.getElementById('bookingGrid'), gg=document.getElementById('gameGrid'); bg.innerHTML=""; gg.innerHTML="";
             for(let i=1; i<=100; i++){
@@ -213,25 +247,10 @@
                 bg.appendChild(bc); let gc=document.createElement('div'); gc.className='grid-cell'; gc.id='g'+i; gc.innerText=i; gc.style.color=clr; gc.style.borderColor=clr; gg.appendChild(gc);
             }
         }
-        async function runSequence() {
-            if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID!");
-            document.getElementById('drawBtn').style.display = 'none';
-            await initTelegramLive(); startLiveDraw();
-        }
-        async function initTelegramLive() {
-            const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
-            const m = `✨ **FASIL BINGO PRO** ✨\n\n📢 **ዕጣው ተጀምሯል...**\n━━━━━━━━━━━━━━━`;
-            let res = await fetch(`https://api.telegram.org/bot${t}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, text:m, parse_mode:'Markdown'}) });
-            let d = await res.json(); if(d.ok) liveMsgId = d.result.message_id;
-        }
-        async function updateTelegramLive(step, num) {
-            const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
-            const name = localStorage.getItem('bk_'+num) || "ያልተመዘገበ";
-            let txt = `✨ **FASIL BINGO PRO** ✨\n\n🎯 **${step}ኛ ዕጣ፦ ቁጥር ${num}**\n👤 **ስም፦ ${name}**\n━━━━━━━━━━━━━━━`;
-            await fetch(`https://api.telegram.org/bot${t}/editMessageText`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, message_id:liveMsgId, text:txt, parse_mode:'Markdown'}) });
-        }
-        function showPage(p, b) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); document.getElementById(p).classList.add('active'); b.classList.add('active'); }
         function saveSettings() { localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); alert("SAVED!"); }
+        function showPage(p, b) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); document.getElementById(p).classList.add('active'); b.classList.add('active'); if(p==='historyPage') loadHistory(); }
+        function saveHist(w) { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); h.unshift({t:new Date().toLocaleString(), r:w}); localStorage.setItem('f_h', JSON.stringify(h.slice(0,20))); }
+        function loadHistory() { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); document.getElementById('historyList').innerHTML = h.map(x=>`<div style="background:#111; padding:10px; margin:5px; border-radius:10px; border:1px solid #333; text-align:left;">🏆 <b>${x.r.join(' - ')}</b><br><small>${x.t}</small></div>`).join(''); }
         function clearBookingOnly() { if(confirm("ሁሉንም ስሞች አጥፍተህ አዲስ መመዝገብ ትፈልጋለህ?")){ for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i); setup(); } }
     </script>
 </body>
