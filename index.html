@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL BINGO PRO - Final Master</title>
+    <title>FASIL BINGO PRO - Final Fixed</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; }
         body { font-family: sans-serif; background: #000; color: var(--gold); text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; width: 100vw; position: fixed; }
@@ -26,26 +26,23 @@
         .focus-label { font-size: 16px; font-weight: bold; color: var(--bright-gold); letter-spacing: 1px; }
         .focus-num { font-size: 60px; font-weight: 900; color: #fff; text-shadow: 0 0 15px var(--gold); line-height: 1; }
 
-        /* GRID ADJUSTMENT: ፎቶው ላይ እንዳይቆረጥ መጠኑ ቀንሷል */
         .grid-container { 
             display: grid; grid-template-columns: repeat(10, 1fr); gap: 1.5px; 
             background: #151515; padding: 3px; border-radius: 8px; border: 1px solid #222; 
-            width: 96%; margin: 2px auto; max-height: 200px; overflow: hidden; 
+            width: 96%; margin: 2px auto; max-height: 210px; overflow: hidden; 
         }
         .grid-cell { 
-            background: #0a0a0a; font-size: 9px; font-weight: bold; padding: 4px 0; 
+            background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 4px 0; 
             border: 1px solid #222; border-radius: 3px; display: flex; align-items: center; justify-content: center; 
         }
         .booked { border: 1px solid #fff !important; background: #333 !important; }
         .winner-hit { background: var(--red) !important; color: #fff !important; animation: winner-pulse 0.8s infinite; border: 1px solid #fff !important;}
         @keyframes winner-pulse { 50% { transform: scale(1.1); } }
         
-        /* DRAW SECTION */
         .draw-section { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; flex: 1; padding-bottom: 75px; }
         canvas { border: 2.5px solid var(--gold); border-radius: 50%; background: #050505; width: 85px; height: 85px; margin: 5px auto; }
         button.main-btn { width: 92%; padding: 14px; border-radius: 12px; font-size: 18px; font-weight: bold; background: var(--gold); color: #000; border: none; box-shadow: 0 4px 10px rgba(191,149,63,0.3); }
         
-        /* ABOUT CARD */
         .about-card { background: #111; border: 1px solid var(--gold); border-radius: 15px; padding: 15px; width: 90%; margin: 10px auto; text-align: left; }
         .contact-btn { display: block; background: #222; color: var(--gold); padding: 12px; margin-top: 10px; text-decoration: none; text-align: center; border-radius: 10px; border: 1px solid var(--gold); font-weight: bold; }
 
@@ -58,11 +55,13 @@
 <body onload="checkLicense()">
 
     <div id="lockScreen">
-        <div style="background:#111; padding:30px; border:2px solid var(--gold); border-radius:20px; width:80%;">
-            <h2>FASIL VIP PRO</h2>
-            <div id="myDeviceId" style="color:#fff; margin:10px; font-size:18px;">---</div>
-            <input type="password" id="licenseKey" style="width:90%; padding:12px; text-align:center; border-radius:8px; border:1px solid var(--gold); background:#000; color:#fff;" placeholder="Activation Key">
-            <button onclick="validateKey()" class="main-btn">ACTIVATE</button>
+        <div style="background:#111; padding:30px; border:2px solid var(--gold); border-radius:20px; width:85%;">
+            <h2 style="color:var(--bright-gold)">FASIL VIP PRO</h2>
+            <p style="color:#777; font-size:12px;">DEVICE ID:</p>
+            <div id="myDeviceId" style="color:#fff; margin-bottom:15px; font-size:20px; font-weight:bold; letter-spacing:2px;">---</div>
+            <input type="password" id="licenseKey" style="width:90%; padding:15px; text-align:center; border-radius:10px; border:1px solid var(--gold); background:#000; color:#fff; font-size:18px;" placeholder="Activation Key">
+            <button onclick="validateKey()" class="main-btn" style="margin-top:15px;">ACTIVATE</button>
+            <p style="color:#555; font-size:10px; margin-top:15px;">Contact @Fassilandualem for key</p>
         </div>
     </div>
 
@@ -70,7 +69,7 @@
         <div id="bookingPage" class="page">
             <h3>📋 መዝገብ</h3>
             <div id="bookingGrid" class="grid-container" style="max-height: 70vh;"></div>
-            <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid red; padding:8px; border-radius:8px; margin-top:10px; width:90%;">RESET NAMES</button>
+            <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid red; padding:8px; border-radius:8px; margin-top:10px; width:90%;">RESET ALL NAMES</button>
         </div>
         
         <div id="gamePage" class="page active">
@@ -95,10 +94,11 @@
             </div>
         </div>
 
-        <div id="historyPage" class="page"><h3>🕒 ታሪክ</h3><div id="historyList" style="overflow-y:auto; flex:1;"></div></div>
+        <div id="historyPage" class="page"><h3>🕒 የታሪክ ማህደር</h3><div id="historyList" style="overflow-y:auto; flex:1;"></div></div>
         
         <div id="setupPage" class="page">
             <h3>⚙️ Settings</h3>
+            <p style="font-size:12px;">Telegram Bot Configuration</p>
             <input type="text" id="botTokenInput" class="setup-input" placeholder="Bot Token">
             <input type="text" id="chatIdInput" class="setup-input" placeholder="Chat ID">
             <button onclick="saveSettings()" class="main-btn">SAVE SETTINGS</button>
@@ -107,12 +107,23 @@
         <div id="aboutPage" class="page">
             <h3>ℹ️ ስለ እኛ</h3>
             <div class="about-card">
-                <h2 style="color:var(--gold); text-align:center;">FASIL TECH</h2>
-                <p><b>Software:</b> FASIL BINGO PRO v3.5</p>
+                <h2 style="color:var(--gold); text-align:center; margin-bottom:5px;">FASIL TECH</h2>
+                <p style="text-align:center; font-size:12px; margin-bottom:15px;">Official Bingo Software v3.5</p>
                 <p>📞 <b>Phone:</b> +251951381356</p>
                 <p>📧 <b>Email:</b> Fassilandualem1@gmail.com</p>
-                <hr style="border:0.5px solid #333;">
-                <a href="https://t.me/Fassilandualem" target="_blank" class="contact-btn">📱 በቴሌግራም አግኙኝ (@Fassilandualem)</a>
+                <a href="https://t.me/Fassilandualem" target="_blank" class="contact-btn">📱 በቴሌግራም አግኙኝ</a>
+                
+                <hr style="border:0.5px solid #333; margin:20px 0;">
+                
+                <div id="adminPanel" style="background:#000; padding:10px; border-radius:10px; border:1px dashed #444;">
+                    <p style="font-size:10px; color:#555;">ADMIN TOOL</p>
+                    <button onclick="openKeyGen()" style="background:none; border:none; color:#333; font-size:10px;">Login</button>
+                    <div id="keyGenBox" style="display:none;">
+                        <input type="text" id="targetUid" class="setup-input" style="font-size:12px;" placeholder="የደንበኛ Device ID (e.g. FS-1234)">
+                        <button onclick="generateForCustomer()" style="background:var(--gold); border:none; padding:5px; border-radius:5px; width:100%; font-weight:bold;">GET KEY</button>
+                        <div id="generatedKeyDisplay" style="color:#fff; margin-top:10px; font-weight:bold; text-align:center; font-size:18px;"></div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -150,7 +161,20 @@
 
         function validateKey() {
             let k = document.getElementById('licenseKey').value.trim(), uid = localStorage.getItem('f_uid'), expected = (parseInt(uid.split('-')[1]) + 1000).toString();
-            if (k === "9988" || k === expected) { localStorage.setItem('f_license', k); location.reload(); } else { alert("WRONG KEY!"); }
+            if (k === "9988" || k === expected) { localStorage.setItem('f_license', k); location.reload(); } else { alert("WRONG ACTIVATION KEY!"); }
+        }
+
+        function openKeyGen() {
+            let master = prompt("Enter Admin Master Pass:");
+            if(master === "9988") document.getElementById('keyGenBox').style.display = 'block';
+        }
+
+        function generateForCustomer() {
+            let id = document.getElementById('targetUid').value.trim();
+            if(!id.includes('-')) return alert("Invalid ID Format");
+            let num = id.split('-')[1];
+            let key = (parseInt(num) + 1000).toString();
+            document.getElementById('generatedKeyDisplay').innerText = "KEY: " + key;
         }
 
         function openApp() {
@@ -162,7 +186,7 @@
         }
 
         async function runSequence() {
-            if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID!");
+            if(!localStorage.getItem('f_chat_id')) return alert("Setup Telegram Chat ID first!");
             document.getElementById('drawBtn').style.display = 'none';
             await initTelegramLive(); startLiveDraw();
         }
@@ -178,15 +202,15 @@
                 await new Promise(r=>setTimeout(r, 800));
                 document.getElementById('levelLabel').innerText = i + "ኛ ዕጣ GO!";
                 playImpactSound(800, 'square', 0.3, 0.5);
-                for(let j=0; j<30; j++) { 
-                    playImpactSound(Math.random()*200+300,'triangle',0.05, 0.15);
+                for(let j=0; j<25; j++) { 
+                    playImpactSound(Math.random()*200+300,'triangle',0.05, 0.1);
                     let rand = Math.floor(Math.random()*100)+1;
                     renderBall(rand, false); 
                     document.getElementById('currentResult').innerText = rand;
-                    document.getElementById('currentResult').style.color = "#777";
-                    await new Promise(r=>setTimeout(r, 60)); 
+                    document.getElementById('currentResult').style.color = "#555";
+                    await new Promise(r=>setTimeout(r, 70)); 
                 }
-                playImpactSound(523, 'square', 0.8, 0.8);
+                playImpactSound(523, 'square', 0.8, 1.0);
                 renderBall(win, true);
                 document.getElementById('currentResult').innerText = win; 
                 document.getElementById('currentResult').style.color = winColor;
@@ -194,7 +218,7 @@
                 document.getElementById('s' + i).style.color = winColor;
                 document.getElementById('g'+win).classList.add('winner-hit');
                 await updateTelegramLive(i, win);
-                await new Promise(r=>setTimeout(r, 1500));
+                await new Promise(r=>setTimeout(r, 2000));
             }
             await finalTelegramPost(winners);
             saveHist(winners);
@@ -221,7 +245,7 @@
             if(!liveMsgId) return;
             const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
             const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
-            const m = `🔥🔥 **የዕጣው ማጠቃለያ** 🔥🔥\n\n🥇 **1ኛ ዕጣ፦ ቁጥር ${w[0]}** (${n[0]})\n🥈 **2ኛ ዕጣ፦ ቁጥር ${w[1]}** (${n[1]})\n🥉 **3ኛ ዕጣ፦ ቁጥር ${w[2]}** (${n[2]})\n━━━━━━━━━━━━━━━\n🎊 **እንኳን ደስ አላችሁ!**\n🚀 **Powered by FASIL TECH**`;
+            const m = `🔥🔥 **የዕጣው ማጠቃለያ** 🔥🔥\n\n🥇 **1ኛ ዕጣ፦ ቁጥር ${w[0]}** (${n[0]})\n🥈 **2ኛ ዕጣ፦ ቁጥር ${w[1]}** (${n[1]})\n🥉 **3ኛ ዕጣ፦ ቁጥር ${w[2]}** (${n[2]})\n━━━━━━━━━━━━━━━\n🎊 **እንኳን ደስ አላችሁ!**\n🚀 **POWERED BY FASIL TECH**`;
             await fetch(`https://api.telegram.org/bot${t}/editMessageText`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, message_id:liveMsgId, text:m, parse_mode:'Markdown'}) });
         }
 
@@ -240,11 +264,11 @@
             cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill();
             cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(v||"?", 100, 125);
         }
-        function saveSettings() { localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); alert("SAVED!"); }
+        function saveSettings() { localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); alert("SETTINGS SAVED!"); }
         function showPage(p, b) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); document.getElementById(p).classList.add('active'); b.classList.add('active'); if(p==='historyPage') loadHistory(); }
         function saveHist(w) { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); h.unshift({t:new Date().toLocaleString(), r:w}); localStorage.setItem('f_h', JSON.stringify(h.slice(0,20))); }
         function loadHistory() { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); document.getElementById('historyList').innerHTML = h.map(x=>`<div style="background:#111; padding:10px; margin:5px; border-radius:10px; border:1px solid #333; text-align:left;">🏆 <b>${x.r.join(' - ')}</b><br><small>${x.t}</small></div>`).join(''); }
-        function clearBookingOnly() { if(confirm("ሁሉንም ስሞች አጥፍተህ አዲስ መመዝገብ ትፈልጋለህ?")){ for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i); setup(); } }
+        function clearBookingOnly() { if(confirm("ሁሉንም ተጫዋቾች ማጥፋት ትፈልጋለህ?")){ for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i); setup(); } }
     </script>
 </body>
 </html>
