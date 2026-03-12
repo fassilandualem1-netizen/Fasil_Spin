@@ -3,140 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP PRO - Ultimate Edition</title>
+    <title>FASIL VIP PRO - Grand Finale</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; --dark: #000; }
-        
-        html, body { 
-            overflow: hidden; height: 100vh; width: 100vw; margin: 0; padding: 0; 
-            position: fixed; touch-action: none; background: var(--dark); font-family: 'Segoe UI', sans-serif;
-        }
-        
+        html, body { overflow: hidden; height: 100vh; width: 100vw; margin: 0; padding: 0; position: fixed; touch-action: none; background: var(--dark); font-family: 'Segoe UI', sans-serif; }
         body { color: var(--gold); text-align: center; display: flex; flex-direction: column; }
         
-        /* ሰዓቱ ከፍ እንዲል ተደርጓል */
         .live-status-bar { display: flex; align-items: center; justify-content: center; background: #111; padding: 6px 15px; border-radius: 50px; border: 1px solid #333; width: fit-content; margin: 35px auto 5px auto; }
-        .blink-dot { width: 8px; height: 8px; background-color: var(--red); border-radius: 50%; margin-right: 8px; box-shadow: 0 0 5px var(--red); animation: live-blink 1s infinite; }
+        .blink-dot { width: 8px; height: 8px; background-color: var(--red); border-radius: 50%; margin-right: 8px; animation: live-blink 1s infinite; }
         @keyframes live-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        #focusWinnerDisplay { height: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 2px; }
-        .focus-label { font-size: 22px; font-weight: bold; color: var(--bright-gold); text-shadow: 0 0 10px var(--gold); min-height: 25px; }
-        .focus-num { font-size: 100px; font-weight: 900; color: #fff; text-shadow: 0 0 25px var(--gold); line-height: 1; }
+        #focusWinnerDisplay { height: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .focus-label { font-size: 28px; font-weight: bold; color: var(--bright-gold); text-shadow: 0 0 10px var(--gold); }
+        .focus-num { font-size: 90px; font-weight: 900; color: #fff; text-shadow: 0 0 25px var(--gold); line-height: 1; }
 
         #appContent { flex: 1; display: none; flex-direction: column; overflow: hidden; }
         .page { display: none; flex: 1; padding: 12px; box-sizing: border-box; overflow: hidden; position: relative; }
         .page.active { display: flex; flex-direction: column; }
         
-        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: #151515; padding: 4px; border-radius: 8px; width: 100%; margin: 3px 0; }
+        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: #151515; padding: 4px; border-radius: 8px; margin: 3px 0; }
         .grid-cell { background: #0a0a0a; font-size: 10px; font-weight: bold; padding: 8px 0; border: 1px solid #222; border-radius: 3px; }
-        .booked { border: 1px solid #fff !important; background: #333 !important; }
         .winner-hit { background: var(--red) !important; color: #fff !important; animation: winner-pulse 0.8s infinite; }
         @keyframes winner-pulse { 50% { transform: scale(1.2); } }
         
-        canvas { border: 3px solid var(--gold); border-radius: 50%; background: #050505; width: 110px; height: 110px; margin: 3px auto; }
+        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 110px; height: 110px; margin: 5px auto; }
+        .btn-container { padding-bottom: 80px; width: 100%; }
+        button.main-btn { width: 90%; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; background: var(--gold); color: #000; border: none; }
 
-        /* START DRAW በተን ከፍ እንዲል margin ተስተካክሏል */
-        .btn-container { padding-bottom: 85px; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        button.main-btn { width: 95%; padding: 16px; border-radius: 12px; font-size: 20px; font-weight: bold; background: var(--gold); color: #000; border: none; box-shadow: 0 4px 15px rgba(191,149,63,0.3); }
-
-        /* About Page Styling */
-        .about-card { background: #0a0a0a; border: 1px solid var(--gold); border-radius: 15px; padding: 15px; text-align: left; height: 70vh; overflow-y: auto; }
-        .about-title { color: var(--bright-gold); font-size: 18px; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; }
-        .about-text { font-size: 13px; line-height: 1.6; color: #bbb; margin-bottom: 15px; }
-        .contact-btn { display: flex; align-items: center; background: #111; border: 1px solid #333; padding: 10px; border-radius: 10px; text-decoration: none; color: #fff; margin-bottom: 8px; }
-        .contact-icon { font-size: 18px; margin-right: 12px; color: var(--gold); }
+        /* Final Result Overlay */
+        #finalOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; flex-direction: column; justify-content: center; align-items: center; color: var(--bright-gold); padding: 20px; }
+        .final-card { background: #111; border: 2px solid var(--gold); border-radius: 20px; width: 90%; padding: 20px; box-shadow: 0 0 30px var(--gold); }
+        .final-item { margin: 15px 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .final-rank { font-size: 14px; color: #aaa; }
+        .final-val { font-size: 24px; font-weight: bold; display: block; color: #fff; }
 
         .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 70px; z-index: 1000; } 
-        .tab-btn { flex: 1; color: #777; border: none; background: none; font-weight: bold; font-size: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .tab-btn { flex: 1; color: #777; border: none; background: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
-        .tab-icon { font-size: 18px; margin-bottom: 3px; }
-
-        #lockScreen { position: fixed; inset: 0; background: #000; z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; }
     </style>
 </head>
 <body onload="checkLicense()">
 
-    <div id="lockScreen">
+    <div id="lockScreen" style="display:none; position:fixed; inset:0; background:#000; z-index:10000; flex-direction:column; justify-content:center; align-items:center;">
         <div style="background:#111; padding:30px; border:2px solid var(--gold); border-radius:20px; width:80%;">
-            <h2 style="margin-top:0;">FASIL VIP PRO</h2>
+            <h2>FASIL VIP PRO</h2>
             <div id="myDeviceId" style="color:#fff; margin-bottom:15px; font-family:monospace;">---</div>
-            <input type="text" id="licenseKey" style="width:90%; padding:12px; text-align:center; border-radius:8px; border:1px solid var(--gold); background:#000; color:#fff;" placeholder="Activation Key">
+            <input type="text" id="licenseKey" style="width:90%; padding:12px; text-align:center; border-radius:8px; background:#000; color:#fff; border:1px solid var(--gold);" placeholder="Key">
             <br><br>
             <button onclick="validateKey()" class="main-btn">ACTIVATE</button>
         </div>
     </div>
 
-    <div id="appContent">
-        <div id="bookingPage" class="page">
-            <h3 style="margin:5px;">📋 መዝገብ</h3>
-            <div id="bookingGrid" class="grid-container"></div>
-            <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:10px; width: 100%;">መዝገብ አፅዳ</button>
+    <div id="finalOverlay">
+        <div class="final-card">
+            <h2 style="color:var(--gold); margin-top:0;">🏆 የዕጣው ማጠቃለያ</h2>
+            <div id="finalList"></div>
+            <button class="main-btn" onclick="location.reload()" style="margin-top:20px;">ዝጋ / እንደገና ጀምር</button>
         </div>
-        
+    </div>
+
+    <div id="appContent">
         <div id="gamePage" class="page active">
             <div class="live-status-bar">
                 <div class="blink-dot"></div>
                 <span id="liveClock" style="color: #fff; font-family: monospace;">00:00:00</span>
             </div>
             <div id="focusWinnerDisplay">
-                <div class="focus-label" id="levelLabel"></div>
+                <div class="focus-label" id="levelLabel">READY?</div>
                 <div class="focus-num" id="currentResult">--</div>
             </div>
             <div id="gameGrid" class="grid-container"></div>
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
-            
             <div class="btn-container">
                 <button id="drawBtn" class="main-btn" onclick="runSequence()">START DRAW</button>
-                <button id="resetBtn" class="main-btn" onclick="location.reload()" style="display:none; background:#111; color:#fff; border:1px solid var(--gold);">እንደገና ጀምር</button>
             </div>
         </div>
 
-        <div id="historyPage" class="page"><h3 style="margin:5px;">🕒 የታሪክ ማህደር</h3><div id="historyList"></div></div>
-        
-        <div id="setupPage" class="page">
-            <h3 style="margin:5px;">⚙️ SETUP</h3>
-            <input type="text" id="botTokenInput" class="setup-input" placeholder="Bot Token">
-            <input type="text" id="chatIdInput" class="setup-input" placeholder="Chat ID">
-            <button class="main-btn" style="width:90%;" onclick="saveSettings()">SAVE SETTINGS</button>
-        </div>
+        <div id="bookingPage" class="page"><h3>📋 መዝገብ</h3><div id="bookingGrid" class="grid-container"></div><button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid #444; padding:10px; border-radius:10px; margin-top:10px; width: 100%;">አፅዳ</button></div>
+        <div id="historyPage" class="page"><h3>🕒 ታሪክ</h3><div id="historyList"></div></div>
+        <div id="setupPage" class="page"><h3>⚙️ SETUP</h3><input type="text" id="botTokenInput" style="width:90%; padding:12px; margin:10px auto; border-radius:8px; border:1px solid var(--gold); background:#111; color:#fff;" placeholder="Bot Token"><input type="text" id="chatIdInput" style="width:90%; padding:12px; margin:10px auto; border-radius:8px; border:1px solid var(--gold); background:#111; color:#fff;" placeholder="Chat ID"><button class="main-btn" onclick="saveSettings()">SAVE</button></div>
+        <div id="aboutPage" class="page"><h3>ℹ️ ABOUT</h3><p>FASIL VIP PRO V5.0<br>Contact: +251 951 381 356</p></div>
 
-        <div id="aboutPage" class="page">
-            <div class="about-card">
-                <div class="about-title">ℹ️ ስለ FASIL VIP PRO</div>
-                <div class="about-text">
-                    ይህ አፕሊኬሽን ለቢንጎ እና ለተለያዩ የዕጣ ጨዋታዎች ተብሎ በከፍተኛ ጥራት የተዘጋጀ የዲጂታል ዕጣ ማውጫ ሲስተም ነው። 
-                    <br><br>
-                    <b>ዋና ዋና ጥቅሞች፦</b>
-                    <ul>
-                        <li><b>ግልጽነት፦</b> የዕጣ አወጣጥ ሂደቱ በሰው ጣልቃ ገብነት ሳይሆን በሲስተሙ በዘፈቀደ (Randomly) የሚከናወን ነው።</li>
-                        <li><b>ቀጥታ ስርጭት፦</b> የዕጣውን ውጤት በቀጥታ ወደ ቴሌግራም ግሩፕ ወይም ቻናል የመላክ አቅም አለው።</li>
-                        <li><b>ደህንነት፦</b> እያንዳንዱ መሳሪያ የራሱ የሆነ መለያ (ID) ያለው ሲሆን፣ ያለ አክቲቬሽን ቁልፍ አይሰራም።</li>
-                    </ul>
-                </div>
-
-                <div class="about-title">📞 አግኙን</div>
-                <a href="tel:+251951381356" class="contact-btn">
-                    <span class="contact-icon">📞</span>
-                    <span>+251 951 381 356</span>
-                </a>
-                <a href="mailto:Fassilandualem1@gmail.com" class="contact-btn">
-                    <span class="contact-icon">📧</span>
-                    <span>Fassilandualem1@gmail.com</span>
-                </a>
-                <a href="tg://resolve?domain=Fassilandualem" class="contact-btn">
-                    <span class="contact-icon">📱</span>
-                    <span>በቴሌግራም ያናግሩን</span>
-                </a>
-                <p style="text-align:center; font-size:10px; opacity:0.5; margin-top:20px;">V 4.5.0 | Powered by FASIL TECH</p>
-            </div>
-        </div>
-        
         <div class="tabs">
-            <button class="tab-btn" onclick="showPage('bookingPage', this)"><span class="tab-icon">📋</span>መዝገብ</button>
-            <button class="tab-btn active" onclick="showPage('gamePage', this)"><span class="tab-icon">🎰</span>ዕጣ</button>
-            <button class="tab-btn" onclick="showPage('historyPage', this)"><span class="tab-icon">🕒</span>ታሪክ</button>
-            <button class="tab-btn" onclick="showPage('setupPage', this)"><span class="tab-icon">⚙️</span>SETUP</button>
-            <button class="tab-btn" onclick="showPage('aboutPage', this)"><span class="tab-icon">ℹ️</span>ABOUT</button>
+            <button class="tab-btn" onclick="showPage('bookingPage', this)">📋 መዝገብ</button>
+            <button class="tab-btn active" onclick="showPage('gamePage', this)">🎰 ዕጣ</button>
+            <button class="tab-btn" onclick="showPage('historyPage', this)">🕒 ታሪክ</button>
+            <button class="tab-btn" onclick="showPage('setupPage', this)">⚙️ SETUP</button>
+            <button class="tab-btn" onclick="showPage('aboutPage', this)">ℹ️ ABOUT</button>
         </div>
     </div>
 
@@ -147,46 +100,17 @@
         let liveMsgId = null;
         const cv = document.getElementById('bingoCanvas'), cx = cv.getContext('2d');
 
-        function playSound(f, t, d) { 
+        function playSound(f, t, d, v=0.8) { 
             try { 
                 if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if(audioCtx.state==='suspended') audioCtx.resume(); 
                 let o=audioCtx.createOscillator(), g=audioCtx.createGain(); 
                 o.type=t; o.frequency.setValueAtTime(f, audioCtx.currentTime); 
-                g.gain.setValueAtTime(0.4, audioCtx.currentTime); 
+                g.gain.setValueAtTime(v, audioCtx.currentTime); 
                 g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+d); 
                 o.connect(g); g.connect(audioCtx.destination); 
                 o.start(); o.stop(audioCtx.currentTime+d); 
             } catch(e){} 
-        }
-        const snds = { spin:()=>playSound(Math.random()*200+500,'triangle',0.05), win:()=>playSound(523,'square',0.6) };
-
-        function checkLicense() {
-            let uid = localStorage.getItem('f_uid') || "FS-" + Math.floor(1000 + Math.random() * 9000);
-            localStorage.setItem('f_uid', uid); document.getElementById('myDeviceId').innerText = uid;
-            const savedKey = localStorage.getItem('f_license'), expectedKey = (parseInt(uid.split('-')[1]) + 1000).toString();
-            if (savedKey === "9988" || savedKey === expectedKey) { openApp(); } 
-            else { document.getElementById('lockScreen').style.display = 'flex'; }
-        }
-
-        function validateKey() {
-            let k = document.getElementById('licenseKey').value.trim(), uid = localStorage.getItem('f_uid'), expected = (parseInt(uid.split('-')[1]) + 1000).toString();
-            if (k === "9988" || k === expected) { localStorage.setItem('f_license', k); location.reload(); } else { alert("Invalid Key!"); }
-        }
-
-        function openApp() {
-            document.getElementById('appContent').style.display = 'flex';
-            document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || "";
-            document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || "";
-            setup(); renderBall("?", false);
-            setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
-        }
-
-        async function runSequence() {
-            if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID!");
-            document.getElementById('drawBtn').style.display = 'none';
-            initTelegramLive().catch(e=>console.log("Bot Error"));
-            startLiveDraw();
         }
 
         async function startLiveDraw() {
@@ -196,49 +120,71 @@
 
             for(let i=1; i<=3; i++) {
                 let win = winners[i-1];
-                document.getElementById('levelLabel').innerText = i + "ኛ ዕጣ";
-                for(let j=0; j<35; j++) { 
-                    snds.spin(); 
+                
+                // 1. READY (2 sec)
+                document.getElementById('levelLabel').innerText = "READY?";
+                playSound(440, 'sine', 0.5, 1.0);
+                await new Promise(r=>setTimeout(r, 2000));
+
+                // 2. VERIFYING (2 sec)
+                document.getElementById('levelLabel').innerText = "VERIFYING...";
+                playSound(200, 'square', 1.0, 0.5);
+                await new Promise(r=>setTimeout(r, 2000));
+
+                // 3. GO! (1 sec)
+                document.getElementById('levelLabel').innerText = "GO!";
+                playSound(880, 'sine', 0.3, 1.0);
+                await new Promise(r=>setTimeout(r, 1000));
+
+                // 4. SPIN (5 sec) - Total 10 sec process
+                let startTime = Date.now();
+                while(Date.now() - startTime < 5000) {
+                    playSound(Math.random()*400+400, 'triangle', 0.05, 1.0); // Full Volume Spin
                     let rand = Math.floor(Math.random()*100)+1;
-                    renderBall(rand, false); 
+                    renderBall(rand, false);
                     document.getElementById('currentResult').innerText = rand;
-                    await new Promise(r=>setTimeout(r, 60)); 
+                    await new Promise(r=>setTimeout(r, 70));
                 }
-                snds.win();
+
+                // WINNER
+                playSound(523, 'square', 0.8, 1.0);
                 renderBall(win, true);
-                document.getElementById('currentResult').innerText = win; 
+                document.getElementById('currentResult').innerText = win;
+                document.getElementById('levelLabel').innerText = i + "ኛ ዕጣ";
                 document.getElementById('g'+win).classList.add('winner-hit');
-                updateTelegramLive(i, win).catch(e=>console.log("Tele Error"));
+                updateTelegramLive(i, win).catch(e=>console.log("Error"));
                 await new Promise(r=>setTimeout(r, 3000));
             }
-            finalTelegramPost(winners).catch(e=>console.log("Final Error"));
-            saveHist(winners); 
-            document.getElementById('levelLabel').innerText = "ተጠናቋል!";
-            document.getElementById('resetBtn').style.display = 'block';
+            showFinalSummary(winners);
         }
 
-        async function initTelegramLive() {
-            const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
-            const m = `✨ **FASIL VIP PRO BINGO** ✨\n\n📢 **ዕጣው ተጀምሯል...**\n━━━━━━━━━━━━━`;
-            let res = await fetch(`https://api.telegram.org/bot${t}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, text:m, parse_mode:'Markdown'}) });
-            let d = await res.json(); if(d.ok) liveMsgId = d.result.message_id;
+        function showFinalSummary(w) {
+            const list = document.getElementById('finalList');
+            list.innerHTML = w.map((num, i) => {
+                const name = localStorage.getItem('bk_'+num) || "ያልተመዘገበ";
+                return `<div class="final-item">
+                    <span class="final-rank">${i+1}ኛ አሸናፊ</span>
+                    <span class="final-val">ቁጥር ${num} (${name})</span>
+                </div>`;
+            }).join('');
+            document.getElementById('finalOverlay').style.display = 'flex';
+            saveHist(w);
+            finalTelegramPost(w).catch(e=>console.log("Error"));
         }
 
-        async function updateTelegramLive(step, num) {
-            if(!liveMsgId) return;
-            const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
-            let txt = `✨ **FASIL VIP PRO BINGO** ✨\n\n🎯 **${step}ኛ ዕጣ፦ ቁጥር ${num}**\n━━━━━━━━━━━━━\n_ቀጣዩን ዕጣ ይከታተሉ..._`;
-            await fetch(`https://api.telegram.org/bot${t}/editMessageText`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, message_id:liveMsgId, text:txt, parse_mode:'Markdown'}) });
+        // --- Standard Logic ---
+        function checkLicense() {
+            let uid = localStorage.getItem('f_uid') || "FS-" + Math.floor(1000 + Math.random() * 9000);
+            localStorage.setItem('f_uid', uid); document.getElementById('myDeviceId').innerText = uid;
+            const savedKey = localStorage.getItem('f_license'), expectedKey = (parseInt(uid.split('-')[1]) + 1000).toString();
+            if (savedKey === "9988" || savedKey === expectedKey) { document.getElementById('appContent').style.display = 'flex'; openApp(); } 
+            else { document.getElementById('lockScreen').style.display = 'flex'; }
         }
-
-        async function finalTelegramPost(w) {
-            if(!liveMsgId) return;
-            const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id');
-            const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ");
-            const m = `🔥🔥 **የዕጣው ማጠቃለያ** 🔥🔥\n\n🥇 **1ኛ ዕጣ፦ ${w[0]}** (${n[0]})\n🥈 **2ኛ ዕጣ፦ ${w[1]}** (${n[1]})\n🥉 **3ኛ ዕጣ፦ ${w[2]}** (${n[2]})\n━━━━━━━━━━━━━\n🎊 **እንኳን ደስ አላችሁ!**\n🚀 **POWERED BY FASIL VIP PRO**`;
-            await fetch(`https://api.telegram.org/bot${t}/editMessageText`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, message_id:liveMsgId, text:m, parse_mode:'Markdown'}) });
+        function validateKey() {
+            let k = document.getElementById('licenseKey').value.trim(), uid = localStorage.getItem('f_uid'), expected = (parseInt(uid.split('-')[1]) + 1000).toString();
+            if (k === "9988" || k === expected) { localStorage.setItem('f_license', k); location.reload(); } else { alert("Wrong Key!"); }
         }
-
+        function openApp() { setup(); renderBall("?", false); setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000); }
         function setup() {
             const bg=document.getElementById('bookingGrid'), gg=document.getElementById('gameGrid'); bg.innerHTML=""; gg.innerHTML="";
             for(let i=1; i<=100; i++){
@@ -248,26 +194,16 @@
                 bg.appendChild(bc); let gc=document.createElement('div'); gc.className='grid-cell'; gc.id='g'+i; gc.innerText=i; gc.style.color=clr; gc.style.borderColor=clr; gg.appendChild(gc);
             }
         }
-
-        function renderBall(v, f) {
-            cx.clearRect(0,0,200,200); let clr = (f && v>0)?rowColors[Math.floor((v-1)/10)]:'#bf953f';
-            let g=cx.createRadialGradient(70,70,10,100,100,80); g.addColorStop(0,'#fcf6ba'); g.addColorStop(1, clr);
-            cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill();
-            cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(v||"?",100,125);
-        }
-
-        function saveSettings() { localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); alert("Saved!"); }
-        
-        function showPage(p, b) { 
-            document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); 
-            document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); 
-            document.getElementById(p).classList.add('active'); b.classList.add('active'); 
-            if(p==='historyPage') loadHistory(); 
-        }
-
+        function renderBall(v, f) { cx.clearRect(0,0,200,200); let clr = (f && v>0)?rowColors[Math.floor((v-1)/10)]:'#bf953f'; let g=cx.createRadialGradient(70,70,10,100,100,80); g.addColorStop(0,'#fcf6ba'); g.addColorStop(1, clr); cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle=g; cx.fill(); cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(v||"?",100,125); }
+        async function runSequence() { if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID!"); document.getElementById('drawBtn').style.display = 'none'; initTelegramLive().catch(e=>console.log("Error")); startLiveDraw(); }
+        async function initTelegramLive() { const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id'); const m = `✨ **FASIL VIP PRO BINGO** ✨\n\n📢 **ዕጣው ተጀምሯል...**`; await fetch(`https://api.telegram.org/bot${t}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, text:m, parse_mode:'Markdown'}) }); }
+        async function updateTelegramLive(step, num) { const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id'); let txt = `🎯 **${step}ኛ ዕጣ፦ ቁጥር ${num}**`; await fetch(`https://api.telegram.org/bot${t}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, text:txt, parse_mode:'Markdown'}) }); }
+        async function finalTelegramPost(w) { const t = localStorage.getItem('f_bot_token') || DEFAULT_BOT_TOKEN, c = localStorage.getItem('f_chat_id'); const n = w.map(num => localStorage.getItem('bk_'+num) || "ያልተመዘገበ"); let m = `🏆 **የዕጣው ማጠቃለያ**\n\n🥇 1ኛ: ${w[0]} (${n[0]})\n🥈 2ኛ: ${w[1]} (${n[1]})\n🥉 3ኛ: ${w[2]} (${n[2]})`; await fetch(`https://api.telegram.org/bot${t}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, text:m, parse_mode:'Markdown'}) }); }
+        function showPage(p, b) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); document.getElementById(p).classList.add('active'); b.classList.add('active'); if(p==='historyPage') loadHistory(); }
         function saveHist(w) { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); h.unshift({t:new Date().toLocaleTimeString(), r:w}); localStorage.setItem('f_h', JSON.stringify(h.slice(0,20))); }
         function loadHistory() { let h=JSON.parse(localStorage.getItem('f_h')||"[]"); document.getElementById('historyList').innerHTML = h.map(x=>`<div style="background:#111; padding:10px; margin:5px; border-radius:10px; border:1px solid #333;"><small>${x.t}</small><br><b>${x.r.join(' - ')}</b></div>`).join(''); }
-        function clearBookingOnly() { if(confirm("መዝገብ ላጥፋ?")){ for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i); setup(); } }
+        function saveSettings() { localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); alert("Saved!"); }
+        function clearBookingOnly() { if(confirm("አፅዳ?")){ for(let i=1; i<=100; i++) localStorage.removeItem('bk_'+i); setup(); } }
     </script>
 </body>
 </html>
