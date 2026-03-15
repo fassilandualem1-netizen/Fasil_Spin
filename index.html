@@ -11,22 +11,27 @@
         .page { display: none; flex: 1; padding: 10px; box-sizing: border-box; overflow-y: auto; background: var(--dark); }
         .page.active { display: flex; flex-direction: column; }
         
-        .board-selector { background: #000; padding: 45px 10px 10px 10px; display: flex; justify-content: space-around; gap: 8px; }
+        /* Live Status Bar */
+        .live-status-bar { display: flex; align-items: center; justify-content: center; background: #111; padding: 5px 15px; border-radius: 50px; border: 1px solid #333; width: fit-content; margin: 40px auto 10px auto; gap: 10px; }
+        .blink-dot { width: 10px; height: 10px; background-color: var(--red); border-radius: 50%; animation: live-blink 1s infinite; box-shadow: 0 0 10px var(--red); }
+        @keyframes live-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        #liveClock { color: #fff; font-family: monospace; font-size: 14px; font-weight: bold; }
+
+        .board-selector { background: #000; padding: 10px; display: flex; justify-content: space-around; gap: 8px; }
         .board-opt { flex: 1; padding: 10px; border: 1px solid #222; border-radius: 10px; font-size: 12px; cursor: pointer; text-align: center; color: #888; background: #0a0a0a; }
         .board-opt.active { border-color: var(--gold); background: var(--gold); color: #000; font-weight: bold; }
 
         #focusWinnerDisplay { height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 70%); border-radius: 20px; border: 1px solid #222; margin-bottom: 5px; }
         .focus-num { font-size: 70px; font-weight: 900; color: #fff; text-shadow: 0 0 20px var(--neon); line-height: 1; }
         
-        /* Fixed 10 Column Grid */
         .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; background: #080808; padding: 8px; border-radius: 12px; border: 1px solid #222; }
-        .grid-cell { background: #050505; border: 1px solid #1a1a1a; border-radius: 4px; text-align: center; font-weight: bold; padding: 8px 0; font-size: 11px; }
+        .grid-cell { background: #050505; border: 1px solid #1a1a1a; border-radius: 4px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; }
         
         .tracking { background: var(--neon) !important; color: #000 !important; box-shadow: 0 0 10px var(--neon); }
-        .booked { border: 1px solid #fff !important; background: #333 !important; }
-        .winner-hit { background: var(--red) !important; color: white !important; border: 1.5px solid white !important; transform: scale(1.05); z-index: 5; }
+        .booked { border: 1.2px solid #fff !important; background: #333 !important; }
+        .winner-hit { background: var(--red) !important; color: white !important; border: 1.5px solid white !important; z-index: 5; }
 
-        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 80px; height: 80px; margin: 5px auto; display: block; }
+        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 75px; height: 75px; margin: 5px auto; display: block; }
         button.main-btn { width: 100%; padding: 16px; border-radius: 12px; font-size: 18px; font-weight: bold; background: var(--gold); color: #000; border: none; cursor: pointer; }
         
         .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 75px; z-index: 1000; }
@@ -40,8 +45,8 @@
 
     <div id="finalOverlay">
         <div style="background:#111; border:2px solid var(--gold); border-radius:20px; width:85%; padding:25px; text-align:center;">
-            <h1 style="color:var(--gold); font-size:28px;">🏆 የዕጣ ማጠቃለያ</h1>
-            <div id="finalList" style="text-align:left; color:white; font-size:20px; margin:20px 0; line-height:2;"></div>
+            <h1 style="color:var(--gold); font-size:26px;">🏆 የዕጣ ማጠቃለያ</h1>
+            <div id="finalList" style="text-align:left; color:white; font-size:18px; margin:20px 0; line-height:2;"></div>
             <button class="main-btn" onclick="clearSessionAndReload()">ዳግም አስጀምር</button>
         </div>
     </div>
@@ -63,17 +68,18 @@
         </div>
 
         <div id="gamePage" class="page active">
+            <div class="live-status-bar"><div class="blink-dot"></div><div id="liveClock">00:00:00</div></div>
             <div id="focusWinnerDisplay">
-                <div id="levelLabel" style="font-size:22px; font-weight:bold; color:var(--bright-gold);">READY?</div>
+                <div id="levelLabel" style="font-size:20px; font-weight:bold; color:var(--bright-gold);">READY?</div>
                 <div class="focus-num" id="currentResult">--</div>
             </div>
             <div id="gameGrid" class="grid-container"></div>
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
-            <div style="padding:10px 20px 85px 20px;"><button id="drawBtn" class="main-btn" onclick="runSequence()">START DRAW</button></div>
+            <div style="padding:5px 20px 85px 20px;"><button id="drawBtn" class="main-btn" onclick="runSequence()">START DRAW</button></div>
         </div>
 
         <div id="bookingPage" class="page">
-            <h3>📋 መዝገብ (10 Column)</h3>
+            <h3>📋 መዝገብ</h3>
             <div id="bookingGrid" class="grid-container" style="padding-bottom:100px;"></div>
             <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid #444; padding:12px; width:100%; border-radius:10px;">መዝገብ አፅዳ</button>
         </div>
@@ -114,13 +120,21 @@
 
         function validateKey() { if (document.getElementById('licenseKey').value === "9988") { localStorage.setItem('f_is_premium', "true"); location.reload(); } }
 
-        function openApp() { loadSettings(); setupGrids(); renderBall("?", false); if(localStorage.getItem('f_temp_winners')) { document.getElementById('drawBtn').innerText = "RESUME DRAW"; document.getElementById('drawBtn').style.background = "#ff3333"; } }
+        function openApp() { 
+            loadSettings(); setupGrids(); renderBall("?", false); 
+            setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+            if(localStorage.getItem('f_temp_winners')) { document.getElementById('drawBtn').innerText = "RESUME DRAW"; document.getElementById('drawBtn').style.background = "#ff3333"; } 
+        }
 
         function changeBoard(max) { currentMax = max; document.querySelectorAll('.board-opt').forEach(el => el.classList.remove('active')); document.getElementById('opt' + max).classList.add('active'); setupGrids(); }
 
         function setupGrids() {
             const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
             bg.innerHTML = ""; gg.innerHTML = "";
+            let cols = (currentMax === 100 || currentMax === 50) ? 10 : 5;
+            bg.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            gg.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
             for(let i=1; i<=currentMax; i++){
                 let k = `bk_${currentMax}_${i}`, bc = document.createElement('div'); bc.className='grid-cell'; bc.innerText=i;
                 if(localStorage.getItem(k)) bc.classList.add('booked');
@@ -128,14 +142,21 @@
                 bg.appendChild(bc);
                 let gc = document.createElement('div'); gc.className='grid-cell'; gc.id='g'+i; gc.innerText=i;
                 gc.style.color = rowColors[Math.floor((i-1)/(currentMax/10))]; gg.appendChild(gc);
-                if(currentMax === 25) { gc.style.padding = "15px 0"; gc.style.fontSize = "18px"; bc.style.padding = "15px 0"; }
+
+                // Font & Padding Adjustments
+                if(currentMax === 25) { 
+                    gc.style.padding = "18px 0"; gc.style.fontSize = "22px"; bc.style.padding = "18px 0"; bc.style.fontSize = "18px";
+                } else if(currentMax === 50) { 
+                    gc.style.padding = "14px 0"; gc.style.fontSize = "18px"; bc.style.padding = "14px 0"; bc.style.fontSize = "15px";
+                } else {
+                    gc.style.padding = "10px 0"; gc.style.fontSize = "12px"; bc.style.padding = "10px 0"; bc.style.fontSize = "11px";
+                }
             }
         }
 
         async function runSequence() {
             if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID!");
             document.getElementById('drawBtn').disabled = true;
-            
             let winners = JSON.parse(localStorage.getItem('f_temp_winners'));
             if(!winners) {
                 let all = Array.from({length: currentMax}, (_, i) => i + 1);
@@ -144,37 +165,27 @@
                 localStorage.setItem('f_temp_winners', JSON.stringify(winners));
                 await sendMsg(`🚀 **FASIL VIP PRO BINGO** 🚀\n━━━━━━━━━━━━━━━\n🔔 **ዕጣው አሁን እየወጣ ነው...** 📡`);
             }
-
             let startFrom = parseInt(localStorage.getItem('f_draw_step')) || 1;
             for(let i=startFrom; i<=3; i++) {
-                let win = winners[i-1];
-                localStorage.setItem('f_draw_step', i);
-                
-                // Sequence: Ready -> Verifying -> Go
+                let win = winners[i-1]; localStorage.setItem('f_draw_step', i);
                 lbl.innerText = "READY?"; playSound(440, 'sine', 0.5); await new Promise(r=>setTimeout(r, 1000));
                 lbl.innerText = "VERIFYING..."; playSound(554, 'sine', 0.5); await new Promise(r=>setTimeout(r, 1000));
                 lbl.innerText = "GO!"; playSound(659, 'sine', 0.8); await new Promise(r=>setTimeout(r, 500));
-                
                 let startTime = Date.now();
-                // 10 Seconds Draw
                 while(Date.now() - startTime < 10000) {
                     let rand = Math.floor(Math.random()*currentMax)+1;
                     renderBall(rand, false); resultEl.innerText = rand;
                     document.querySelectorAll('#gameGrid .grid-cell').forEach(c => c.classList.remove('tracking'));
                     if(document.getElementById('g'+rand)) document.getElementById('g'+rand).classList.add('tracking');
                     playSound(Math.random()*600+200, 'triangle', 0.08, 1.2);
-                    await new Promise(r=>setTimeout(r, 70));
+                    await new Promise(r=>setTimeout(r, 80));
                 }
-                
                 document.querySelectorAll('#gameGrid .grid-cell').forEach(c => c.classList.remove('tracking'));
-                renderBall(win, true); resultEl.innerText = win;
-                lbl.innerText = i + "ኛ ዕጣ አሸናፊ!";
+                renderBall(win, true); resultEl.innerText = win; lbl.innerText = i + "ኛ ዕጣ አሸናፊ!";
                 document.getElementById('g'+win).classList.add('winner-hit', 'tracking');
-                
                 const name = localStorage.getItem(`bk_${currentMax}_${win}`) || "ያልተመዘገበ";
                 await sendMsg(`🎯 **${i}ኛ ዕጣ የወጣው ቁጥር፦ [ ${win} ]**\n👤 **ስም፦ ${name}**\n━━━━━━━━━━━━━━━`);
-                playSound(880, 'sawtooth', 1.2, 2.0);
-                await new Promise(r=>setTimeout(r, 3500));
+                playSound(880, 'sawtooth', 1.2, 2.0); await new Promise(r=>setTimeout(r, 3500));
             }
             showFinalSummary(winners);
         }
