@@ -12,14 +12,16 @@
         .page.active { display: flex; flex-direction: column; }
         
         /* Live Status Bar */
-        .live-status-bar { display: flex; align-items: center; justify-content: center; background: #111; padding: 5px 15px; border-radius: 50px; border: 1px solid #333; width: fit-content; margin: 40px auto 10px auto; gap: 10px; }
+        .live-status-bar { display: flex; align-items: center; justify-content: center; background: #111; padding: 5px 15px; border-radius: 50px; border: 1px solid #333; width: fit-content; margin: 15px auto 10px auto; gap: 10px; }
         .blink-dot { width: 10px; height: 10px; background-color: var(--red); border-radius: 50%; animation: live-blink 1s infinite; box-shadow: 0 0 10px var(--red); }
         @keyframes live-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         #liveClock { color: #fff; font-family: monospace; font-size: 14px; font-weight: bold; }
 
-        .board-selector { background: #000; padding: 10px; display: flex; justify-content: space-around; gap: 8px; }
-        .board-opt { flex: 1; padding: 10px; border: 1px solid #222; border-radius: 10px; font-size: 12px; cursor: pointer; text-align: center; color: #888; background: #0a0a0a; }
-        .board-opt.active { border-color: var(--gold); background: var(--gold); color: #000; font-weight: bold; }
+        /* Floating Board Selector */
+        #boardFab { position: fixed; right: 20px; top: 80px; width: 50px; height: 50px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; z-index: 2000; box-shadow: 0 0 15px rgba(0,0,0,0.5); font-size: 18px; border: 2px solid #fff; }
+        #boardMenu { position: fixed; right: 25px; top: 140px; background: #111; border: 1px solid var(--gold); border-radius: 10px; display: none; flex-direction: column; z-index: 2000; overflow: hidden; }
+        .menu-item { padding: 15px 25px; color: #fff; border-bottom: 1px solid #222; font-size: 14px; text-align: center; }
+        .menu-item:active { background: var(--gold); color: #000; }
 
         #focusWinnerDisplay { height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 70%); border-radius: 20px; border: 1px solid #222; margin-bottom: 5px; }
         .focus-num { font-size: 70px; font-weight: 900; color: #fff; text-shadow: 0 0 20px var(--neon); line-height: 1; }
@@ -60,13 +62,14 @@
         </div>
     </div>
 
-    <div id="appContent">
-        <div class="board-selector">
-            <div class="board-opt active" id="opt25" onclick="changeBoard(25)">1-25</div>
-            <div class="board-opt" id="opt50" onclick="changeBoard(50)">1-50</div>
-            <div class="board-opt" id="opt100" onclick="changeBoard(100)">1-100</div>
-        </div>
+    <div id="boardFab" onclick="toggleMenu()">🔢</div>
+    <div id="boardMenu">
+        <div class="menu-item" onclick="changeBoard(25)">1 - 25</div>
+        <div class="menu-item" onclick="changeBoard(50)">1 - 50</div>
+        <div class="menu-item" onclick="changeBoard(100)">1 - 100</div>
+    </div>
 
+    <div id="appContent">
         <div id="gamePage" class="page active">
             <div class="live-status-bar"><div class="blink-dot"></div><div id="liveClock">00:00:00</div></div>
             <div id="focusWinnerDisplay">
@@ -79,13 +82,13 @@
         </div>
 
         <div id="bookingPage" class="page">
-            <h3>📋 መዝገብ</h3>
+            <h3 style="margin-top:20px;">📋 መዝገብ</h3>
             <div id="bookingGrid" class="grid-container" style="padding-bottom:100px;"></div>
             <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid #444; padding:12px; width:100%; border-radius:10px;">መዝገብ አፅዳ</button>
         </div>
 
         <div id="setupPage" class="page">
-            <h3>⚙️ SETUP</h3>
+            <h3 style="margin-top:20px;">⚙️ SETUP</h3>
             <input type="text" id="botTokenInput" style="width:100%; padding:15px; margin-bottom:15px; background:#111; color:#fff; border:1px solid var(--gold); border-radius:10px;" placeholder="Bot Token">
             <input type="text" id="chatIdInput" style="width:100%; padding:15px; background:#111; color:#fff; border:1px solid var(--gold); border-radius:10px;" placeholder="Chat ID">
             <br><br><button class="main-btn" onclick="saveSettings()">SAVE SETTINGS</button>
@@ -101,8 +104,10 @@
     <script>
         const DEFAULT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
-        let currentMax = 25, audioCtx = null;
+        let currentMax = 100, audioCtx = null;
         const cv = document.getElementById('bingoCanvas'), cx = cv.getContext('2d'), resultEl = document.getElementById('currentResult'), lbl = document.getElementById('levelLabel');
+
+        function toggleMenu() { const m = document.getElementById('boardMenu'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
 
         function playSound(f, t, d, v=2.0) { 
             try { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -126,7 +131,7 @@
             if(localStorage.getItem('f_temp_winners')) { document.getElementById('drawBtn').innerText = "RESUME DRAW"; document.getElementById('drawBtn').style.background = "#ff3333"; } 
         }
 
-        function changeBoard(max) { currentMax = max; document.querySelectorAll('.board-opt').forEach(el => el.classList.remove('active')); document.getElementById('opt' + max).classList.add('active'); setupGrids(); }
+        function changeBoard(max) { currentMax = max; document.getElementById('boardMenu').style.display = 'none'; setupGrids(); }
 
         function setupGrids() {
             const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
@@ -143,9 +148,8 @@
                 let gc = document.createElement('div'); gc.className='grid-cell'; gc.id='g'+i; gc.innerText=i;
                 gc.style.color = rowColors[Math.floor((i-1)/(currentMax/10))]; gg.appendChild(gc);
 
-                // Font & Padding Adjustments
                 if(currentMax === 25) { 
-                    gc.style.padding = "18px 0"; gc.style.fontSize = "22px"; bc.style.padding = "18px 0"; bc.style.fontSize = "18px";
+                    gc.style.padding = "18px 0"; gc.style.fontSize = "24px"; bc.style.padding = "18px 0"; bc.style.fontSize = "18px";
                 } else if(currentMax === 50) { 
                     gc.style.padding = "14px 0"; gc.style.fontSize = "18px"; bc.style.padding = "14px 0"; bc.style.fontSize = "15px";
                 } else {
@@ -215,13 +219,18 @@
             await fetch(`https://api.telegram.org/bot${t}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:c, text:m, parse_mode:'Markdown'}) });
         }
 
-        function showPage(p, b) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); document.getElementById(p).classList.add('active'); b.classList.add('active'); }
+        function showPage(p, b) { 
+            document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); 
+            document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); 
+            document.getElementById(p).classList.add('active'); b.classList.add('active');
+            // Hide FAB if not on game page
+            document.getElementById('boardFab').style.display = (p === 'gamePage') ? 'flex' : 'none';
+            document.getElementById('boardMenu').style.display = 'none';
+        }
         function saveSettings() { localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); alert("Saved! ✅"); }
         function loadSettings() { document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || ""; document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || ""; }
         function clearBookingOnly() { if(confirm("መዝገብ ላጥፋ?")){ for(let i=1; i<=100; i++) localStorage.removeItem(`bk_${currentMax}_${i}`); setupGrids(); } }
     </script>
 </body>
 </html>
-
-
 
