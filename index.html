@@ -3,37 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP PRO - FINAL FIX</title>
+    <title>FASIL VIP PRO - MASTER EDITION</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; --neon: #00f2ff; --dark: #000; }
         html, body { overflow: hidden; height: 100vh; width: 100vw; margin: 0; padding: 0; position: fixed; background: var(--dark); font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; user-select: none; color: var(--gold); }
         #appContent { display: none; height: 100vh; flex-direction: column; }
-        .page { display: none; flex: 1; padding: 10px; overflow-y: auto; padding-bottom: 95px; box-sizing: border-box; }
-        .page.active { display: flex; flex-direction: column; }
-        .board-selector { background: #111; padding: 10px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-around; gap: 8px; }
+        .page { display: none; flex: 1; padding: 10px; overflow-y: auto; box-sizing: border-box; }
+        #gamePage { display: none; flex-direction: column; height: 100vh; padding-bottom: 0; }
+        #gamePage.active { display: flex; }
+        .board-selector { background: #111; padding: 10px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-around; gap: 8px; z-index: 100; }
         .board-opt { flex: 1; padding: 10px; border: 1px solid #333; border-radius: 8px; font-size: 12px; cursor: pointer; text-align: center; color: #888; }
         .board-opt.active { border-color: var(--gold); background: var(--gold); color: #000; font-weight: bold; box-shadow: 0 0 15px var(--gold); }
-        .live-status-bar { display: flex; align-items: center; justify-content: center; background: #0a0a0a; padding: 4px 12px; border-radius: 50px; border: 1px solid #333; width: fit-content; margin: 0 auto 10px auto; font-size: 12px; color: #fff; }
-        .blink-dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; margin-right: 8px; animation: live-blink 1s infinite; }
+        .live-status-bar { display: flex; align-items: center; justify-content: center; background: #0a0a0a; padding: 4px 12px; border-radius: 50px; border: 1px solid #333; width: fit-content; margin: 0 auto 5px auto; font-size: 11px; color: #fff; }
+        .blink-dot { width: 6px; height: 6px; background: var(--red); border-radius: 50%; margin-right: 8px; animation: live-blink 1s infinite; }
         @keyframes live-blink { 50% { opacity: 0.3; } }
-        #focusWinnerDisplay { height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 70%); border-radius: 15px; border: 1px solid #222; margin-bottom: 5px; }
-        .focus-label { font-size: 24px; color: var(--bright-gold); text-shadow: 0 0 10px var(--gold); }
-        .focus-num { font-size: 80px; font-weight: 900; color: #fff; text-shadow: 0 0 30px var(--neon); line-height: 1; }
-        .grid-container { display: grid; gap: 3px; background: #080808; padding: 5px; border-radius: 10px; border: 1px solid #222; margin: 5px 0; }
-        .grid-cell { background: #050505; border: 1px solid #1a1a1a; border-radius: 3px; text-align: center; font-weight: bold; transition: 0.1s; display: flex; align-items: center; justify-content: center; color: #444; }
-        .tracking { background: var(--neon) !important; color: #000 !important; box-shadow: 0 0 15px var(--neon); transform: scale(1.1); z-index: 5; }
-        .booked { border: 1.5px solid #fff !important; background: #222 !important; color: #fff !important; }
-        .winner-hit { background: var(--red) !important; color: #fff !important; animation: winner-pulse 0.5s infinite; border: 2px solid white !important; z-index: 10; }
-        @keyframes winner-pulse { 50% { transform: scale(1.1); box-shadow: 0 0 30px var(--red); } }
-        .about-card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 15px; margin-bottom: 15px; border-left: 3px solid var(--gold); text-align: left; }
-        .card-title { font-size: 16px; font-weight: bold; color: var(--gold); margin-bottom: 8px; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #000; width: 100px; height: 100px; margin: 5px auto; display: block; }
-        button.main-btn { width: 100%; padding: 18px; border-radius: 15px; font-size: 20px; font-weight: bold; background: linear-gradient(to bottom, var(--bright-gold), var(--gold)); color: #000; border: none; cursor: pointer; }
+        #focusWinnerDisplay { height: 90px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 70%); border-radius: 15px; border: 1px solid #222; margin-bottom: 5px; flex-shrink: 0; }
+        .focus-label { font-size: 16px; color: var(--bright-gold); }
+        .focus-num { font-size: 65px; font-weight: 900; color: #fff; text-shadow: 0 0 20px var(--neon); line-height: 1; }
+        .grid-container { display: grid; gap: 2px; background: #080808; padding: 5px; border-radius: 10px; border: 1px solid #222; margin: 5px 0; overflow-y: auto; }
+        .grid-cell { background: #050505; border: 1px solid #1a1a1a; border-radius: 3px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #444; }
+        .tracking { background: var(--neon) !important; color: #000 !important; box-shadow: 0 0 10px var(--neon); }
+        .booked { border: 1.2px solid #fff !important; background: #222 !important; color: #fff !important; }
+        .winner-hit { background: var(--red) !important; color: white !important; border: 1.5px solid white !important; box-shadow: 0 0 10px var(--red); transform: scale(1.05); z-index: 5; }
+        canvas#bingoCanvas { border: 3px solid var(--gold); border-radius: 50%; background: #000; width: 75px; height: 75px; margin: 2px auto; display: block; flex-shrink: 0; }
+        .draw-btn-container { padding: 5px 10px 85px 10px; flex-shrink: 0; }
+        button.main-btn { width: 100%; padding: 15px; border-radius: 15px; font-size: 18px; font-weight: bold; background: linear-gradient(to bottom, var(--bright-gold), var(--gold)); color: #000; border: none; cursor: pointer; }
         .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 75px; z-index: 1000; }
         .tab-btn { flex: 1; color: #666; border: none; background: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .tab-btn.active { color: #fff; border-top: 4px solid var(--gold); background: #1a1a1a; }
         #finalOverlay, #lockScreen { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .modal { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 25px; width: 85%; text-align: center; }
+        .modal { background: #111; padding: 25px; border: 2px solid var(--gold); border-radius: 25px; width: 85%; text-align: center; }
+        .about-card { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 15px; margin-bottom: 15px; border-left: 3px solid var(--gold); text-align: left; }
+        .card-title { font-size: 16px; font-weight: bold; color: var(--gold); margin-bottom: 8px; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .social-link { display: block; background: #1a1a1a; padding: 12px; border-radius: 10px; text-decoration: none; color: #fff; margin-bottom: 10px; border: 1px solid #333; font-size: 14px; }
     </style>
 </head>
 <body onload="checkLicense()">
@@ -46,9 +48,9 @@
         <div class="modal">
             <h2 style="color:var(--gold);">FASIL VIP PRO</h2>
             <p id="trialMsg" style="color:#bbb; font-size:12px;"></p>
-            <div id="myDeviceId" style="color:#fff; margin:15px 0; font-family:monospace; background:#000; padding:10px; border-radius:8px; border:1px solid #333;">---</div>
+            <div id="myDeviceId" style="color:#fff; margin:15px 0; font-family:monospace; background:#000; padding:10px; border-radius:8px;">---</div>
             <input type="text" id="licenseKey" style="width:90%; padding:14px; text-align:center; border-radius:10px; background:#000; color:#fff; border:1px solid var(--gold);" placeholder="Activation Key">
-            <br><br><button onclick="validateKey()" class="main-btn">ACTIVATE SYSTEM</button>
+            <br><br><button onclick="validateKey()" class="main-btn">ACTIVATE</button>
         </div>
     </div>
 
@@ -64,18 +66,17 @@
             <div id="focusWinnerDisplay"><div class="focus-label" id="levelLabel">READY?</div><div class="focus-num" id="currentResult">--</div></div>
             <div id="gameGrid" class="grid-container"></div>
             <canvas id="bingoCanvas" width="200" height="200"></canvas>
-            <div style="padding:10px;"><button id="drawBtn" class="main-btn" onclick="runSequence()">START DRAW (30s)</button></div>
+            <div class="draw-btn-container"><button id="drawBtn" class="main-btn" onclick="runSequence()">START DRAW</button></div>
         </div>
 
         <div id="bookingPage" class="page">
             <h3>📋 መዝገብ ሰሌዳ</h3>
-            <div id="bookingGrid" class="grid-container"></div>
-            <button onclick="clearBookingData()" style="color:red; background:none; border:1px solid #333; padding:12px; border-radius:10px; width:100%; margin-top:10px;">ይህንን ሰሌዳ አፅዳ</button>
+            <div id="bookingGrid" class="grid-container" style="overflow-y:auto; padding-bottom:100px;"></div>
+            <div style="position:fixed; bottom:80px; left:10px; right:10px;"><button onclick="clearBookingData()" style="color:red; background:#111; border:1px solid #333; padding:12px; border-radius:10px; width:100%;">ሰሌዳውን አፅዳ</button></div>
         </div>
 
         <div id="setupPage" class="page">
             <h3>⚙️ SETUP</h3>
-            <p style="font-size: 11px; color: #888;">Bot Token እና Chat ID እዚህ ያስገቡ</p>
             <input type="text" id="botTokenInput" style="width:100%; padding:15px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #333; border-radius:10px;" placeholder="Bot Token">
             <input type="text" id="chatIdInput" style="width:100%; padding:15px; margin-bottom:20px; background:#111; color:#fff; border:1px solid #333; border-radius:10px;" placeholder="Chat ID (e.g. -100...)">
             <button class="main-btn" onclick="saveSettings()">SAVE SETTINGS</button>
@@ -83,11 +84,12 @@
 
         <div id="aboutPage" class="page">
             <h2 style="color:var(--bright-gold); text-align:center; text-shadow:0 0 10px var(--gold);">FASIL VIP TECH</h2>
+            <canvas id="aboutLogo" width="100" height="100" style="margin: 0 auto 15px auto; display:block;"></canvas>
             <div class="about-card"><div class="card-title">🚀 ስለ ሲስተሙ</div><div style="font-size:13px; color:#bbb; line-height:1.6;">ይህ FASIL VIP BINGO ሲስተም ለቢንጎ እና መሰል የዕጣ ጨዋታዎች የተዘጋጀ ዘመናዊ ዲጂታል መድረክ ነው።</div></div>
-            <div class="about-card"><div class="card-title">👨‍💻 አዘጋጅ (Developer)</div><div style="margin-top:10px;">
-                <a href="https://t.me/Fassilandualem" target="_blank" style="display:block; background:#1a1a1a; padding:12px; border-radius:10px; text-decoration:none; color:#fff; margin-bottom:10px; border:1px solid #333;">📱 Telegram: @Fassilandualem</a>
-                <a href="tel:+251951381356" style="display:block; background:#1a1a1a; padding:12px; border-radius:10px; text-decoration:none; color:#fff; border:1px solid #333;">📞 Phone: +251 951 381 356</a>
-            </div></div>
+            <div class="about-card"><div class="card-title">👨‍💻 አዘጋጅ (Developer)</div>
+                <a href="https://t.me/Fassilandualem" target="_blank" class="social-link">📱 Telegram: @Fassilandualem</a>
+                <a href="tel:+251951381356" class="social-link">📞 Phone: +251 951 381 356</a>
+            </div>
         </div>
 
         <div class="tabs">
@@ -119,7 +121,7 @@
             const isPremium = localStorage.getItem('f_is_premium');
             const trialExpired = (Date.now() - parseInt(startDate)) > (5 * 24 * 60 * 60 * 1000);
             if (isPremium === "true" || !trialExpired) { document.getElementById('appContent').style.display = 'flex'; openApp(); } 
-            else { document.getElementById('lockScreen').style.display = 'flex'; document.getElementById('trialMsg').innerText = "የ 5 ቀን ነፃ የሙከራ ጊዜዎ አብቅቷል!"; }
+            else { document.getElementById('lockScreen').style.display = 'flex'; document.getElementById('trialMsg').innerText = "Trial Expired!"; }
         }
 
         function validateKey() {
@@ -128,20 +130,37 @@
             else alert("Invalid Key!");
         }
 
-        function openApp() { loadSettings(); setupGrids(); renderBall("?", false); setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000); }
+        function openApp() { 
+            loadSettings(); setupGrids(); renderBall("?", false); 
+            drawAboutLogo();
+            setInterval(() => { document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000); 
+        }
+
+        function drawAboutLogo() {
+            const acv = document.getElementById('aboutLogo'), acx = acv.getContext('2d');
+            acx.beginPath(); acx.arc(50,50,45,0,Math.PI*2); acx.fillStyle='#bf953f'; acx.fill();
+            acx.fillStyle='#000'; acx.font='bold 40px Arial'; acx.textAlign='center'; acx.fillText('F', 50, 65);
+        }
 
         function changeBoard(max) { currentMax = max; document.querySelectorAll('.board-opt').forEach(el => el.classList.remove('active')); document.getElementById('opt' + max).classList.add('active'); setupGrids(); }
 
         function setupGrids() {
             const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
             bg.innerHTML = ""; gg.innerHTML = "";
-            let cols = (currentMax === 100) ? 10 : 5;
-            bg.style.gridTemplateColumns = `repeat(${cols}, 1fr)`; gg.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            let cols = (currentMax === 25) ? 5 : 10;
+            bg.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            gg.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+            let fontSize, padding;
+            if (currentMax === 25) { fontSize = "18px"; padding = "15px 0"; } 
+            else if (currentMax === 50) { fontSize = "14px"; padding = "10px 0"; } 
+            else { fontSize = "11px"; padding = "6px 0"; }
+
             for(let i=1; i<=currentMax; i++){
                 let key = `bk_${currentMax}_${i}`;
                 let makeCell = (p) => {
                     let d = document.createElement('div'); d.className = 'grid-cell'; d.innerText = i;
-                    d.style.padding = (currentMax === 100) ? "8px 0" : "15px 0"; d.style.fontSize = (currentMax === 100) ? "10px" : "16px";
+                    d.style.fontSize = fontSize; d.style.padding = padding;
                     if(p==='g') { d.id = 'g'+i; d.style.color = rowColors[Math.floor((i-1)/(currentMax/10))]; }
                     return d;
                 };
@@ -152,13 +171,16 @@
         }
 
         async function runSequence() {
-            const chatId = localStorage.getItem('f_chat_id');
-            if(!chatId) return alert("እባክዎ መጀመሪያ SETUP ገጽ ላይ Chat ID ያስገቡ!");
-            
+            if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID!");
             document.getElementById('drawBtn').disabled = true;
+            document.querySelectorAll('.grid-cell').forEach(c => c.classList.remove('winner-hit'));
             let winners = [];
+            await sendMsg("🚀 **FASIL VIP PRO BINGO** 🚀\n🔔 ዕጣው አሁን እየወጣ ነው... 📡");
+
             for(let i = 1; i <= 3; i++) {
                 document.getElementById('levelLabel').innerText = i + "ኛ ዕጣ...";
+                renderBall("?", false); 
+                await new Promise(d => setTimeout(d, 500));
                 let start = Date.now();
                 while(Date.now() - start < 8000) {
                     let r = Math.floor(Math.random() * currentMax) + 1;
@@ -170,31 +192,24 @@
                 }
                 let w; do { w = Math.floor(Math.random() * currentMax) + 1; } while(winners.includes(w));
                 winners.push(w); resEl.innerText = w; renderBall(w, true);
-                document.getElementById('g' + w).classList.add('winner-hit');
-                await sendToTelegram(i, w);
-                await new Promise(d => setTimeout(d, 2000));
+                const winnerCell = document.getElementById('g' + w);
+                if(winnerCell) { winnerCell.classList.remove('tracking'); winnerCell.classList.add('winner-hit'); }
+                const name = localStorage.getItem(`bk_${currentMax}_${w}`) || "ያልተመዘገበ";
+                await sendMsg(`🎯 **${i}ኛ ዕጣ የወጣው ቁጥር:** ${w}\n👤 **ስም:** ${name}\n━━━━━━━━━━━━━━`);
+                await new Promise(d => setTimeout(d, 3000));
             }
             showSummary(winners);
             document.getElementById('drawBtn').disabled = false;
         }
 
-        async function sendToTelegram(step, num) {
-            const token = localStorage.getItem('f_bot_token') || DEFAULT_TOKEN;
-            const chatId = localStorage.getItem('f_chat_id');
-            const name = localStorage.getItem(`bk_${currentMax}_${num}`) || "ያልተመዘገበ";
-            
-            const msg = `🎰 የሰሌዳ 1-${currentMax} ውጤት\n━━━━━━━━━━━━━━\n🎯 ${step}ኛ ዕጣ: [ ${num} ]\n👤 አሸናፊ: ${name}\n━━━━━━━━━━━━━━\n🔥 FASIL VIP PRO`;
-            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                if(!data.ok) alert("Telegram Error: " + data.description);
-            } catch(e) { alert("Network Error: ኢንተርኔት መኖሩን ያረጋግጡ!"); }
+        async function sendMsg(text) {
+            const t = localStorage.getItem('f_bot_token') || DEFAULT_TOKEN, c = localStorage.getItem('f_chat_id');
+            const url = `https://api.telegram.org/bot${t}/sendMessage?chat_id=${c}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+            try { await fetch(url); } catch(e){}
         }
 
         function renderBall(v, f) { 
-            cx.clearRect(0,0,200,200); cx.shadowBlur = f ? 30 : 0; cx.shadowColor = "#fff";
+            cx.clearRect(0,0,200,200);
             let clr = (f && v > 0) ? rowColors[Math.floor((v-1)/(currentMax/10))] : '#bf953f';
             cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2); cx.fillStyle = clr; cx.fill(); 
             cx.fillStyle="#000"; cx.font="bold 75px Arial"; cx.textAlign="center"; cx.fillText(v||"?", 100, 125); 
@@ -207,9 +222,9 @@
         }
 
         function showPage(p, btn) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active')); document.getElementById(p).classList.add('active'); btn.classList.add('active'); }
-        function saveSettings() { localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); alert("Settings Saved! ✅"); }
+        function saveSettings() { localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); alert("Saved! ✅"); }
         function loadSettings() { document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || ""; document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || ""; }
-        function clearBookingData() { if(confirm("የዚህን ሰሌዳ መዝገብ ላጥፋ?")) { for(let i=1; i<=currentMax; i++) localStorage.removeItem(`bk_${currentMax}_${i}`); setupGrids(); } }
+        function clearBookingData() { if(confirm("አፅዳ?")) { for(let i=1; i<=currentMax; i++) localStorage.removeItem(`bk_${currentMax}_${i}`); setupGrids(); } }
     </script>
 </body>
 </html>
