@@ -6,8 +6,8 @@
     <title>FASIL VIP PRO - Secured Enterprise</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; --neon: #00f2ff; --dark: #000; }
-        html, body { overflow: hidden; height: 100vh; width: 100vw; margin: 0; padding: 0; position: fixed; touch-action: none; background: var(--dark); font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; user-select: none; color: var(--gold); }
-        #appContent { display: none; height: 100vh; flex-direction: column; overflow: hidden; }
+        html, body { overflow: hidden; height: 100vh; width: 100vw; margin: 0; padding: 0; position: fixed; background: var(--dark); font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; user-select: none; color: var(--gold); }
+        #appContent { display: none; height: 100vh; flex-direction: column; }
         .page { display: none; flex: 1; padding: 10px; box-sizing: border-box; overflow-y: auto; background: var(--dark); }
         .page.active { display: flex; flex-direction: column; }
         
@@ -18,14 +18,15 @@
         #focusWinnerDisplay { height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 70%); border-radius: 20px; border: 1px solid #222; margin-bottom: 5px; }
         .focus-num { font-size: 70px; font-weight: 900; color: #fff; text-shadow: 0 0 20px var(--neon); line-height: 1; }
         
-        .grid-container { display: grid; gap: 4px; background: #080808; padding: 8px; border-radius: 12px; border: 1px solid #222; }
-        .grid-cell { background: #050505; border: 1px solid #1a1a1a; border-radius: 4px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        /* Fixed 10 Column Grid */
+        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; background: #080808; padding: 8px; border-radius: 12px; border: 1px solid #222; }
+        .grid-cell { background: #050505; border: 1px solid #1a1a1a; border-radius: 4px; text-align: center; font-weight: bold; padding: 8px 0; font-size: 11px; }
         
         .tracking { background: var(--neon) !important; color: #000 !important; box-shadow: 0 0 10px var(--neon); }
-        .booked { border: 1.5px solid #fff !important; background: #333 !important; color: #fff !important; }
-        .winner-hit { background: var(--red) !important; color: white !important; border: 1.5px solid white !important; box-shadow: 0 0 15px var(--red); z-index: 5; }
+        .booked { border: 1px solid #fff !important; background: #333 !important; }
+        .winner-hit { background: var(--red) !important; color: white !important; border: 1.5px solid white !important; transform: scale(1.05); z-index: 5; }
 
-        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 85px; height: 85px; margin: 5px auto; display: block; }
+        canvas { border: 4px solid var(--gold); border-radius: 50%; background: #050505; width: 80px; height: 80px; margin: 5px auto; display: block; }
         button.main-btn { width: 100%; padding: 16px; border-radius: 12px; font-size: 18px; font-weight: bold; background: var(--gold); color: #000; border: none; cursor: pointer; }
         
         .tabs { display: flex; background: #111; border-top: 2px solid var(--gold); position: fixed; bottom: 0; width: 100%; height: 75px; z-index: 1000; }
@@ -39,9 +40,9 @@
 
     <div id="finalOverlay">
         <div style="background:#111; border:2px solid var(--gold); border-radius:20px; width:85%; padding:25px; text-align:center;">
-            <h2 style="color:var(--gold);">🏆 የዕጣ ማጠቃለያ</h2>
-            <div id="finalList" style="text-align:left; color:white; margin:20px 0;"></div>
-            <button class="main-btn" onclick="clearSessionAndReload()">ጨርሻለሁ</button>
+            <h1 style="color:var(--gold); font-size:28px;">🏆 የዕጣ ማጠቃለያ</h1>
+            <div id="finalList" style="text-align:left; color:white; font-size:20px; margin:20px 0; line-height:2;"></div>
+            <button class="main-btn" onclick="clearSessionAndReload()">ዳግም አስጀምር</button>
         </div>
     </div>
 
@@ -63,7 +64,7 @@
 
         <div id="gamePage" class="page active">
             <div id="focusWinnerDisplay">
-                <div id="levelLabel" style="font-size:20px; color:var(--bright-gold);">READY?</div>
+                <div id="levelLabel" style="font-size:22px; font-weight:bold; color:var(--bright-gold);">READY?</div>
                 <div class="focus-num" id="currentResult">--</div>
             </div>
             <div id="gameGrid" class="grid-container"></div>
@@ -72,9 +73,9 @@
         </div>
 
         <div id="bookingPage" class="page">
-            <h3>📋 መዝገብ</h3>
+            <h3>📋 መዝገብ (10 Column)</h3>
             <div id="bookingGrid" class="grid-container" style="padding-bottom:100px;"></div>
-            <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid #444; padding:12px; width:100%; border-radius:10px;">ሁሉንም አፅዳ</button>
+            <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid #444; padding:12px; width:100%; border-radius:10px;">መዝገብ አፅዳ</button>
         </div>
 
         <div id="setupPage" class="page">
@@ -95,7 +96,7 @@
         const DEFAULT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
         let currentMax = 25, audioCtx = null;
-        const cv = document.getElementById('bingoCanvas'), cx = cv.getContext('2d'), resultEl = document.getElementById('currentResult');
+        const cv = document.getElementById('bingoCanvas'), cx = cv.getContext('2d'), resultEl = document.getElementById('currentResult'), lbl = document.getElementById('levelLabel');
 
         function playSound(f, t, d, v=2.0) { 
             try { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -120,9 +121,6 @@
         function setupGrids() {
             const bg = document.getElementById('bookingGrid'), gg = document.getElementById('gameGrid');
             bg.innerHTML = ""; gg.innerHTML = "";
-            let cols = (currentMax === 25) ? 5 : (currentMax === 50 ? 6 : 8);
-            bg.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            gg.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             for(let i=1; i<=currentMax; i++){
                 let k = `bk_${currentMax}_${i}`, bc = document.createElement('div'); bc.className='grid-cell'; bc.innerText=i;
                 if(localStorage.getItem(k)) bc.classList.add('booked');
@@ -131,7 +129,6 @@
                 let gc = document.createElement('div'); gc.className='grid-cell'; gc.id='g'+i; gc.innerText=i;
                 gc.style.color = rowColors[Math.floor((i-1)/(currentMax/10))]; gg.appendChild(gc);
                 if(currentMax === 25) { gc.style.padding = "15px 0"; gc.style.fontSize = "18px"; bc.style.padding = "15px 0"; }
-                else if(currentMax === 50) { gc.style.padding = "12px 0"; gc.style.fontSize = "15px"; bc.style.padding = "12px 0"; }
             }
         }
 
@@ -145,53 +142,58 @@
                 for(let i=all.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [all[i], all[j]]=[all[j], all[i]]; }
                 winners = [all[0], all[1], all[2]];
                 localStorage.setItem('f_temp_winners', JSON.stringify(winners));
-                await sendMsg(`🚀 **FASIL VIP PRO BINGO** 🚀\n🔔 **ዕጣው አሁን እየወጣ ነው...** 📡`);
+                await sendMsg(`🚀 **FASIL VIP PRO BINGO** 🚀\n━━━━━━━━━━━━━━━\n🔔 **ዕጣው አሁን እየወጣ ነው...** 📡`);
             }
 
             let startFrom = parseInt(localStorage.getItem('f_draw_step')) || 1;
             for(let i=startFrom; i<=3; i++) {
                 let win = winners[i-1];
                 localStorage.setItem('f_draw_step', i);
-                document.getElementById('levelLabel').innerText = "READY?"; await new Promise(r=>setTimeout(r, 1500));
+                
+                // Sequence: Ready -> Verifying -> Go
+                lbl.innerText = "READY?"; playSound(440, 'sine', 0.5); await new Promise(r=>setTimeout(r, 1000));
+                lbl.innerText = "VERIFYING..."; playSound(554, 'sine', 0.5); await new Promise(r=>setTimeout(r, 1000));
+                lbl.innerText = "GO!"; playSound(659, 'sine', 0.8); await new Promise(r=>setTimeout(r, 500));
                 
                 let startTime = Date.now();
-                while(Date.now() - startTime < 5000) {
+                // 10 Seconds Draw
+                while(Date.now() - startTime < 10000) {
                     let rand = Math.floor(Math.random()*currentMax)+1;
                     renderBall(rand, false); resultEl.innerText = rand;
                     document.querySelectorAll('#gameGrid .grid-cell').forEach(c => c.classList.remove('tracking'));
                     if(document.getElementById('g'+rand)) document.getElementById('g'+rand).classList.add('tracking');
-                    playSound(Math.random()*600+200, 'triangle', 0.1, 1.5);
-                    await new Promise(r=>setTimeout(r, 80));
+                    playSound(Math.random()*600+200, 'triangle', 0.08, 1.2);
+                    await new Promise(r=>setTimeout(r, 70));
                 }
                 
                 document.querySelectorAll('#gameGrid .grid-cell').forEach(c => c.classList.remove('tracking'));
                 renderBall(win, true); resultEl.innerText = win;
-                document.getElementById('levelLabel').innerText = i + "ኛ ዕጣ";
+                lbl.innerText = i + "ኛ ዕጣ አሸናፊ!";
                 document.getElementById('g'+win).classList.add('winner-hit', 'tracking');
                 
                 const name = localStorage.getItem(`bk_${currentMax}_${win}`) || "ያልተመዘገበ";
-                await sendMsg(`🎯 **${i}ኛ ዕጣ የወጣው ቁጥር፦ [ ${win} ]**\n👤 ስም፦ ${name}`);
-                playSound(660, 'sawtooth', 0.8, 2.5);
-                await new Promise(r=>setTimeout(r, 3000));
+                await sendMsg(`🎯 **${i}ኛ ዕጣ የወጣው ቁጥር፦ [ ${win} ]**\n👤 **ስም፦ ${name}**\n━━━━━━━━━━━━━━━`);
+                playSound(880, 'sawtooth', 1.2, 2.0);
+                await new Promise(r=>setTimeout(r, 3500));
             }
             showFinalSummary(winners);
         }
 
         function showFinalSummary(w) {
             const list = document.getElementById('finalList');
-            list.innerHTML = w.map((num, i) => `<div>${i+1}ኛ፡ <b>${num}</b> (${localStorage.getItem(`bk_${currentMax}_${num}`) || "ያልተመዘገበ"})</div>`).join('<br>');
+            list.innerHTML = w.map((num, i) => `🏅 ${i+1}ኛ፡ <b>${num}</b> (${localStorage.getItem(`bk_${currentMax}_${num}`) || "ያልተመዘገበ"})`).join('<br>');
             document.getElementById('finalOverlay').style.display = 'flex';
-            let msg = `🏆 **የዕጣው ማጠቃለያ (Final Results)** 🏆\n` + w.map((n,i)=>`${i+1}ኛ፡ ${n} (${localStorage.getItem(`bk_${currentMax}_${n}`)||'ያልተመዘገበ'})`).join('\n');
+            let msg = `🏆 **የዕጣው ማጠቃለያ (Final Results)** 🏆\n━━━━━━━━━━━━━━━\n` + 
+                      w.map((n,i)=> `🥇 **${i+1}ኛ ዕጣ፦ ${n}** (${localStorage.getItem(`bk_${currentMax}_${n}`)||'ያልተመዘገበ'})`).join('\n') +
+                      `\n━━━━━━━━━━━━━━━\n🔥 **POWERED BY FASIL VIP TECH**`;
             sendMsg(msg);
         }
 
         function clearSessionAndReload() { localStorage.removeItem('f_temp_winners'); localStorage.removeItem('f_draw_step'); location.reload(); }
 
         function renderBall(v, f) {
-            cx.clearRect(0,0,200,200);
-            cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2);
-            cx.fillStyle = f ? "#00ff00" : "#222"; cx.fill();
-            cx.strokeStyle = "#bf953f"; cx.lineWidth = 5; cx.stroke();
+            cx.clearRect(0,0,200,200); cx.beginPath(); cx.arc(100,100,85,0,Math.PI*2);
+            cx.fillStyle = f ? "#00ff00" : "#222"; cx.fill(); cx.strokeStyle = "#bf953f"; cx.lineWidth = 5; cx.stroke();
             cx.fillStyle = f ? "#000" : "#fff"; cx.font = "bold 80px Arial"; cx.textAlign = "center";
             cx.fillText(v, 100, 130);
         }
@@ -203,7 +205,7 @@
         }
 
         function showPage(p, b) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); document.getElementById(p).classList.add('active'); b.classList.add('active'); }
-        function saveSettings() { localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); alert("Settings Saved! ✅"); }
+        function saveSettings() { localStorage.setItem('f_bot_token', document.getElementById('botTokenInput').value.trim()); localStorage.setItem('f_chat_id', document.getElementById('chatIdInput').value.trim()); alert("Saved! ✅"); }
         function loadSettings() { document.getElementById('botTokenInput').value = localStorage.getItem('f_bot_token') || ""; document.getElementById('chatIdInput').value = localStorage.getItem('f_chat_id') || ""; }
         function clearBookingOnly() { if(confirm("መዝገብ ላጥፋ?")){ for(let i=1; i<=100; i++) localStorage.removeItem(`bk_${currentMax}_${i}`); setupGrids(); } }
     </script>
