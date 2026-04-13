@@ -140,40 +140,82 @@
         }
 
         async function runSequence() {
-            if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID!");
-            document.getElementById('drawBtn').disabled = true;
-            let winners = JSON.parse(localStorage.getItem('f_temp_winners'));
-            if(!winners) {
-                let all = Array.from({length: currentMax}, (_, i) => i + 1);
-                for(let i=all.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [all[i], all[j]]=[all[j], all[i]]; }
-                winners = [all, all, all];
-                localStorage.setItem('f_temp_winners', JSON.stringify(winners));
-                sendMsg(`🚀 **FASIL VIP PRO BINGO** 🚀\n━━━━━━━━━━━━━━━\n🔔 **ዕጣው አሁን እየወጣ ነው...** 📡`);
-            }
-            let startFrom = parseInt(localStorage.getItem('f_draw_step')) || 1;
-            for(let i=startFrom; i<=3; i++) {
-                let win = winners[i-1]; localStorage.setItem('f_draw_step', i);
-                lbl.innerText = "READY?"; playSound(440, 'sine', 0.5); await new Promise(r=>setTimeout(r, 1000));
-                lbl.innerText = "VERIFYING..."; playSound(554, 'sine', 0.5); await new Promise(r=>setTimeout(r, 1000));
-                lbl.innerText = "GO!"; playSound(659, 'sine', 0.8); await new Promise(r=>setTimeout(r, 500));
-                let startTime = Date.now();
-                while(Date.now() - startTime < 10000) {
-                    let rand = Math.floor(Math.random()*currentMax)+1;
-                    renderBall(rand, false); resultEl.innerText = rand;
-                    document.querySelectorAll('#gameGrid .grid-cell').forEach(c => c.classList.remove('tracking'));
-                    if(document.getElementById('g'+rand)) document.getElementById('g'+rand).classList.add('tracking');
-                    playSound(Math.random()*600+200, 'triangle', 0.08, 1.2);
-                    await new Promise(r=>setTimeout(r, 150)); // ፍጥነቱን ለ RAM ማመጣጠኛነት ወደ 150ms አሳድጌዋለሁ
-                }
-                document.querySelectorAll('#gameGrid .grid-cell').forEach(c => c.classList.remove('tracking'));
-                renderBall(win, true); resultEl.innerText = win; lbl.innerText = i + "ኛ ዕጣ አሸናፊ!";
-                document.getElementById('g'+win).classList.add('winner-hit', 'tracking');
-                sendMsg(`🎯 **${i}ኛ ዕጣ የወጣው ቁጥር፦ [ ${win} ]**\n━━━━━━━━━━━━━━━`);
-                playSound(880, 'sawtooth', 1.2, 2.0); await new Promise(r=>setTimeout(r, 3500));
-            }
-            showFinalSummary(winners);
+    if(!localStorage.getItem('f_chat_id')) return alert("Setup Chat ID!");
+    document.getElementById('drawBtn').disabled = true;
+    
+    let winners = JSON.parse(localStorage.getItem('f_temp_winners'));
+    if(!winners) {
+        let all = Array.from({length: currentMax}, (_, i) => i + 1);
+        // ቁጥሮቹን በዘፈቀደ ለመቀላቀል (Shuffle)
+        for(let i=all.length-1; i>0; i--) { 
+            const j=Math.floor(Math.random()*(i+1)); 
+            [all[i], all[j]]=[all[j], all[i]]; 
+        }
+        // የመጀመሪያዎቹን 3 አሸናፊዎች መምረጥ
+        winners = [all, all, all];
+        localStorage.setItem('f_temp_winners', JSON.stringify(winners));
+        sendMsg(`🚀 **FASIL VIP PRO BINGO** 🚀\n━━━━━━━━━━━━━━━\n🔔 **ዕጣው አሁን እየወጣ ነው...** 📡`);
+    }
+
+    let startFrom = parseInt(localStorage.getItem('f_draw_step')) || 1;
+    for(let i=startFrom; i<=3; i++) {
+        let win = winners[i-1]; 
+        localStorage.setItem('f_draw_step', i);
+        
+        lbl.innerText = "READY?"; playSound(440, 'sine', 0.5); await new Promise(r=>setTimeout(r, 1000));
+        lbl.innerText = "VERIFYING..."; playSound(554, 'sine', 0.5); await new Promise(r=>setTimeout(r, 1000));
+        lbl.innerText = "GO!"; playSound(659, 'sine', 0.8); await new Promise(r=>setTimeout(r, 500));
+        
+        let startTime = Date.now();
+        // ለ 10 ሰከንድ ቁጥሩ ይሽከረከራል
+        while(Date.now() - startTime < 10000) {
+            let rand = Math.floor(Math.random()*currentMax)+1;
+            renderBall(rand, false); 
+            resultEl.innerText = rand;
+            
+            document.querySelectorAll('#gameGrid .grid-cell').forEach(c => c.classList.remove('tracking'));
+            if(document.getElementById('g'+rand)) document.getElementById('g'+rand).classList.add('tracking');
+            
+            playSound(Math.random()*600+200, 'triangle', 0.08, 1.2);
+            // ፍጥነቱ በፈለግከው መሰረት 120ms ሆኗል
+            await new Promise(r=>setTimeout(r, 120)); 
         }
 
+        document.querySelectorAll('#gameGrid .grid-cell').forEach(c => c.classList.remove('tracking'));
+        renderBall(win, true); 
+        resultEl.innerText = win; 
+        lbl.innerText = i + "ኛ ዕጣ አሸናፊ!";
+        document.getElementById('g'+win).classList.add('winner-hit', 'tracking');
+        
+        sendMsg(`🎯 **${i}ኛ ዕጣ የወጣው ቁጥር፦ [ ${win} ]**\n━━━━━━━━━━━━━━━`);
+        playSound(880, 'sawtooth', 1.2, 2.0);
+        
+        // በየዕጣው መካከል 5 ሰከንድ ይጠብቃል
+        await new Promise(r=>setTimeout(r, 5000)); 
+    }
+    showFinalSummary(winners);
+}
+
+// ቁጥሩ በክቡ መሃል በትክክል እንዲቀመጥ renderBall ማስተካከያ
+function renderBall(v, f) {
+    cx.clearRect(0,0,200,200); 
+    cx.beginPath(); 
+    cx.arc(100,100,85,0,Math.PI*2);
+    cx.fillStyle = f ? "#00ff00" : "#222"; 
+    cx.fill(); 
+    cx.strokeStyle = "#bf953f"; 
+    cx.lineWidth = 5; 
+    cx.stroke();
+    
+    cx.fillStyle = f ? "#000" : "#fff"; 
+    // ቁጥሩ 100 ሲሆን መጠኑን በራሱ ያስተካክላል
+    let fontSize = (v.toString().length > 2) ? "65px" : "85px";
+    cx.font = `bold ${fontSize} Arial`; 
+    cx.textAlign = "center";
+    cx.textBaseline = "middle"; // በቁመት መሃል ለማድረግ
+    cx.fillText(v, 100, 105); // 105 ቁጥሩን መሃል ላይ ያደርገዋል
+}
+                
         function showFinalSummary(w) {
             const list = document.getElementById('finalList');
             list.innerHTML = w.map((num, i) => `🏅 ${i+1}ኛ፡ <b>${num}</b>`).join('<br>');
