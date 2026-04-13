@@ -81,6 +81,26 @@
             <div style="padding:5px 20px 85px 20px;"><button id="drawBtn" class="main-btn" onclick="runSequence()">START DRAW</button></div>
         </div>
 
+        <div id="bookingPage" class="page">
+            <h3 style="margin-top:20px;">📋 መዝገብ</h3>
+            <div id="bookingGrid" class="grid-container" style="padding-bottom:100px;"></div>
+            <button onclick="clearBookingOnly()" style="color:red; background:none; border:1px solid #444; padding:12px; width:100%; border-radius:10px;">መዝገብ አፅዳ</button>
+        </div>
+
+        <div id="setupPage" class="page">
+            <h3 style="margin-top:20px;">⚙️ SETUP</h3>
+            <input type="text" id="botTokenInput" style="width:100%; padding:15px; margin-bottom:15px; background:#111; color:#fff; border:1px solid var(--gold); border-radius:10px;" placeholder="Bot Token">
+            <input type="text" id="chatIdInput" style="width:100%; padding:15px; background:#111; color:#fff; border:1px solid var(--gold); border-radius:10px;" placeholder="Chat ID">
+            <br><br><button class="main-btn" onclick="saveSettings()">SAVE SETTINGS</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn" onclick="showPage('bookingPage', this)">📋 መዝገብ</button>
+            <button class="tab-btn active" onclick="showPage('gamePage', this)">🎰 ዕጣ</button>
+            <button class="tab-btn" onclick="showPage('setupPage', this)">⚙️ SETUP</button>
+        </div>
+    </div>
+
     <script>
         const DEFAULT_TOKEN = "8757888085:AAG2Gpgdyu_R_TOEtt3f_JU0F-xjmCnSPgc";
         const rowColors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A8", "#33FFF6", "#FFD433", "#8D33FF", "#33FFAC", "#FF8333"];
@@ -213,4 +233,3 @@
     </script>
 </body>
 </html>
-
