@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FASIL VIP PRO - Secured Enterprise</title>
+    <title>ፋሲል እና ዳመነ ዕጣ - Secured Enterprise</title>
     <style>
         :root { --gold: #bf953f; --bright-gold: #fcf6ba; --red: #ff3333; --neon: #00f2ff; --dark: #000; }
         html, body { overflow: hidden; height: 100vh; width: 100vw; margin: 0; padding: 0; position: fixed; background: var(--dark); font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; user-select: none; color: var(--gold); }
@@ -47,7 +47,7 @@
 
     <div id="finalOverlay">
         <div style="background:#111; border:2px solid var(--gold); border-radius:20px; width:85%; padding:25px; text-align:center;">
-            <h1 style="color:var(--gold); font-size:26px;">🏆 የዕጣ ማጠቃለያ</h1>
+            <h1 style="color:var(--gold); font-size:26px;">🏆 ፋሲል እና ዳመነ ዕጣ ማጠቃለያ</h1>
             <div id="finalList" style="text-align:left; color:white; font-size:18px; margin:20px 0; line-height:2;"></div>
             <button class="main-btn" onclick="clearSessionAndReload()">ዳግም አስጀምር</button>
         </div>
@@ -167,7 +167,7 @@
                 for(let i=all.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [all[i], all[j]]=[all[j], all[i]]; }
                 winners = [all[0], all[1], all[2]];
                 localStorage.setItem('f_temp_winners', JSON.stringify(winners));
-                await sendMsg(`🚀 **FASIL VIP PRO BINGO** 🚀\n━━━━━━━━━━━━━━━\n🔔 **ዕጣው አሁን እየወጣ ነው...** 📡`);
+                await sendMsg(`🚀 **ፋሲል እና ዳመነ ዕጣ** 🚀\n━━━━━━━━━━━━━━━\n🔔 **ዕጣው አሁን እየወጣ ነው ገባ ገባ በሉ ያ ጀማ🥂...** 📡`);
             }
             let startFrom = parseInt(localStorage.getItem('f_draw_step')) || 1;
             for(let i=startFrom; i<=3; i++) {
