@@ -94,9 +94,7 @@
             <br><br><button class="main-btn" onclick="saveSettings()">SAVE SETTINGS</button>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn" onclick="showPage('bookingPage', this)">📋 መዝገብ</button>
-            <button class="tab-btn active" onclick="showPage('gamePage', this)">🎰 ዕጣ</button>
+         active" onclick="showPage('gamePage', this)">🎰 ዕጣ</button>
             <button class="tab-btn" onclick="showPage('setupPage', this)">⚙️ SETUP</button>
         </div>
     </div>
@@ -143,7 +141,7 @@
             for(let i=1; i<=currentMax; i++){
                 let k = `bk_${currentMax}_${i}`, bc = document.createElement('div'); bc.className='grid-cell'; bc.innerText=i;
                 if(localStorage.getItem(k)) bc.classList.add('booked');
-                bc.onclick=()=>{ let v=prompt(i+" ስም:", localStorage.getItem(k)||""); if(v!==null){ v===""?localStorage.removeItem(k):localStorage.setItem(k,v); setupGrids(); } };
+                
                 bg.appendChild(bc);
                 let gc = document.createElement('div'); gc.className='grid-cell'; gc.id='g'+i; gc.innerText=i;
                 gc.style.color = rowColors[Math.floor((i-1)/(currentMax/10))]; gg.appendChild(gc);
